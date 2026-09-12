@@ -1,5 +1,10 @@
 # FLYTRAP status
 
+CI correction (2026-09-12): **local PASS**, hosted run pending branch push.
+Foundation now uses uv 0.12.13 managed Python 3.14.7 with linked SQLite 3.53.1;
+`make bootstrap` and `make verify test-upstream` exited 0. See the
+[milestone 01 correction](milestones/01.md) for counts and evidence.
+
 Milestones **00–04 complete**. **05 automated work complete; human review PENDING.**
 Latest validation: 2026-09-12 UTC (2026-09-11 US/Central).
 HEAD is `e999df631277d94277747271bc0a8b1359682b29`; milestone 05 changes are local
