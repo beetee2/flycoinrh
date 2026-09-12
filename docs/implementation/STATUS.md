@@ -1,5 +1,12 @@
 # FLYTRAP status
 
+CI correction (2026-09-12): **local and hosted PASS**. Foundation now uses uv
+0.12.13 managed Python 3.14.7 with linked SQLite 3.53.1; `make bootstrap` and
+`make verify test-upstream` exited 0 locally, and
+[hosted run 34668843967](https://github.com/beetee2/flycoinrh/actions/runs/34668843967)
+passed. See the [milestone 01 correction](milestones/01.md) for counts and
+evidence.
+
 Milestones **00–04 complete**. **05 bounded review revision complete;
 human_review: PENDING. Do not start 06.**
 
