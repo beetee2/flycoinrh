@@ -1,0 +1,695 @@
+{
+  "$defs": {
+    "Brightness": {
+      "additionalProperties": false,
+      "properties": {
+        "A": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "A",
+          "type": "number"
+        },
+        "B": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "B",
+          "type": "number"
+        }
+      },
+      "required": [
+        "A",
+        "B"
+      ],
+      "title": "Brightness",
+      "type": "object"
+    },
+    "Comparison": {
+      "additionalProperties": false,
+      "properties": {
+        "same_image": {
+          "title": "Same Image",
+          "type": "boolean"
+        },
+        "equal_brightness": {
+          "title": "Equal Brightness",
+          "type": "boolean"
+        },
+        "mean_brightness_u8": {
+          "$ref": "#/$defs/Brightness"
+        },
+        "same_seed_repeatable": {
+          "title": "Same Seed Repeatable",
+          "type": "boolean"
+        },
+        "motor_rates_hz": {
+          "$ref": "#/$defs/Metrics"
+        }
+      },
+      "required": [
+        "same_image",
+        "equal_brightness",
+        "mean_brightness_u8",
+        "same_seed_repeatable",
+        "motor_rates_hz"
+      ],
+      "title": "Comparison",
+      "type": "object"
+    },
+    "Identities": {
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "additionalProperties": true,
+          "title": "Model",
+          "type": "object"
+        },
+        "graph_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Graph Manifest Sha256",
+          "type": "string"
+        },
+        "source_head": {
+          "pattern": "^[0-9a-f]{40}$",
+          "title": "Source Head",
+          "type": "string"
+        },
+        "source_sha256": {
+          "additionalProperties": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "title": "Source Sha256",
+          "type": "object"
+        },
+        "source_tree_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Tree Sha256",
+          "type": "string"
+        },
+        "runtime": {
+          "additionalProperties": true,
+          "title": "Runtime",
+          "type": "object"
+        },
+        "input_sha256": {
+          "$ref": "#/$defs/InputHashes"
+        },
+        "encoding": {
+          "title": "Encoding",
+          "type": "string"
+        },
+        "comparison": {
+          "title": "Comparison",
+          "type": "string"
+        },
+        "statistics": {
+          "title": "Statistics",
+          "type": "string"
+        },
+        "limitations": {
+          "title": "Limitations",
+          "type": "string"
+        }
+      },
+      "required": [
+        "model",
+        "graph_manifest_sha256",
+        "source_head",
+        "source_sha256",
+        "source_tree_sha256",
+        "runtime",
+        "input_sha256",
+        "encoding",
+        "comparison",
+        "statistics",
+        "limitations"
+      ],
+      "title": "Identities",
+      "type": "object"
+    },
+    "InputHashes": {
+      "additionalProperties": false,
+      "properties": {
+        "A": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "A",
+          "type": "string"
+        },
+        "B": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "B",
+          "type": "string"
+        }
+      },
+      "required": [
+        "A",
+        "B"
+      ],
+      "title": "InputHashes",
+      "type": "object"
+    },
+    "LabRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "flytrap-lab-request-1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "a": {
+          "items": {
+            "maximum": 255,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 256,
+          "minItems": 256,
+          "title": "A",
+          "type": "array"
+        },
+        "b": {
+          "items": {
+            "maximum": 255,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 256,
+          "minItems": 256,
+          "title": "B",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "a",
+        "b"
+      ],
+      "title": "LabRequest",
+      "type": "object"
+    },
+    "Metric": {
+      "additionalProperties": false,
+      "properties": {
+        "a_mean": {
+          "maximum": 1000000000000.0,
+          "minimum": 0,
+          "title": "A Mean",
+          "type": "number"
+        },
+        "b_mean": {
+          "maximum": 1000000000000.0,
+          "minimum": 0,
+          "title": "B Mean",
+          "type": "number"
+        },
+        "a_sd": {
+          "maximum": 1000000000000.0,
+          "minimum": 0,
+          "title": "A Sd",
+          "type": "number"
+        },
+        "b_sd": {
+          "maximum": 1000000000000.0,
+          "minimum": 0,
+          "title": "B Sd",
+          "type": "number"
+        },
+        "delta_mean": {
+          "title": "Delta Mean",
+          "type": "number"
+        },
+        "delta_sd": {
+          "maximum": 1000000000000.0,
+          "minimum": 0,
+          "title": "Delta Sd",
+          "type": "number"
+        },
+        "paired_deltas": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "title": "Paired Deltas",
+          "type": "array"
+        }
+      },
+      "required": [
+        "a_mean",
+        "b_mean",
+        "a_sd",
+        "b_sd",
+        "delta_mean",
+        "delta_sd",
+        "paired_deltas"
+      ],
+      "title": "Metric",
+      "type": "object"
+    },
+    "Metrics": {
+      "additionalProperties": false,
+      "properties": {
+        "steer_L": {
+          "$ref": "#/$defs/Metric"
+        },
+        "steer_R": {
+          "$ref": "#/$defs/Metric"
+        },
+        "fwd_L": {
+          "$ref": "#/$defs/Metric"
+        },
+        "fwd_R": {
+          "$ref": "#/$defs/Metric"
+        },
+        "back": {
+          "$ref": "#/$defs/Metric"
+        },
+        "stop": {
+          "$ref": "#/$defs/Metric"
+        },
+        "click": {
+          "$ref": "#/$defs/Metric"
+        }
+      },
+      "required": [
+        "steer_L",
+        "steer_R",
+        "fwd_L",
+        "fwd_R",
+        "back",
+        "stop",
+        "click"
+      ],
+      "title": "Metrics",
+      "type": "object"
+    },
+    "Population": {
+      "additionalProperties": false,
+      "properties": {
+        "neuron_indices": {
+          "items": {
+            "maximum": 1000000000000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 10000,
+          "minItems": 1,
+          "title": "Neuron Indices",
+          "type": "array"
+        },
+        "body_ids": {
+          "items": {
+            "maximum": 1000000000000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 10000,
+          "minItems": 1,
+          "title": "Body Ids",
+          "type": "array"
+        },
+        "pixel_indices": {
+          "items": {
+            "maximum": 255,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 10000,
+          "minItems": 1,
+          "title": "Pixel Indices",
+          "type": "array"
+        },
+        "sampled_pixels_u8": {
+          "items": {
+            "maximum": 255,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 10000,
+          "minItems": 1,
+          "title": "Sampled Pixels U8",
+          "type": "array"
+        },
+        "drive_hz": {
+          "items": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "type": "number"
+          },
+          "maxItems": 10000,
+          "minItems": 1,
+          "title": "Drive Hz",
+          "type": "array"
+        },
+        "coverage_counts": {
+          "items": {
+            "maximum": 1000000000000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 256,
+          "minItems": 256,
+          "title": "Coverage Counts",
+          "type": "array"
+        },
+        "missing_coordinates": {
+          "maximum": 1000000000000,
+          "minimum": 0,
+          "title": "Missing Coordinates",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "neuron_indices",
+        "body_ids",
+        "pixel_indices",
+        "sampled_pixels_u8",
+        "drive_hz",
+        "coverage_counts",
+        "missing_coordinates"
+      ],
+      "title": "Population",
+      "type": "object"
+    },
+    "Populations": {
+      "additionalProperties": false,
+      "properties": {
+        "L1": {
+          "$ref": "#/$defs/Population"
+        },
+        "L2": {
+          "$ref": "#/$defs/Population"
+        }
+      },
+      "required": [
+        "L1",
+        "L2"
+      ],
+      "title": "Populations",
+      "type": "object"
+    },
+    "Rates": {
+      "additionalProperties": false,
+      "properties": {
+        "steer_L": {
+          "maximum": 1000000000000.0,
+          "minimum": 0,
+          "title": "Steer L",
+          "type": "number"
+        },
+        "steer_R": {
+          "maximum": 1000000000000.0,
+          "minimum": 0,
+          "title": "Steer R",
+          "type": "number"
+        },
+        "fwd_L": {
+          "maximum": 1000000000000.0,
+          "minimum": 0,
+          "title": "Fwd L",
+          "type": "number"
+        },
+        "fwd_R": {
+          "maximum": 1000000000000.0,
+          "minimum": 0,
+          "title": "Fwd R",
+          "type": "number"
+        },
+        "back": {
+          "maximum": 1000000000000.0,
+          "minimum": 0,
+          "title": "Back",
+          "type": "number"
+        },
+        "stop": {
+          "maximum": 1000000000000.0,
+          "minimum": 0,
+          "title": "Stop",
+          "type": "number"
+        },
+        "click": {
+          "maximum": 1000000000000.0,
+          "minimum": 0,
+          "title": "Click",
+          "type": "number"
+        }
+      },
+      "required": [
+        "steer_L",
+        "steer_R",
+        "fwd_L",
+        "fwd_R",
+        "back",
+        "stop",
+        "click"
+      ],
+      "title": "Rates",
+      "type": "object"
+    },
+    "Retina": {
+      "additionalProperties": false,
+      "properties": {
+        "populations": {
+          "$ref": "#/$defs/Populations"
+        },
+        "union_coverage_counts": {
+          "items": {
+            "maximum": 1000000000000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 256,
+          "minItems": 256,
+          "title": "Union Coverage Counts",
+          "type": "array"
+        },
+        "sampled_pixel_count": {
+          "maximum": 256,
+          "minimum": 1,
+          "title": "Sampled Pixel Count",
+          "type": "integer"
+        },
+        "discarded_pixel_indices": {
+          "items": {
+            "maximum": 255,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "maxItems": 256,
+          "title": "Discarded Pixel Indices",
+          "type": "array"
+        }
+      },
+      "required": [
+        "populations",
+        "union_coverage_counts",
+        "sampled_pixel_count",
+        "discarded_pixel_indices"
+      ],
+      "title": "Retina",
+      "type": "object"
+    },
+    "Retinas": {
+      "additionalProperties": false,
+      "properties": {
+        "A": {
+          "$ref": "#/$defs/Retina"
+        },
+        "B": {
+          "$ref": "#/$defs/Retina"
+        }
+      },
+      "required": [
+        "A",
+        "B"
+      ],
+      "title": "Retinas",
+      "type": "object"
+    },
+    "Sample": {
+      "additionalProperties": false,
+      "properties": {
+        "side": {
+          "enum": [
+            "A",
+            "A_repeat",
+            "B"
+          ],
+          "title": "Side",
+          "type": "string"
+        },
+        "seed": {
+          "enum": [
+            17,
+            29,
+            43
+          ],
+          "title": "Seed",
+          "type": "integer"
+        },
+        "motor_rates_hz": {
+          "$ref": "#/$defs/Rates"
+        },
+        "statistics": {
+          "$ref": "#/$defs/Statistics"
+        },
+        "neural_ms": {
+          "const": 20.0,
+          "title": "Neural Ms",
+          "type": "number"
+        }
+      },
+      "required": [
+        "side",
+        "seed",
+        "motor_rates_hz",
+        "statistics",
+        "neural_ms"
+      ],
+      "title": "Sample",
+      "type": "object"
+    },
+    "Statistics": {
+      "additionalProperties": false,
+      "properties": {
+        "sampled_neurons": {
+          "maximum": 1000000000000,
+          "minimum": 0,
+          "title": "Sampled Neurons",
+          "type": "integer"
+        },
+        "spike_count": {
+          "maximum": 1000000000000,
+          "minimum": 0,
+          "title": "Spike Count",
+          "type": "integer"
+        },
+        "firing": {
+          "maximum": 1000000000000,
+          "minimum": 0,
+          "title": "Firing",
+          "type": "integer"
+        },
+        "spikes_per_sec": {
+          "maximum": 1000000000000.0,
+          "minimum": 0,
+          "title": "Spikes Per Sec",
+          "type": "number"
+        },
+        "mean_mv": {
+          "maximum": 1000,
+          "minimum": -1000,
+          "title": "Mean Mv",
+          "type": "number"
+        },
+        "visual": {
+          "maximum": 1000000000000,
+          "minimum": 0,
+          "title": "Visual",
+          "type": "integer"
+        },
+        "motor": {
+          "maximum": 1000000000000,
+          "minimum": 0,
+          "title": "Motor",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "sampled_neurons",
+        "spike_count",
+        "firing",
+        "spikes_per_sec",
+        "mean_mv",
+        "visual",
+        "motor"
+      ],
+      "title": "Statistics",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "flytrap-lab-result-1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "result_id": {
+      "pattern": "^[0-9a-f]{32}$",
+      "title": "Result Id",
+      "type": "string"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "cached": {
+      "const": false,
+      "title": "Cached",
+      "type": "boolean"
+    },
+    "fixture": {
+      "const": false,
+      "title": "Fixture",
+      "type": "boolean"
+    },
+    "request": {
+      "$ref": "#/$defs/LabRequest"
+    },
+    "seeds": {
+      "items": {
+        "enum": [
+          17,
+          29,
+          43
+        ],
+        "type": "integer"
+      },
+      "maxItems": 3,
+      "minItems": 3,
+      "title": "Seeds",
+      "type": "array"
+    },
+    "samples": {
+      "items": {
+        "$ref": "#/$defs/Sample"
+      },
+      "maxItems": 9,
+      "minItems": 9,
+      "title": "Samples",
+      "type": "array"
+    },
+    "retina": {
+      "$ref": "#/$defs/Retinas"
+    },
+    "comparison": {
+      "$ref": "#/$defs/Comparison"
+    },
+    "identities": {
+      "$ref": "#/$defs/Identities"
+    },
+    "attempted_calls": {
+      "maximum": 256,
+      "minimum": 9,
+      "title": "Attempted Calls",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "schema_version",
+    "result_id",
+    "created_at",
+    "cached",
+    "fixture",
+    "request",
+    "seeds",
+    "samples",
+    "retina",
+    "comparison",
+    "identities",
+    "attempted_calls"
+  ],
+  "title": "LabResult",
+  "type": "object"
+}

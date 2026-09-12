@@ -1,3 +1,16 @@
+# Active scope override: P00 only
+
+Read docs/implementation/PIVOT.md and docs/implementation/milestones/P00.md first.
+Navigation is stopped. Original milestones 06–18 are blocked and cannot be
+selected by ordinary resume. Milestone 05 diagnostics were accepted without
+approving navigation. Only finish authorized P00 if unfinished; when its
+engineering work is complete, stop for human product review. Repeating resume
+is not product approval or authorization for any successor or public release.
+The historical routing below applies only if a future explicit human decision
+reinstates it; do not use numeric selection now.
+
+---
+
 # Resume FLYTRAP — one milestone per invocation
 
 Resume implementation in this checkout. Perform the actual work;

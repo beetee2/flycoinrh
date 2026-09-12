@@ -115,3 +115,23 @@ feasibility:
 
 verify-feasibility:
 	$(PYTHON) -m scripts.verify_feasibility --graph-root $(GRAPH_ROOT) --output $(EVIDENCE)/trials
+
+# P00 is an explicitly local prototype; old navigation release gates stay blocked.
+.PHONY: serve-lab test-lab test-lab-real test-lab-ui test-lab-e2e check-lab-generated
+serve-lab:
+	$(PYTHON) -m flytrap.lab
+
+check-lab-generated:
+	$(PYTHON) -m scripts.generate_lab_contracts --check
+
+test-lab:
+	$(PYTEST) tests/lab --junitxml=artifacts/milestones/P00/lab-unit.xml
+
+test-lab-real:
+	$(PYTEST) tests/real_model/test_lab_sensory.py tests/real_model/test_lab.py --junitxml=artifacts/milestones/P00/lab-real.xml
+
+test-lab-ui:
+	VITEST_JUNIT_PATH=../artifacts/milestones/P00/lab-ui.xml npm --prefix web test -- tests/Lab.test.tsx
+
+test-lab-e2e:
+	cd web && npx --no-install playwright test --config=playwright.lab.config.ts

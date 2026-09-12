@@ -1,3 +1,25 @@
+# Active routing — P00 FLYTRAP LAB
+
+Milestone 05 diagnostic work and its negative result are ACCEPTED. Navigation
+is STOPPED, not approved. Original milestone 06 remains BLOCKED.
+P00 local prototype engineering is PASS / COMPLETE; human product review PENDING.
+Public release is NOT AUTHORIZED. Read [PIVOT](PIVOT.md) and
+[P00](milestones/P00.md). P00 is complete: ordinary resume must stop
+for human review. It cannot select any old navigation milestone or proposed successor.
+
+Local handoff: `make serve-lab`, http://127.0.0.1:8766/lab (server left running).
+72/256 attempted full-model calls; real API/model and Playwright checks PASS.
+Actual retina: 137/256 pixels sampled, 119 discarded. Explicit untrained
+windowed_reset baseline; no navigation candidates or learning enabled.
+Review bundle: `artifacts/milestones/P00/review-bundle.zip`. Full commands,
+counts, identities, inspected screenshots and limitations are in the P00 record.
+Preservation check: 908 existing files unchanged; working CI configuration retained.
+
+The previous status below is a historical execution snapshot; its pending
+decision is superseded only by the decisions above. Experiment results stand.
+
+---
+
 # FLYTRAP status
 
 CI correction (2026-09-12): **local and hosted PASS**. Foundation now uses uv
