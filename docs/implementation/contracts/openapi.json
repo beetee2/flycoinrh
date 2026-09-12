@@ -1,0 +1,183 @@
+{
+  "components": {
+    "schemas": {
+      "Capabilities": {
+        "additionalProperties": false,
+        "properties": {
+          "admission": {
+            "enum": [
+              "unavailable",
+              "closed",
+              "open"
+            ],
+            "title": "Admission",
+            "type": "string"
+          },
+          "approved_checkpoint_ids": {
+            "items": {
+              "maxLength": 64,
+              "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+              "type": "string"
+            },
+            "maxItems": 32,
+            "title": "Approved Checkpoint Ids",
+            "type": "array"
+          },
+          "approved_comparison_ids": {
+            "items": {
+              "maxLength": 64,
+              "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+              "type": "string"
+            },
+            "maxItems": 32,
+            "title": "Approved Comparison Ids",
+            "type": "array"
+          },
+          "fixture": {
+            "title": "Fixture",
+            "type": "boolean"
+          },
+          "learning_claim_status": {
+            "enum": [
+              "SUPPORTED",
+              "UNSUPPORTED",
+              "INCONCLUSIVE",
+              "NOT_RUN"
+            ],
+            "title": "Learning Claim Status",
+            "type": "string"
+          },
+          "real_model_available": {
+            "title": "Real Model Available",
+            "type": "boolean"
+          },
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "fixture",
+          "real_model_available",
+          "admission",
+          "learning_claim_status",
+          "approved_checkpoint_ids",
+          "approved_comparison_ids"
+        ],
+        "title": "Capabilities",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "enum": [
+              "invalid_request",
+              "unavailable",
+              "queue_full",
+              "quota_exceeded",
+              "idempotency_conflict",
+              "not_found",
+              "internal_error",
+              "resource_deadline"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "maxLength": 512,
+            "minLength": 1,
+            "title": "Message",
+            "type": "string"
+          },
+          "retryable": {
+            "title": "Retryable",
+            "type": "boolean"
+          },
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "code",
+          "message",
+          "retryable"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "FLYTRAP foundation",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/config": {
+      "get": {
+        "operationId": "capabilities_api_config_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Capabilities"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Capabilities"
+      }
+    },
+    "/health/live": {
+      "get": {
+        "operationId": "live_health_live_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Live"
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "ready_health_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Ready"
+      }
+    }
+  }
+}

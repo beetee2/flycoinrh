@@ -1,0 +1,130 @@
+{
+  "title": "FLYTRAP Implementation Kit",
+  "prepared_date": "2026-09-11",
+  "source_revision": "8748e5bd30794d14afeb3441904221b52a002cac",
+  "contains_implemented_application": false,
+  "contains_executed_application_test_results": false,
+  "prompt_order": [
+    {
+      "number": 0,
+      "file": "prompts/00-audit.md",
+      "title": "Mission, repository audit, and persistent working agreement"
+    },
+    {
+      "number": 1,
+      "file": "prompts/01-foundation.md",
+      "title": "Executable scaffold, contracts, and verification harness"
+    },
+    {
+      "number": 2,
+      "file": "prompts/02-connectome.md",
+      "title": "Reproducible graph data and anatomical metadata"
+    },
+    {
+      "number": 3,
+      "file": "prompts/03-controller.md",
+      "title": "Real fly adapter and information isolation"
+    },
+    {
+      "number": 4,
+      "file": "prompts/04-arena.md",
+      "title": "Deterministic arena, rendering, and outcome rules"
+    },
+    {
+      "number": 5,
+      "file": "prompts/05-feasibility.md",
+      "title": "Real-model feasibility and task calibration gate"
+    },
+    {
+      "number": 6,
+      "file": "prompts/06-persistence.md",
+      "title": "Database schema, transactions, and artifact repositories"
+    },
+    {
+      "number": 7,
+      "file": "prompts/07-worker.md",
+      "title": "Single-worker execution and fault recovery"
+    },
+    {
+      "number": 8,
+      "file": "prompts/08-api.md",
+      "title": "HTTP API, admission controls, and resumable events"
+    },
+    {
+      "number": 9,
+      "file": "prompts/09-replay.md",
+      "title": "Replay verification and backend vertical slice"
+    },
+    {
+      "number": 10,
+      "file": "prompts/10-ui.md",
+      "title": "Editor, live viewer, replay, and accessibility"
+    },
+    {
+      "number": 11,
+      "file": "prompts/11-e2e.md",
+      "title": "Browser-to-database-to-real-model system validation"
+    },
+    {
+      "number": 12,
+      "file": "prompts/12-learning.md",
+      "title": "Optional, explicit learning implementation"
+    },
+    {
+      "number": 13,
+      "file": "prompts/13-evaluation.md",
+      "title": "Controlled evaluation and evidence-based claim gate"
+    },
+    {
+      "number": 14,
+      "file": "prompts/14-comparison-sharing.md",
+      "title": "Gated comparisons and contest-ready sharing"
+    },
+    {
+      "number": 15,
+      "file": "prompts/15-hardening.md",
+      "title": "Security, resource control, operations, and containers"
+    },
+    {
+      "number": 16,
+      "file": "prompts/16-release-audit.md",
+      "title": "Fresh-context adversarial release audit"
+    },
+    {
+      "number": 17,
+      "file": "prompts/17-deployment.md",
+      "title": "Authorized deployment and production smoke validation"
+    },
+    {
+      "number": 18,
+      "file": "prompts/18-submission.md",
+      "title": "Authentic demonstration and submission package"
+    }
+  ],
+  "sha256": {
+    "BOUNDARIES.md": "d8a2354fda0874ed687d97ffd99e2f9d7b57d3a26bd076b0ad962db99333f704",
+    "PLAN.md": "f007e66fdb97b9b53a49177ef42415ff8f9a5a36285c7f3ea7d0e0902e14c707",
+    "PROMPTS.md": "21ef9cdfde1b6d890eb16fb1f995ee937f947c436575bf3e4bf0b7103ac03321",
+    "README.md": "0a46ebce44e2374e5f9120aef6a39e3ab3f0e2dbcf74f8252482efb2bd8903fa",
+    "SOURCES.md": "310fab3c6e161ec7b3ffbefde3e70800c5f0e0c6dd20e743ebd24f7ff3d782ca",
+    "prompts/00-audit.md": "fef94bcf7cfbae04135121b99784bf8a334360d6e4ee8482f3da911beaf46608",
+    "prompts/01-foundation.md": "9e70cfec278ff17693345d6e2a2e965e3ddeb3b50eca8ff30d5af5c8f03aa4b2",
+    "prompts/02-connectome.md": "263dc51f41597fcd50b5cc5c05551b391829e4e0f4b353f73e55d0cc232acf87",
+    "prompts/03-controller.md": "467e14a30385bca3c2dafa326d234d7c8625023fb05f767bbf9fdabbab1fe48e",
+    "prompts/04-arena.md": "50fc11b8aad91650d96e988b3a00b1f89fb110b1b54dff719647c459376d5c93",
+    "prompts/05-feasibility.md": "1ac763012ae8f7ec587f7b154bbc10d2d42d0f96240bc2f5db73a398f5400973",
+    "prompts/06-persistence.md": "037f8553da4b712a4616e04e2811f3a249afc7f1bbfd0282d0d1e6f6a385da96",
+    "prompts/07-worker.md": "43a33807e8a35f2f0976588902e43e16c6e72e3d4e0de72a9d60e22d7e28aebf",
+    "prompts/08-api.md": "5e8acafc44194127a758e0707875dad0356bb4c387279d3c5da6b800b6117631",
+    "prompts/09-replay.md": "f60ddcec10221af0087c720cd8d5ce4a6108cc79f49250f56f99a07c955c85b3",
+    "prompts/10-ui.md": "57033dcebe3b381c6d3906fc0664fecdc00a157e369593999260516592a9a031",
+    "prompts/11-e2e.md": "67e17c7807df8f08f1a0a06b9026f41848030bd81a2bf4cc602e994846ede233",
+    "prompts/12-learning.md": "ea75cfeb31a44841631cf0c7418197742adb1523a1570eec5f434d9f747ba453",
+    "prompts/13-evaluation.md": "9e9dcce1c4d13ce67a71fe985422cd3adde69201c7cf9e74bd94c3bfdb2ec458",
+    "prompts/14-comparison-sharing.md": "d015792166e228ebfa0a6c320134c04cb292935bd67fa583e365bc579b63745a",
+    "prompts/15-hardening.md": "6da7a52a079981cb767525fd451575ec68ba20e6f3f9af66d2a6e4c356822335",
+    "prompts/16-release-audit.md": "3946c47f95276aae78e162a9042257bfff6dfe4305e3b006146029197f2a19d6",
+    "prompts/17-deployment.md": "7163869ad69569b2ea7db28bc7590ba573400301c307ac27aa5883ba9da1769c",
+    "prompts/18-submission.md": "ee5263601733e914838d7c0891ca42d5026b69005357e8eaaca88e7eb175beb3"
+  }
+}

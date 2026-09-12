@@ -1,0 +1,35 @@
+{
+  "fixture": true,
+  "description": "Independent hand-assembled grayscale_v1 row bands; stripes left, checkerboard right, all three allowed bars. No model run.",
+  "raster_sha256": "e24809bdef4ff06a8b16bd9c64e37dab0aa3f1e9c73eba97a43353f15d38b12d",
+  "observations": {
+    "start": {
+      "position_q": [
+        12288,
+        20480
+      ],
+      "sha256": "7528c8f36911becc372197681ee56a9e28c3d9599931d88e5fc895ec63f44d87"
+    },
+    "upper_left": {
+      "position_q": [
+        1024,
+        1024
+      ],
+      "sha256": "94a88b24869f5740c6eaa25a4afcc8dd3c9ba7bf9009f50fdf93fa0cdafcbf07"
+    },
+    "lower_right": {
+      "position_q": [
+        23552,
+        23552
+      ],
+      "sha256": "c48ce60d128af07d39f1576fefd9fcda334471422cbcb9ac8cfc853dfbdc4654"
+    },
+    "fractional": {
+      "position_q": [
+        12543,
+        12289
+      ],
+      "sha256": "577d63bacb225dc46fe5cdb5bf96b87b704eddb9dba7c117c3d6765a0e5d542b"
+    }
+  }
+}

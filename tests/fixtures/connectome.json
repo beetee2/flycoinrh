@@ -1,0 +1,53 @@
+{
+  "fixture": true,
+  "provenance": "Synthetic, hand-computed regression data; no biological or learning claims.",
+  "annotations": [
+    {"bodyId": 7, "status": "Traced", "statusLabel": "Neuron", "type": "PAM01"},
+    {"bodyId": 100, "status": "Traced", "statusLabel": "Neuron", "type": "PPL101"},
+    {"bodyId": 200, "status": "Traced", "statusLabel": "Neuron", "type": "MBON01"},
+    {"bodyId": 300, "status": "Traced", "statusLabel": "Neuron", "type": "MBON02"},
+    {"bodyId": 400, "status": "Traced", "statusLabel": "Neuron", "type": null, "flywireType": "MBON03"},
+    {"bodyId": 500, "status": "Traced", "statusLabel": "Neuron", "type": null, "instance": "MBON04"},
+    {"bodyId": 900, "status": "Traced", "statusLabel": "Neuron", "type": "KC", "superclass": "central", "subclass": "intrinsic", "receptorType": "synthetic_receptor", "fruDsx": "synthetic_fru"},
+    {"bodyId": 9007199254740993, "status": "Traced", "statusLabel": "Neuron", "type": null},
+    {"bodyId": 600, "status": "Traced", "statusLabel": "Glia", "type": "glia"},
+    {"bodyId": 800, "status": "Untraced", "statusLabel": "Neuron", "type": "fragment"}
+  ],
+  "neurotransmitters": [
+    {"body": 7, "consensus_nt": "dopamine"},
+    {"body": 100, "consensus_nt": "dopamine"},
+    {"body": 200, "consensus_nt": "acetylcholine"},
+    {"body": 300, "consensus_nt": "GABA"},
+    {"body": 400, "consensus_nt": "unrecognized_synthetic_nt"},
+    {"body": 900, "consensus_nt": "acetylcholine"}
+  ],
+  "weights": [
+    {"body_pre": 7, "body_post": 200, "weight": 2},
+    {"body_pre": 7, "body_post": 200, "weight": 3},
+    {"body_pre": 100, "body_post": 200, "weight": 3},
+    {"body_pre": 7, "body_post": 300, "weight": 3},
+    {"body_pre": 100, "body_post": 300, "weight": 8},
+    {"body_pre": 7, "body_post": 400, "weight": 4},
+    {"body_pre": 100, "body_post": 400, "weight": 4},
+    {"body_pre": 200, "body_post": 7, "weight": 30},
+    {"body_pre": 300, "body_post": 7, "weight": 40},
+    {"body_pre": 900, "body_post": 200, "weight": 4},
+    {"body_pre": 300, "body_post": 200, "weight": 3},
+    {"body_pre": 900, "body_post": 500, "weight": 1},
+    {"body_pre": 900, "body_post": 500, "weight": 1},
+    {"body_pre": 900, "body_post": 400, "weight": 0},
+    {"body_pre": 9007199254740993, "body_post": 200, "weight": 6},
+    {"body_pre": 123456, "body_post": 200, "weight": 99},
+    {"body_pre": 900, "body_post": 600, "weight": 99},
+    {"body_pre": 800, "body_post": 200, "weight": 99}
+  ],
+  "expected": {
+    "bodies": [7, 100, 200, 300, 400, 500, 900, 9007199254740993],
+    "anatomy_nnz": 11,
+    "anatomy_synapses": 110,
+    "mbon_bodies": [200, 300, 400, 500],
+    "pam_counts": [5, 3, 4, 0],
+    "ppl1_counts": [3, 8, 4, 0],
+    "classification": ["PAM", "PPL1", "tie", "zero"]
+  }
+}

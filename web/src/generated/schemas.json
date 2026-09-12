@@ -1,0 +1,1594 @@
+{
+  "BenchmarkReport": {
+    "$defs": {
+      "BenchmarkMetrics": {
+        "additionalProperties": false,
+        "properties": {
+          "infrastructure_failures": {
+            "maximum": 1000000,
+            "minimum": 0,
+            "title": "Infrastructure Failures",
+            "type": "integer"
+          },
+          "mean_steps_all_episodes": {
+            "maximum": 1000000,
+            "minimum": 0,
+            "title": "Mean Steps All Episodes",
+            "type": "number"
+          },
+          "scheduled_episodes": {
+            "maximum": 1000000,
+            "minimum": 1,
+            "title": "Scheduled Episodes",
+            "type": "integer"
+          },
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "success_fraction": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Success Fraction",
+            "type": "number"
+          },
+          "timeout_fraction": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Timeout Fraction",
+            "type": "number"
+          },
+          "total_wall_ms": {
+            "maximum": 1000000000,
+            "minimum": 0,
+            "title": "Total Wall Ms",
+            "type": "number"
+          },
+          "wrong_pad_fraction": {
+            "maximum": 1,
+            "minimum": 0,
+            "title": "Wrong Pad Fraction",
+            "type": "number"
+          }
+        },
+        "required": [
+          "schema_version",
+          "scheduled_episodes",
+          "success_fraction",
+          "wrong_pad_fraction",
+          "timeout_fraction",
+          "infrastructure_failures",
+          "mean_steps_all_episodes",
+          "total_wall_ms"
+        ],
+        "title": "BenchmarkMetrics",
+        "type": "object"
+      },
+      "Uncertainty": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence_level": {
+            "const": 0.95,
+            "title": "Confidence Level",
+            "type": "number"
+          },
+          "lower": {
+            "maximum": 1,
+            "minimum": -1,
+            "title": "Lower",
+            "type": "number"
+          },
+          "method": {
+            "enum": [
+              "paired_layout_bootstrap",
+              "not_estimated"
+            ],
+            "title": "Method",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "upper": {
+            "maximum": 1,
+            "minimum": -1,
+            "title": "Upper",
+            "type": "number"
+          }
+        },
+        "required": [
+          "schema_version",
+          "method",
+          "confidence_level",
+          "lower",
+          "upper"
+        ],
+        "title": "Uncertainty",
+        "type": "object"
+      }
+    },
+    "$id": "https://flytrap.invalid/contracts/v1/BenchmarkReport",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "checkpoint_sha256": {
+        "maxLength": 64,
+        "minLength": 64,
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Checkpoint Sha256",
+        "type": "string"
+      },
+      "claim_status": {
+        "enum": [
+          "SUPPORTED",
+          "UNSUPPORTED",
+          "INCONCLUSIVE",
+          "NOT_RUN"
+        ],
+        "title": "Claim Status",
+        "type": "string"
+      },
+      "cohorts": {
+        "items": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+          "type": "string"
+        },
+        "maxItems": 1024,
+        "minItems": 1,
+        "title": "Cohorts",
+        "type": "array"
+      },
+      "layouts": {
+        "items": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+          "type": "string"
+        },
+        "maxItems": 4096,
+        "minItems": 1,
+        "title": "Layouts",
+        "type": "array"
+      },
+      "limitations": {
+        "items": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "type": "string"
+        },
+        "maxItems": 32,
+        "minItems": 1,
+        "title": "Limitations",
+        "type": "array"
+      },
+      "metrics": {
+        "$ref": "#/$defs/BenchmarkMetrics"
+      },
+      "model_sha256": {
+        "maxLength": 64,
+        "minLength": 64,
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Model Sha256",
+        "type": "string"
+      },
+      "preregistration_sha256": {
+        "maxLength": 64,
+        "minLength": 64,
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Preregistration Sha256",
+        "type": "string"
+      },
+      "report_id": {
+        "maxLength": 64,
+        "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+        "title": "Report Id",
+        "type": "string"
+      },
+      "schema_version": {
+        "const": "1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "seeds": {
+        "items": {
+          "maximum": 4294967295,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "maxItems": 4096,
+        "minItems": 1,
+        "title": "Seeds",
+        "type": "array"
+      },
+      "source_tree_sha256": {
+        "maxLength": 64,
+        "minLength": 64,
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Source Tree Sha256",
+        "type": "string"
+      },
+      "uncertainty": {
+        "$ref": "#/$defs/Uncertainty"
+      }
+    },
+    "required": [
+      "schema_version",
+      "report_id",
+      "preregistration_sha256",
+      "source_tree_sha256",
+      "model_sha256",
+      "checkpoint_sha256",
+      "cohorts",
+      "layouts",
+      "seeds",
+      "metrics",
+      "uncertainty",
+      "limitations",
+      "claim_status"
+    ],
+    "title": "BenchmarkReport",
+    "type": "object"
+  },
+  "Capabilities": {
+    "$id": "https://flytrap.invalid/contracts/v1/Capabilities",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "admission": {
+        "enum": [
+          "unavailable",
+          "closed",
+          "open"
+        ],
+        "title": "Admission",
+        "type": "string"
+      },
+      "approved_checkpoint_ids": {
+        "items": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+          "type": "string"
+        },
+        "maxItems": 32,
+        "title": "Approved Checkpoint Ids",
+        "type": "array"
+      },
+      "approved_comparison_ids": {
+        "items": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+          "type": "string"
+        },
+        "maxItems": 32,
+        "title": "Approved Comparison Ids",
+        "type": "array"
+      },
+      "fixture": {
+        "title": "Fixture",
+        "type": "boolean"
+      },
+      "learning_claim_status": {
+        "enum": [
+          "SUPPORTED",
+          "UNSUPPORTED",
+          "INCONCLUSIVE",
+          "NOT_RUN"
+        ],
+        "title": "Learning Claim Status",
+        "type": "string"
+      },
+      "real_model_available": {
+        "title": "Real Model Available",
+        "type": "boolean"
+      },
+      "schema_version": {
+        "const": "1",
+        "title": "Schema Version",
+        "type": "string"
+      }
+    },
+    "required": [
+      "schema_version",
+      "fixture",
+      "real_model_available",
+      "admission",
+      "learning_claim_status",
+      "approved_checkpoint_ids",
+      "approved_comparison_ids"
+    ],
+    "title": "Capabilities",
+    "type": "object"
+  },
+  "ChallengeSpec": {
+    "$id": "https://flytrap.invalid/contracts/v1/ChallengeSpec",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "content_sha256": {
+        "maxLength": 64,
+        "minLength": 64,
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Content Sha256",
+        "type": "string"
+      },
+      "destination_side": {
+        "enum": [
+          "left",
+          "right"
+        ],
+        "title": "Destination Side",
+        "type": "string"
+      },
+      "distractions": {
+        "items": {
+          "enum": [
+            "top",
+            "middle",
+            "bottom"
+          ],
+          "type": "string"
+        },
+        "maxItems": 3,
+        "title": "Distractions",
+        "type": "array"
+      },
+      "left_texture": {
+        "enum": [
+          "stripes",
+          "checkerboard"
+        ],
+        "title": "Left Texture",
+        "type": "string"
+      },
+      "preset_version": {
+        "const": "two_choice_v1",
+        "title": "Preset Version",
+        "type": "string"
+      },
+      "renderer_version": {
+        "const": "grayscale_v1",
+        "title": "Renderer Version",
+        "type": "string"
+      },
+      "right_texture": {
+        "enum": [
+          "stripes",
+          "checkerboard"
+        ],
+        "title": "Right Texture",
+        "type": "string"
+      },
+      "schema_version": {
+        "const": "1",
+        "title": "Schema Version",
+        "type": "string"
+      }
+    },
+    "required": [
+      "schema_version",
+      "preset_version",
+      "renderer_version",
+      "destination_side",
+      "left_texture",
+      "right_texture",
+      "distractions",
+      "content_sha256"
+    ],
+    "title": "ChallengeSpec",
+    "type": "object"
+  },
+  "CheckpointRef": {
+    "$id": "https://flytrap.invalid/contracts/v1/CheckpointRef",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "checkpoint_id": {
+        "maxLength": 64,
+        "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+        "title": "Checkpoint Id",
+        "type": "string"
+      },
+      "graph_sha256": {
+        "maxLength": 64,
+        "minLength": 64,
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Graph Sha256",
+        "type": "string"
+      },
+      "model_mode": {
+        "enum": [
+          "fixture",
+          "windowed_reset"
+        ],
+        "title": "Model Mode",
+        "type": "string"
+      },
+      "schema_version": {
+        "const": "1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "sha256": {
+        "maxLength": 64,
+        "minLength": 64,
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Sha256",
+        "type": "string"
+      }
+    },
+    "required": [
+      "schema_version",
+      "checkpoint_id",
+      "sha256",
+      "graph_sha256",
+      "model_mode"
+    ],
+    "title": "CheckpointRef",
+    "type": "object"
+  },
+  "ControllerOutput": {
+    "$defs": {
+      "NeuralTelemetry": {
+        "additionalProperties": false,
+        "properties": {
+          "neural_ms": {
+            "maximum": 1000000,
+            "minimum": 0,
+            "title": "Neural Ms",
+            "type": "number"
+          },
+          "sampled_neurons": {
+            "maximum": 1000000,
+            "minimum": 0,
+            "title": "Sampled Neurons",
+            "type": "integer"
+          },
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "spike_count": {
+            "maximum": 100000000,
+            "minimum": 0,
+            "title": "Spike Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "schema_version",
+          "sampled_neurons",
+          "spike_count",
+          "neural_ms"
+        ],
+        "title": "NeuralTelemetry",
+        "type": "object"
+      }
+    },
+    "$id": "https://flytrap.invalid/contracts/v1/ControllerOutput",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "click": {
+        "title": "Click",
+        "type": "boolean"
+      },
+      "dx": {
+        "maximum": 1,
+        "minimum": -1,
+        "title": "Dx",
+        "type": "number"
+      },
+      "dy": {
+        "maximum": 1,
+        "minimum": -1,
+        "title": "Dy",
+        "type": "number"
+      },
+      "model_mode": {
+        "enum": [
+          "fixture",
+          "windowed_reset"
+        ],
+        "title": "Model Mode",
+        "type": "string"
+      },
+      "schema_version": {
+        "const": "1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "telemetry": {
+        "$ref": "#/$defs/NeuralTelemetry"
+      }
+    },
+    "required": [
+      "schema_version",
+      "dx",
+      "dy",
+      "click",
+      "model_mode",
+      "telemetry"
+    ],
+    "title": "ControllerOutput",
+    "type": "object"
+  },
+  "ErrorResponse": {
+    "$id": "https://flytrap.invalid/contracts/v1/ErrorResponse",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "code": {
+        "enum": [
+          "invalid_request",
+          "unavailable",
+          "queue_full",
+          "quota_exceeded",
+          "idempotency_conflict",
+          "not_found",
+          "internal_error",
+          "resource_deadline"
+        ],
+        "title": "Code",
+        "type": "string"
+      },
+      "message": {
+        "maxLength": 512,
+        "minLength": 1,
+        "title": "Message",
+        "type": "string"
+      },
+      "retryable": {
+        "title": "Retryable",
+        "type": "boolean"
+      },
+      "schema_version": {
+        "const": "1",
+        "title": "Schema Version",
+        "type": "string"
+      }
+    },
+    "required": [
+      "schema_version",
+      "code",
+      "message",
+      "retryable"
+    ],
+    "title": "ErrorResponse",
+    "type": "object"
+  },
+  "FrameEvent": {
+    "$defs": {
+      "ControllerOutput": {
+        "additionalProperties": false,
+        "properties": {
+          "click": {
+            "title": "Click",
+            "type": "boolean"
+          },
+          "dx": {
+            "maximum": 1,
+            "minimum": -1,
+            "title": "Dx",
+            "type": "number"
+          },
+          "dy": {
+            "maximum": 1,
+            "minimum": -1,
+            "title": "Dy",
+            "type": "number"
+          },
+          "model_mode": {
+            "enum": [
+              "fixture",
+              "windowed_reset"
+            ],
+            "title": "Model Mode",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "telemetry": {
+            "$ref": "#/$defs/NeuralTelemetry"
+          }
+        },
+        "required": [
+          "schema_version",
+          "dx",
+          "dy",
+          "click",
+          "model_mode",
+          "telemetry"
+        ],
+        "title": "ControllerOutput",
+        "type": "object"
+      },
+      "NeuralTelemetry": {
+        "additionalProperties": false,
+        "properties": {
+          "neural_ms": {
+            "maximum": 1000000,
+            "minimum": 0,
+            "title": "Neural Ms",
+            "type": "number"
+          },
+          "sampled_neurons": {
+            "maximum": 1000000,
+            "minimum": 0,
+            "title": "Sampled Neurons",
+            "type": "integer"
+          },
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "spike_count": {
+            "maximum": 100000000,
+            "minimum": 0,
+            "title": "Spike Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "schema_version",
+          "sampled_neurons",
+          "spike_count",
+          "neural_ms"
+        ],
+        "title": "NeuralTelemetry",
+        "type": "object"
+      },
+      "Position": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "x": {
+            "maximum": 4096,
+            "minimum": 0,
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "maximum": 4096,
+            "minimum": 0,
+            "title": "Y",
+            "type": "number"
+          }
+        },
+        "required": [
+          "schema_version",
+          "x",
+          "y"
+        ],
+        "title": "Position",
+        "type": "object"
+      }
+    },
+    "$id": "https://flytrap.invalid/contracts/v1/FrameEvent",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "action": {
+        "$ref": "#/$defs/ControllerOutput"
+      },
+      "attempt": {
+        "maximum": 16,
+        "minimum": 1,
+        "title": "Attempt",
+        "type": "integer"
+      },
+      "event_sequence": {
+        "maximum": 2147483647,
+        "minimum": 0,
+        "title": "Event Sequence",
+        "type": "integer"
+      },
+      "frame_sha256": {
+        "maxLength": 64,
+        "minLength": 64,
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Frame Sha256",
+        "type": "string"
+      },
+      "observation_sha256": {
+        "maxLength": 64,
+        "minLength": 64,
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Observation Sha256",
+        "type": "string"
+      },
+      "position": {
+        "$ref": "#/$defs/Position"
+      },
+      "run_id": {
+        "maxLength": 64,
+        "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+        "title": "Run Id",
+        "type": "string"
+      },
+      "schema_version": {
+        "const": "1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "tick": {
+        "maximum": 2147483647,
+        "minimum": 0,
+        "title": "Tick",
+        "type": "integer"
+      },
+      "timestamp_ms": {
+        "maximum": 9007199254740991,
+        "minimum": 0,
+        "title": "Timestamp Ms",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "schema_version",
+      "run_id",
+      "attempt",
+      "tick",
+      "event_sequence",
+      "timestamp_ms",
+      "action",
+      "position",
+      "frame_sha256",
+      "observation_sha256"
+    ],
+    "title": "FrameEvent",
+    "type": "object"
+  },
+  "Observation": {
+    "$id": "https://flytrap.invalid/contracts/v1/Observation",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "pixels": {
+        "items": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "maxItems": 256,
+        "minItems": 256,
+        "title": "Pixels",
+        "type": "array"
+      },
+      "schema_version": {
+        "const": "1",
+        "title": "Schema Version",
+        "type": "string"
+      }
+    },
+    "required": [
+      "schema_version",
+      "pixels"
+    ],
+    "title": "Observation",
+    "type": "object"
+  },
+  "ReplayManifest": {
+    "$defs": {
+      "ActionMapping": {
+        "additionalProperties": false,
+        "properties": {
+          "movement_per_tick": {
+            "exclusiveMinimum": 0,
+            "maximum": 64,
+            "title": "Movement Per Tick",
+            "type": "number"
+          },
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "version": {
+            "const": "bounded_xy_v1",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "version",
+          "movement_per_tick"
+        ],
+        "title": "ActionMapping",
+        "type": "object"
+      },
+      "ArtifactRef": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "bytes": {
+            "maximum": 1073741824,
+            "minimum": 0,
+            "title": "Bytes",
+            "type": "integer"
+          },
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "sha256": {
+            "maxLength": 64,
+            "minLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "artifact_id",
+          "sha256",
+          "bytes"
+        ],
+        "title": "ArtifactRef",
+        "type": "object"
+      },
+      "Calibration": {
+        "additionalProperties": false,
+        "properties": {
+          "calibration_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+            "title": "Calibration Id",
+            "type": "string"
+          },
+          "config_sha256": {
+            "maxLength": 64,
+            "minLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Config Sha256",
+            "type": "string"
+          },
+          "gain": {
+            "maximum": 100,
+            "minimum": 0,
+            "title": "Gain",
+            "type": "number"
+          },
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "calibration_id",
+          "gain",
+          "config_sha256"
+        ],
+        "title": "Calibration",
+        "type": "object"
+      },
+      "CheckpointRef": {
+        "additionalProperties": false,
+        "properties": {
+          "checkpoint_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+            "title": "Checkpoint Id",
+            "type": "string"
+          },
+          "graph_sha256": {
+            "maxLength": 64,
+            "minLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Graph Sha256",
+            "type": "string"
+          },
+          "model_mode": {
+            "enum": [
+              "fixture",
+              "windowed_reset"
+            ],
+            "title": "Model Mode",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "sha256": {
+            "maxLength": 64,
+            "minLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "checkpoint_id",
+          "sha256",
+          "graph_sha256",
+          "model_mode"
+        ],
+        "title": "CheckpointRef",
+        "type": "object"
+      },
+      "DataProvenance": {
+        "additionalProperties": false,
+        "properties": {
+          "data_sha256": {
+            "items": {
+              "maxLength": 64,
+              "minLength": 64,
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "maxItems": 32,
+            "minItems": 1,
+            "title": "Data Sha256",
+            "type": "array"
+          },
+          "graph_sha256": {
+            "maxLength": 64,
+            "minLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Graph Sha256",
+            "type": "string"
+          },
+          "ordered_body_mapping_sha256": {
+            "maxLength": 64,
+            "minLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Ordered Body Mapping Sha256",
+            "type": "string"
+          },
+          "ordered_synapse_mapping_sha256": {
+            "maxLength": 64,
+            "minLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Ordered Synapse Mapping Sha256",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "graph_sha256",
+          "data_sha256",
+          "ordered_body_mapping_sha256",
+          "ordered_synapse_mapping_sha256"
+        ],
+        "title": "DataProvenance",
+        "type": "object"
+      },
+      "DependencyVersions": {
+        "additionalProperties": false,
+        "properties": {
+          "node": {
+            "maxLength": 64,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._+-]{0,63}$(?![\\s\\S])",
+            "title": "Node",
+            "type": "string"
+          },
+          "node_lock_sha256": {
+            "maxLength": 64,
+            "minLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Node Lock Sha256",
+            "type": "string"
+          },
+          "platform": {
+            "maxLength": 64,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._+-]{0,63}$(?![\\s\\S])",
+            "title": "Platform",
+            "type": "string"
+          },
+          "python": {
+            "maxLength": 64,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._+-]{0,63}$(?![\\s\\S])",
+            "title": "Python",
+            "type": "string"
+          },
+          "python_lock_sha256": {
+            "maxLength": 64,
+            "minLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Python Lock Sha256",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "sqlite": {
+            "maxLength": 64,
+            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._+-]{0,63}$(?![\\s\\S])",
+            "title": "Sqlite",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "python",
+          "node",
+          "sqlite",
+          "python_lock_sha256",
+          "node_lock_sha256",
+          "platform"
+        ],
+        "title": "DependencyVersions",
+        "type": "object"
+      },
+      "Position": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "x": {
+            "maximum": 4096,
+            "minimum": 0,
+            "title": "X",
+            "type": "number"
+          },
+          "y": {
+            "maximum": 4096,
+            "minimum": 0,
+            "title": "Y",
+            "type": "number"
+          }
+        },
+        "required": [
+          "schema_version",
+          "x",
+          "y"
+        ],
+        "title": "Position",
+        "type": "object"
+      },
+      "TraceChunk": {
+        "additionalProperties": false,
+        "properties": {
+          "artifact_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+            "title": "Artifact Id",
+            "type": "string"
+          },
+          "bytes": {
+            "maximum": 1073741824,
+            "minimum": 0,
+            "title": "Bytes",
+            "type": "integer"
+          },
+          "event_count": {
+            "maximum": 4096,
+            "minimum": 1,
+            "title": "Event Count",
+            "type": "integer"
+          },
+          "first_tick": {
+            "maximum": 2147483647,
+            "minimum": 0,
+            "title": "First Tick",
+            "type": "integer"
+          },
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "sequence": {
+            "maximum": 2147483647,
+            "minimum": 0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "sha256": {
+            "maxLength": 64,
+            "minLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "artifact_id",
+          "sha256",
+          "bytes",
+          "sequence",
+          "first_tick",
+          "event_count"
+        ],
+        "title": "TraceChunk",
+        "type": "object"
+      }
+    },
+    "$id": "https://flytrap.invalid/contracts/v1/ReplayManifest",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "action_mapping": {
+        "$ref": "#/$defs/ActionMapping"
+      },
+      "arena_version": {
+        "const": "two_choice_v1",
+        "title": "Arena Version",
+        "type": "string"
+      },
+      "artifacts": {
+        "items": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "maxItems": 128,
+        "title": "Artifacts",
+        "type": "array"
+      },
+      "benchmark_report_id": {
+        "anyOf": [
+          {
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Benchmark Report Id"
+      },
+      "calibration": {
+        "$ref": "#/$defs/Calibration"
+      },
+      "challenge_id": {
+        "maxLength": 64,
+        "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+        "title": "Challenge Id",
+        "type": "string"
+      },
+      "challenge_sha256": {
+        "maxLength": 64,
+        "minLength": 64,
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Challenge Sha256",
+        "type": "string"
+      },
+      "checkpoint": {
+        "$ref": "#/$defs/CheckpointRef"
+      },
+      "chunks": {
+        "items": {
+          "$ref": "#/$defs/TraceChunk"
+        },
+        "maxItems": 4096,
+        "title": "Chunks",
+        "type": "array"
+      },
+      "claim_status": {
+        "enum": [
+          "SUPPORTED",
+          "UNSUPPORTED",
+          "INCONCLUSIVE",
+          "NOT_RUN"
+        ],
+        "title": "Claim Status",
+        "type": "string"
+      },
+      "completion": {
+        "enum": [
+          "complete",
+          "incomplete"
+        ],
+        "title": "Completion",
+        "type": "string"
+      },
+      "data": {
+        "$ref": "#/$defs/DataProvenance"
+      },
+      "environment": {
+        "$ref": "#/$defs/DependencyVersions"
+      },
+      "environment_ticks": {
+        "maximum": 2147483647,
+        "minimum": 0,
+        "title": "Environment Ticks",
+        "type": "integer"
+      },
+      "final_result": {
+        "anyOf": [
+          {
+            "enum": [
+              "success",
+              "wrong_pad",
+              "trial_timeout",
+              "infrastructure_failure"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Final Result"
+      },
+      "fixture": {
+        "title": "Fixture",
+        "type": "boolean"
+      },
+      "initial_state": {
+        "$ref": "#/$defs/Position"
+      },
+      "neural_state_mode": {
+        "enum": [
+          "fixture",
+          "windowed_reset"
+        ],
+        "title": "Neural State Mode",
+        "type": "string"
+      },
+      "random_stream_version": {
+        "const": "seed32_v1",
+        "title": "Random Stream Version",
+        "type": "string"
+      },
+      "renderer_version": {
+        "const": "grayscale_v1",
+        "title": "Renderer Version",
+        "type": "string"
+      },
+      "reward_version": {
+        "const": "destination_v1",
+        "title": "Reward Version",
+        "type": "string"
+      },
+      "run_id": {
+        "maxLength": 64,
+        "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+        "title": "Run Id",
+        "type": "string"
+      },
+      "run_seed": {
+        "maximum": 4294967295,
+        "minimum": 0,
+        "title": "Run Seed",
+        "type": "integer"
+      },
+      "schema_version": {
+        "const": "1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "simulated_ms": {
+        "maximum": 1000000000,
+        "minimum": 0,
+        "title": "Simulated Ms",
+        "type": "number"
+      },
+      "source_commit": {
+        "maxLength": 40,
+        "minLength": 40,
+        "pattern": "^[0-9a-f]{40}$",
+        "title": "Source Commit",
+        "type": "string"
+      },
+      "source_tree_sha256": {
+        "maxLength": 64,
+        "minLength": 64,
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Source Tree Sha256",
+        "type": "string"
+      },
+      "trace_sha256": {
+        "maxLength": 64,
+        "minLength": 64,
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Trace Sha256",
+        "type": "string"
+      },
+      "upstream_revision": {
+        "maxLength": 40,
+        "minLength": 40,
+        "pattern": "^[0-9a-f]{40}$",
+        "title": "Upstream Revision",
+        "type": "string"
+      },
+      "wall_ms": {
+        "maximum": 1000000000,
+        "minimum": 0,
+        "title": "Wall Ms",
+        "type": "number"
+      }
+    },
+    "required": [
+      "schema_version",
+      "run_id",
+      "challenge_id",
+      "challenge_sha256",
+      "fixture",
+      "source_commit",
+      "source_tree_sha256",
+      "upstream_revision",
+      "environment",
+      "data",
+      "checkpoint",
+      "calibration",
+      "neural_state_mode",
+      "run_seed",
+      "random_stream_version",
+      "arena_version",
+      "renderer_version",
+      "reward_version",
+      "action_mapping",
+      "initial_state",
+      "chunks",
+      "trace_sha256",
+      "artifacts",
+      "completion",
+      "final_result",
+      "wall_ms",
+      "simulated_ms",
+      "environment_ticks",
+      "claim_status",
+      "benchmark_report_id"
+    ],
+    "title": "ReplayManifest",
+    "type": "object"
+  },
+  "RunRecord": {
+    "$defs": {
+      "CheckpointRef": {
+        "additionalProperties": false,
+        "properties": {
+          "checkpoint_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+            "title": "Checkpoint Id",
+            "type": "string"
+          },
+          "graph_sha256": {
+            "maxLength": 64,
+            "minLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Graph Sha256",
+            "type": "string"
+          },
+          "model_mode": {
+            "enum": [
+              "fixture",
+              "windowed_reset"
+            ],
+            "title": "Model Mode",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "sha256": {
+            "maxLength": 64,
+            "minLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "checkpoint_id",
+          "sha256",
+          "graph_sha256",
+          "model_mode"
+        ],
+        "title": "CheckpointRef",
+        "type": "object"
+      }
+    },
+    "$id": "https://flytrap.invalid/contracts/v1/RunRecord",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "attempt": {
+        "maximum": 16,
+        "minimum": 0,
+        "title": "Attempt",
+        "type": "integer"
+      },
+      "challenge_id": {
+        "maxLength": 64,
+        "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+        "title": "Challenge Id",
+        "type": "string"
+      },
+      "challenge_sha256": {
+        "maxLength": 64,
+        "minLength": 64,
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Challenge Sha256",
+        "type": "string"
+      },
+      "checkpoint": {
+        "$ref": "#/$defs/CheckpointRef"
+      },
+      "config_sha256": {
+        "maxLength": 64,
+        "minLength": 64,
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Config Sha256",
+        "type": "string"
+      },
+      "controller_id": {
+        "enum": [
+          "fixture_v1",
+          "fly_v1"
+        ],
+        "title": "Controller Id",
+        "type": "string"
+      },
+      "created_at_ms": {
+        "maximum": 9007199254740991,
+        "minimum": 0,
+        "title": "Created At Ms",
+        "type": "integer"
+      },
+      "error_code": {
+        "anyOf": [
+          {
+            "enum": [
+              "invalid_request",
+              "unavailable",
+              "queue_full",
+              "quota_exceeded",
+              "idempotency_conflict",
+              "not_found",
+              "internal_error",
+              "resource_deadline"
+            ],
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Error Code"
+      },
+      "finished_at_ms": {
+        "anyOf": [
+          {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Finished At Ms"
+      },
+      "run_id": {
+        "maxLength": 64,
+        "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+        "title": "Run Id",
+        "type": "string"
+      },
+      "run_seed": {
+        "maximum": 4294967295,
+        "minimum": 0,
+        "title": "Run Seed",
+        "type": "integer"
+      },
+      "schema_version": {
+        "const": "1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "started_at_ms": {
+        "anyOf": [
+          {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Started At Ms"
+      },
+      "state": {
+        "enum": [
+          "queued",
+          "running",
+          "completed",
+          "failed",
+          "timed_out"
+        ],
+        "title": "State",
+        "type": "string"
+      }
+    },
+    "required": [
+      "schema_version",
+      "run_id",
+      "challenge_id",
+      "challenge_sha256",
+      "run_seed",
+      "config_sha256",
+      "controller_id",
+      "checkpoint",
+      "state",
+      "attempt",
+      "created_at_ms",
+      "started_at_ms",
+      "finished_at_ms",
+      "error_code"
+    ],
+    "title": "RunRecord",
+    "type": "object"
+  },
+  "RunRequest": {
+    "$id": "https://flytrap.invalid/contracts/v1/RunRequest",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "additionalProperties": false,
+    "properties": {
+      "challenge_id": {
+        "maxLength": 64,
+        "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+        "title": "Challenge Id",
+        "type": "string"
+      },
+      "checkpoint_id": {
+        "maxLength": 64,
+        "pattern": "^[a-z][a-z0-9_-]{0,63}$(?![\\s\\S])",
+        "title": "Checkpoint Id",
+        "type": "string"
+      },
+      "controller_id": {
+        "enum": [
+          "fixture_v1",
+          "fly_v1"
+        ],
+        "title": "Controller Id",
+        "type": "string"
+      },
+      "schema_version": {
+        "const": "1",
+        "title": "Schema Version",
+        "type": "string"
+      }
+    },
+    "required": [
+      "schema_version",
+      "challenge_id",
+      "controller_id",
+      "checkpoint_id"
+    ],
+    "title": "RunRequest",
+    "type": "object"
+  }
+}

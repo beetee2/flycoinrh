@@ -5,7 +5,7 @@
 
 # 1.1 GB of connectome downloaded from Janelia's public bucket; the README
 # says exactly how to fetch it, and build_graph.py turns it into build/graph.npz
-data/
+/data/
 
 # derived artefacts, recordings, scratch
 build/
@@ -17,3 +17,18 @@ __pycache__/
 
 # trained gains are small and reproducible, but they ARE a result - keep them
 !build/gains_ui.npz
+
+# FLYTRAP local verification evidence
+/artifacts/
+
+# FLYTRAP isolated environments and generated build caches
+/.venv/
+/.pytest_cache/
+/.hypothesis/
+/.ruff_cache/
+/dist/
+/web/node_modules/
+/web/dist/
+/web/test-results/
+/web/playwright-report/
+/.coverage

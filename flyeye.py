@@ -13,9 +13,10 @@ from flysim import FlyBrain
 class FlyEye:
     """Retinotopic sampling of the screen onto the fly's 892 hex columns."""
 
-    def __init__(self, fb, annotations_path="data/body-annotations.feather"):
+    def __init__(self, fb, annotations_path="data/body-annotations.feather", *, annotations=None):
         import pandas as pd
-        a = pd.read_feather(annotations_path).drop_duplicates("bodyId").set_index("bodyId")
+        a = (pd.read_feather(annotations_path) if annotations is None else annotations)
+        a = a.drop_duplicates("bodyId").set_index("bodyId")
         h1 = a["assignedOlHex1"].reindex(fb.bodies).to_numpy()
         h2 = a["assignedOlHex2"].reindex(fb.bodies).to_numpy()
         has = ~(np.isnan(h1.astype(float)) | np.isnan(h2.astype(float)))
@@ -89,14 +90,15 @@ class FlyPilot:
     affordable to simulate.
     """
 
-    def __init__(self, fb, eye=None, sim_steps=100, click_hz=330.0):
+    def __init__(self, fb, eye=None, sim_steps=100, click_hz=330.0, *,
+                 annotations_path="data/body-annotations.feather", annotations=None):
         self.fb = fb
-        self.eye = eye or FlyEye(fb)
+        self.eye = eye or FlyEye(fb, annotations_path=annotations_path, annotations=annotations)
         self.sim_steps = sim_steps
         self.click_hz = click_hz
 
         import pandas as pd
-        a = pd.read_feather("data/body-annotations.feather")
+        a = pd.read_feather(annotations_path) if annotations is None else annotations
         a = a.drop_duplicates("bodyId").set_index("bodyId")
         side = a["somaSide"].reindex(fb.bodies).fillna("").to_numpy().astype(str)
 
@@ -153,6 +155,8 @@ class FlyPilot:
         eye_idx = np.flatnonzero(self.eye.on_mask | self.eye.off_mask)
         motor_idx = np.concatenate([v for v in self.motor.values()])             if self.motor else np.array([], dtype=np.int64)
         info = {
+            "spike_count": int(r["_total_spikes"]),
+            "sampled_neurons": self.fb.n,
             "firing": int(len(fired)) if fired is not None else 0,
             "spikes_per_sec": float(r.get("_spikes_per_sec", 0.0)),
             "mean_mv": float(r.get("_mean_mv", 0.0)),
@@ -184,4 +188,3 @@ class FlyPilot:
         except Exception:
             info["vision"] = None
         return dx, dy, click, hz, info
-

@@ -1,0 +1,7 @@
+{
+  "schema_version": "flytrap-calibration-1",
+  "calibration_id": "untrained-visual-v1",
+  "max_hz": 180.0,
+  "click_hz": 330.0,
+  "gain": 1.0
+}

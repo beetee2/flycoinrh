@@ -1,0 +1,9 @@
+{
+  "fixture": true,
+  "description": "Three invented neurons, W[post, pre]. Not a biological connectome.",
+  "bodies": [101, 102, 103],
+  "types": ["L1", "DNa02", "PAM"],
+  "edges": [[1, 0, 8.25], [2, 1, -1.1]],
+  "sign": [1.0, -1.0, 0.0],
+  "nt": ["acetylcholine", "gaba", "dopamine"]
+}

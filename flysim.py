@@ -180,6 +180,7 @@ class FlyBrain:
 
         secs = steps * p.dt / 1000.0
         out = {k: c / secs for k, c in counts.items()}
+        out["_total_spikes"] = total_spikes
         out["_total_hz"] = total_spikes / secs / n
         out["_spikes_per_sec"] = total_spikes / secs
         out["_fired"] = np.flatnonzero(ever)
