@@ -1,0 +1,216 @@
+{
+  "baseline_sha256": "adfa5cc48f476d99b39ac61779143f5f22e88f5940ebf0226a143c5585410ccc",
+  "calibration": {
+    "derivation": {
+      "back": "mean((fwd_L + fwd_R)/2) / mean(back) = 730/1341",
+      "limitation": "Balances pre-stop means; does not guarantee zero final black motion or navigation.",
+      "selection": "96 black windows per development seed 51001 and 51002; left layout only",
+      "steer_left": "mean(steer_R) / mean(steer_L) = 782/815"
+    },
+    "mean_rates_hz": {
+      "back": 174.609375,
+      "fwd_L": 141.92708333333334,
+      "fwd_R": 48.177083333333336,
+      "steer_L": 212.23958333333334,
+      "steer_R": 203.64583333333334,
+      "stop": 113.671875
+    },
+    "source_file_sha256": {
+      "artifacts/milestones/05/revision/primary/tangent_v2-crop16_v1-51001-left-dark/trace.jsonl": "390f7d54ad2d6da2a8938bea3d3784847d810acc5a2d243caa1c7e1fc744db21",
+      "artifacts/milestones/05/revision/primary/tangent_v2-crop16_v1-51002-left-dark/trace.jsonl": "22989a4e6a624a6c161b7555e3ef2222d4fd9291248e3b46fe387f4e3e96df28"
+    },
+    "weights": {
+      "back": 0.5443698732289336,
+      "steer_left": 0.9595092024539877
+    },
+    "windows": 192
+  },
+  "human_review": "CHANGES_REQUESTED",
+  "learning_enabled": false,
+  "max_total_calls": 1988,
+  "max_trial_calls": 1984,
+  "model_parameters": "config/flytrap-model-v1.json",
+  "plan_sha256": "d3fb121f069d795749b0d057c6fcafd7dff176543db42b25f16fd8cf853bfc63",
+  "prior_report_sha256": "48ceeef69a9822db699d1bd147612ee5713da945854d382d82014f5d1d82dcc5",
+  "real_regression_max_calls": 4,
+  "real_regression_timeout_seconds": 120,
+  "runtime": {
+    "cpu": "Intel(R) Core(TM) i9-10900KF CPU @ 3.70GHz",
+    "dependencies": {
+      "Pillow": "12.2.0",
+      "fastapi": "0.128.0",
+      "numpy": "2.4.2",
+      "pandas": "3.0.1",
+      "pyarrow": "23.0.1",
+      "pydantic": "2.13.5",
+      "pytest": "9.1.1",
+      "scipy": "1.17.1"
+    },
+    "meminfo": "MemTotal:       32649192 kB\nMemFree:         2011392 kB\nMemAvailable:   13938636 kB\nBuffers:              28 kB\nCached:         13974396 kB\nSwapCached:         5992 kB\nActive:         11965840 kB\nInactive:       14817340 kB\nActive(anon):   11353708 kB\nInactive(anon):  2216924 kB\nActive(file):     612132 kB\nInactive(file): 12600416 kB\nUnevictable:        2676 kB\nMlocked:            2672 kB\nSwapTotal:      49880056 kB\nSwapFree:       45623480 kB\nZswap:                 0 kB\nZswapped:              0 kB\nDirty:              7040 kB\nWriteback:             0 kB\nAnonPages:      12808100 kB\nMapped:          2002808 kB\nShmem:            760272 kB\nKReclaimable:     579588 kB\nSlab:            1024108 kB\nSReclaimable:     579588 kB\nSUnreclaim:       444520 kB\nKernelStack:       54096 kB\nPageTables:       240648 kB\nSecPageTables:      1028 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:    66204652 kB\nCommitted_AS:   86696816 kB\nVmallocTotal:   34359738367 kB\nVmallocUsed:      261568 kB\nVmallocChunk:          0 kB\nPercpu:            21024 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:         0 kB\nShmemHugePages:        0 kB\nShmemPmdMapped:        0 kB\nFileHugePages:         0 kB\nFilePmdMapped:         0 kB\nCmaTotal:              0 kB\nCmaFree:               0 kB\nUnaccepted:            0 kB\nBalloon:               0 kB\nGPUActive:             0 kB\nGPUReclaim:            0 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB\nDirectMap4k:     8360968 kB\nDirectMap2M:    24989696 kB\nDirectMap1G:     1048576 kB\n",
+    "node": "v26.8.2",
+    "platform": "Linux-7.2.4-arch1-2-x86_64-with-glibc2.44",
+    "python": "3.14.7",
+    "sqlite_linked": "3.53.4"
+  },
+  "schema_version": "milestone05-final-development-3",
+  "trials": [
+    {
+      "crop": "crop16_v1",
+      "id": "screen-51001-crop16_v1-upstream_pilot_v1-left-canonical",
+      "input": "canonical",
+      "layout": "left",
+      "motor": "upstream_pilot_v1",
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "stage": "screen",
+      "tick_limit": 56
+    },
+    {
+      "crop": "crop16_v1",
+      "id": "screen-51001-crop16_v1-upstream_pilot_v1-right-canonical",
+      "input": "canonical",
+      "layout": "right",
+      "motor": "upstream_pilot_v1",
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "stage": "screen",
+      "tick_limit": 56
+    },
+    {
+      "crop": "tracking16_v3",
+      "id": "screen-51001-tracking16_v3-upstream_pilot_v1-left-canonical",
+      "input": "canonical",
+      "layout": "left",
+      "motor": "upstream_pilot_v1",
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "stage": "screen",
+      "tick_limit": 56
+    },
+    {
+      "crop": "tracking16_v3",
+      "id": "screen-51001-tracking16_v3-upstream_pilot_v1-right-canonical",
+      "input": "canonical",
+      "layout": "right",
+      "motor": "upstream_pilot_v1",
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "stage": "screen",
+      "tick_limit": 56
+    },
+    {
+      "crop": "tracking16_v3",
+      "id": "screen-51001-tracking16_v3-dark_balance_v3-left-canonical",
+      "input": "canonical",
+      "layout": "left",
+      "motor": "dark_balance_v3",
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "stage": "screen",
+      "tick_limit": 56
+    },
+    {
+      "crop": "tracking16_v3",
+      "id": "screen-51001-tracking16_v3-dark_balance_v3-right-canonical",
+      "input": "canonical",
+      "layout": "right",
+      "motor": "dark_balance_v3",
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "stage": "screen",
+      "tick_limit": 56
+    },
+    {
+      "crop": "tracking16_v3",
+      "id": "screen-51001-tracking16_v3-upstream_pilot_v1-left-dark",
+      "input": "dark",
+      "layout": "left",
+      "motor": "upstream_pilot_v1",
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "stage": "screen",
+      "tick_limit": 56
+    },
+    {
+      "crop": "tracking16_v3",
+      "id": "screen-51001-tracking16_v3-dark_balance_v3-left-dark",
+      "input": "dark",
+      "layout": "left",
+      "motor": "dark_balance_v3",
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "stage": "screen",
+      "tick_limit": 56
+    },
+    {
+      "crop": "tracking16_v3",
+      "id": "confirm-51003-tracking16_v3-dark_balance_v3-left-canonical",
+      "input": "canonical",
+      "layout": "left",
+      "motor": "dark_balance_v3",
+      "physics": "tangent_v2",
+      "seed": 51003,
+      "stage": "confirm",
+      "tick_limit": 256
+    },
+    {
+      "crop": "tracking16_v3",
+      "id": "confirm-51003-tracking16_v3-dark_balance_v3-right-canonical",
+      "input": "canonical",
+      "layout": "right",
+      "motor": "dark_balance_v3",
+      "physics": "tangent_v2",
+      "seed": 51003,
+      "stage": "confirm",
+      "tick_limit": 256
+    },
+    {
+      "crop": "tracking16_v3",
+      "id": "confirm-51003-tracking16_v3-dark_balance_v3-left-dark",
+      "input": "dark",
+      "layout": "left",
+      "motor": "dark_balance_v3",
+      "physics": "tangent_v2",
+      "seed": 51003,
+      "stage": "confirm",
+      "tick_limit": 256
+    },
+    {
+      "crop": "tracking16_v3",
+      "id": "confirm-51004-tracking16_v3-dark_balance_v3-left-canonical",
+      "input": "canonical",
+      "layout": "left",
+      "motor": "dark_balance_v3",
+      "physics": "tangent_v2",
+      "seed": 51004,
+      "stage": "confirm",
+      "tick_limit": 256
+    },
+    {
+      "crop": "tracking16_v3",
+      "id": "confirm-51004-tracking16_v3-dark_balance_v3-right-canonical",
+      "input": "canonical",
+      "layout": "right",
+      "motor": "dark_balance_v3",
+      "physics": "tangent_v2",
+      "seed": 51004,
+      "stage": "confirm",
+      "tick_limit": 256
+    },
+    {
+      "crop": "tracking16_v3",
+      "id": "confirm-51004-tracking16_v3-dark_balance_v3-left-dark",
+      "input": "dark",
+      "layout": "left",
+      "motor": "dark_balance_v3",
+      "physics": "tangent_v2",
+      "seed": 51004,
+      "stage": "confirm",
+      "tick_limit": 256
+    }
+  ],
+  "unused_calls": 60,
+  "user_cap": 2048,
+  "visual_calibration": "config/flytrap-visual-v1.json",
+  "wall_budget_seconds": 1300
+}

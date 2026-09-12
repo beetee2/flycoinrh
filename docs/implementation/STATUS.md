@@ -7,46 +7,56 @@ CI correction (2026-09-12): **local and hosted PASS**. Foundation now uses uv
 passed. See the [milestone 01 correction](milestones/01.md) for counts and
 evidence.
 
-Milestones **00–04 complete**. **05 bounded review revision complete;
-human_review: PENDING. Do not start 06.**
+Milestones **00–04 complete**. **05 human_review: CHANGES_REQUESTED.**
+The human accepted the prior bounded diagnostic work and negative conclusion;
+the navigation interaction remains unapproved. **Milestone 06 is BLOCKED.**
 
-Human review requested changes to the original milestone-05 result. The revision
-preserves v1 and adds an explicit tangential-physics candidate, passive motor
-telemetry, and one separately versioned observation experiment. Current
-recommendation: **NO-GO for a playable core**. Passing mechanics and pipeline
-checks do not establish an engaging two-choice interaction.
+The final authorized sensor-to-movement experiment is complete. Engineering and
+replay checks pass; the interaction verdict is **FAIL / STOP NAVIGATION**.
+All four full visual confirmation episodes timed out with zero destination
+contacts and 841/1,024 before-state ticks (82.1%) within eight pixels of a wall.
+Only nine ticks were stationary, so movement alone does not establish suitability.
 
-Latest validation: 2026-09-12 UTC (2026-09-11 US/Central).
-Revision began at `a1ecbdc44d9397c97a4af41f3f4abf84c1d050e0`; changes remain local
-and uncommitted. Learning remains disabled, with evidence **NOT_RUN**.
+One position-dependent observation and one fixed, target-free motor readout
+calibration were tested separately. The 16×16 inputs retain both patterns, but
+the existing retinal map preserves both full contrasts in only 48/529 camera
+bins and at none of the actual tracking visual positions. Layout changes still
+influence retinal drive and movement. Whole-region retinal pattern preservation
+and usable navigation were not achieved.
 
-| Boundary | Status | Actual result |
+| Boundary | Status | Actual evidence |
 |---|---|---|
-| Historical trace diagnosis | PASS | All eight bundles read; 2,048 original actions/states/inputs reconstructed before new neural runs. |
-| V1 preservation | PASS | Original implementation/configurations/checkpoint/traces/evidence intact; original artifact verifier still passes. |
-| Candidate physics / sensory boundary | PASS | All-wall/corner/obstacle/swept/replay tests; exact v1 pad-row cutoff and optional full-scene samples verified. |
-| Bounded development execution | PASS | 24 scheduled 96-tick diagnostics, 2,304 real calls, 896.1 measured phase seconds; no execution failures. |
-| Interaction / task outcomes | NO-GO recommendation | Zero pad contacts; all diagnostics end as incomplete cutoffs. Tangential motion improves, bottom-wall residence persists. |
-| Passive telemetry / determinism | PASS | DNa02/DNa01/MDN/DNp09 captured unchanged; 768 v1 prefix steps exactly match history; matched pixels/seeds/windows reproduce rates/actions. |
-| Artifact reconstruction | PASS | All 2,304 new steps, exact inputs and trajectory images replayed under their recorded versions. |
-| Required checks | PASS | 1,559 Python, 89 web contracts, 9 components, 2 fixture-browser checks; lint/types/build/locks/dependency checks pass. |
-| Full real-model browser release | BLOCKED | Worker/API/replay integration remains pending; `make verify-real` exits 2. |
-| Task competence / learning | UNSUPPORTED / NOT_RUN | No held-out evaluation or training; no condition promoted. |
+| Overall milestone human review | CHANGES_REQUESTED | Prior diagnostics accepted; navigation not approved. Return for a new decision. |
+| Final bounded experiment | PASS execution | 14/14 scheduled trials, 1,984 trial calls plus 4 regression calls = 1,988 of 2,048 cap; no replacements or tuning. |
+| Complete versus partial episodes | PASS accounting | Eight 56-tick incomplete screening cutoffs; six 256-tick scored confirmation timeouts; zero contacts/failures. |
+| Controller input / fixed readout / reset | PASS | Pixels-only isolation, exact samples/rates/mapping and unchanged windowed dynamics; positive fixed readout weights, learning disabled. |
+| Navigation sensory fit | FAIL | Both patterns survive in pixels but not throughout the retinal operating region; no further candidate searched. |
+| Interaction suitability | FAIL / STOP recommendation | Predominantly lower/left wall drift; no demonstrated usable interaction or task competence. |
+| Artifact replay / preservation | PASS | 1,984 new steps and 1,648 exact reused black steps checked; all 496 prior artifact hashes unchanged; original/revision verifiers pass. |
+| Required repository checks | PASS | `make verify test-upstream`: 2,257 Python, 150 upstream, 89 web contracts, 9 components, 2 fixture-browser passes; later 32-case affected regression includes one additional test. |
+| Full real-model browser release | BLOCKED | `make verify-real` exits 2; later worker/API/end-to-end integration remains unimplemented. |
+| Learning | NOT_RUN / disabled | Engineered readout calibration is not learning; no held-out outcomes used. |
 
-Read the [short comparison](FEASIBILITY-05-REVISION.md),
-[complete historical diagnosis](FEASIBILITY-05-DIAGNOSIS.md), and
-[milestone record](milestones/05.md). Review
-[actual visual trajectories and input pixels](../../artifacts/milestones/05/revision/analysis/canonical-trajectories-inputs.png)
-and [all black controls](../../artifacts/milestones/05/revision/analysis/dark-trajectories-inputs.png).
-The [tracked summary](../../experiments/feasibility-revision-v2-results.json)
-retains all scheduled trial IDs; full local evidence is under ignored
-[`artifacts/milestones/05/revision/`](../../artifacts/milestones/05/revision/).
+Latest execution: 2026-09-12 UTC (2026-09-11 US/Central), from source HEAD
+`f077ceb` with local final-experiment additions. Runner time 714.820 seconds,
+within 1,300 seconds; actual runtime Python 3.14.7 / SQLite 3.53.4. The successful
+CI correction above and its historical evidence remain preserved.
 
-The historical [core-v1 condition](../../experiments/core-v1.json) remains intact
-and unapproved. The earlier proposed GO in the historical report is superseded
-by this revision. Preserve the ignored graph, raw data and all historical and
-revision evidence when moving the checkout. The graph remains SHA256
+Read the [final report](FEASIBILITY-05-FINAL.md),
+[frozen plan](FEASIBILITY-05-FINAL-PLAN.md),
+[milestone record](milestones/05.md), and
+[all scheduled results](../../experiments/feasibility-final-v3-results.json).
+Review the [full confirmation trajectories and inputs](../../artifacts/milestones/05/final-sensorimotor/analysis/confirm-trajectories-inputs.png).
+Complete local evidence is under ignored
+[`artifacts/milestones/05/final-sensorimotor/`](../../artifacts/milestones/05/final-sensorimotor/).
+
+Preserve the [original](FEASIBILITY.md), [historical diagnosis](FEASIBILITY-05-DIAGNOSIS.md),
+[previous revision](FEASIBILITY-05-REVISION.md), their configurations/tests,
+and all ignored raw/graph/evidence files. No condition is promoted.
+The graph remains SHA256
 `4279e2222475b986a096634ea5f6ac9518d0f8feff3f3c2ed52ad1139d3cd2ed`.
 
-Next: **human review of milestone 05 only**. No milestone 06, deployment, remote
-push or publication is authorized by this revision.
+Next: **human review of milestone 05 only**. Recommend stopping navigation and
+retaining the simulation/evidence for a possible separately authorized
+stimulus-response interaction. No automatic pivot, milestone 06, deployment,
+remote push, PR, paid resource or publication is authorized.

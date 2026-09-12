@@ -1,0 +1,4422 @@
+{
+  "aggregate": {
+    "boundary_band_before_ticks": 841,
+    "exact_wall_before_ticks": 374,
+    "left_bottom_corner_before_ticks": 26,
+    "mean_requested_pixels": [
+      -0.510900221540559,
+      0.2971015438715809
+    ],
+    "moved_steps_with_next_input": 1011,
+    "movement_followed_by_changed_input": 453,
+    "pad_contacts": 0,
+    "stationary_ticks": 9,
+    "visual_confirmation_ticks": 1024
+  },
+  "comparisons": [
+    {
+      "a": "screen-51001-crop16_v1-upstream_pilot_v1-left-canonical",
+      "a_ticks": 56,
+      "b": "screen-51001-crop16_v1-upstream_pilot_v1-right-canonical",
+      "b_ticks": 56,
+      "different_inputs": 21,
+      "different_motor_actions": 21,
+      "different_positions": 22,
+      "endpoint_separation_pixels": 0.0,
+      "includes_exact_reuse": false,
+      "kind": "mirrored_layout",
+      "last_common_tick": 56,
+      "matched_ticks": 56,
+      "separation_at_last_common_tick_pixels": 0.0
+    },
+    {
+      "a": "screen-51001-crop16_v1-upstream_pilot_v1-left-canonical",
+      "a_ticks": 56,
+      "b": "screen-51001-tracking16_v3-upstream_pilot_v1-left-canonical",
+      "b_ticks": 56,
+      "different_inputs": 56,
+      "different_motor_actions": 56,
+      "different_positions": 56,
+      "endpoint_separation_pixels": 0.43359375,
+      "includes_exact_reuse": false,
+      "kind": "observation_only",
+      "last_common_tick": 56,
+      "matched_ticks": 56,
+      "separation_at_last_common_tick_pixels": 0.43359375
+    },
+    {
+      "a": "screen-51001-crop16_v1-upstream_pilot_v1-right-canonical",
+      "a_ticks": 56,
+      "b": "screen-51001-tracking16_v3-upstream_pilot_v1-right-canonical",
+      "b_ticks": 56,
+      "different_inputs": 56,
+      "different_motor_actions": 56,
+      "different_positions": 56,
+      "endpoint_separation_pixels": 2.234375,
+      "includes_exact_reuse": false,
+      "kind": "observation_only",
+      "last_common_tick": 56,
+      "matched_ticks": 56,
+      "separation_at_last_common_tick_pixels": 2.234375
+    },
+    {
+      "a": "screen-51001-tracking16_v3-upstream_pilot_v1-left-canonical",
+      "a_ticks": 56,
+      "b": "screen-51001-tracking16_v3-upstream_pilot_v1-right-canonical",
+      "b_ticks": 56,
+      "different_inputs": 56,
+      "different_motor_actions": 55,
+      "different_positions": 52,
+      "endpoint_separation_pixels": 2.66796875,
+      "includes_exact_reuse": false,
+      "kind": "mirrored_layout",
+      "last_common_tick": 56,
+      "matched_ticks": 56,
+      "separation_at_last_common_tick_pixels": 2.66796875
+    },
+    {
+      "a": "screen-51001-tracking16_v3-upstream_pilot_v1-left-canonical",
+      "a_ticks": 56,
+      "b": "screen-51001-tracking16_v3-upstream_pilot_v1-left-dark",
+      "b_ticks": 56,
+      "different_inputs": 56,
+      "different_motor_actions": 56,
+      "different_positions": 56,
+      "endpoint_separation_pixels": 42.23046875,
+      "includes_exact_reuse": false,
+      "kind": "visual_vs_black",
+      "last_common_tick": 56,
+      "matched_ticks": 56,
+      "separation_at_last_common_tick_pixels": 42.23046875
+    },
+    {
+      "a": "screen-51001-tracking16_v3-upstream_pilot_v1-left-canonical",
+      "a_ticks": 56,
+      "b": "screen-51001-tracking16_v3-dark_balance_v3-left-canonical",
+      "b_ticks": 56,
+      "different_inputs": 51,
+      "different_motor_actions": 56,
+      "different_positions": 56,
+      "endpoint_separation_pixels": 27.901606840944496,
+      "includes_exact_reuse": false,
+      "kind": "motor_only",
+      "last_common_tick": 56,
+      "matched_ticks": 56,
+      "separation_at_last_common_tick_pixels": 27.901606840944496
+    },
+    {
+      "a": "screen-51001-tracking16_v3-upstream_pilot_v1-right-canonical",
+      "a_ticks": 56,
+      "b": "derived-screen-51001-upstream_pilot_v1-right-dark",
+      "b_ticks": 56,
+      "different_inputs": 56,
+      "different_motor_actions": 56,
+      "different_positions": 56,
+      "endpoint_separation_pixels": 44.8984375,
+      "includes_exact_reuse": true,
+      "kind": "visual_vs_black",
+      "last_common_tick": 56,
+      "matched_ticks": 56,
+      "separation_at_last_common_tick_pixels": 44.8984375
+    },
+    {
+      "a": "screen-51001-tracking16_v3-upstream_pilot_v1-right-canonical",
+      "a_ticks": 56,
+      "b": "screen-51001-tracking16_v3-dark_balance_v3-right-canonical",
+      "b_ticks": 56,
+      "different_inputs": 51,
+      "different_motor_actions": 56,
+      "different_positions": 55,
+      "endpoint_separation_pixels": 11.021841386484752,
+      "includes_exact_reuse": false,
+      "kind": "motor_only",
+      "last_common_tick": 56,
+      "matched_ticks": 56,
+      "separation_at_last_common_tick_pixels": 11.021841386484752
+    },
+    {
+      "a": "screen-51001-tracking16_v3-dark_balance_v3-left-canonical",
+      "a_ticks": 56,
+      "b": "screen-51001-tracking16_v3-dark_balance_v3-right-canonical",
+      "b_ticks": 56,
+      "different_inputs": 56,
+      "different_motor_actions": 56,
+      "different_positions": 56,
+      "endpoint_separation_pixels": 22.47278661638703,
+      "includes_exact_reuse": false,
+      "kind": "mirrored_layout",
+      "last_common_tick": 56,
+      "matched_ticks": 56,
+      "separation_at_last_common_tick_pixels": 22.47278661638703
+    },
+    {
+      "a": "screen-51001-tracking16_v3-dark_balance_v3-left-canonical",
+      "a_ticks": 56,
+      "b": "screen-51001-tracking16_v3-dark_balance_v3-left-dark",
+      "b_ticks": 56,
+      "different_inputs": 56,
+      "different_motor_actions": 56,
+      "different_positions": 56,
+      "endpoint_separation_pixels": 28.461372030806537,
+      "includes_exact_reuse": false,
+      "kind": "visual_vs_black",
+      "last_common_tick": 56,
+      "matched_ticks": 56,
+      "separation_at_last_common_tick_pixels": 28.461372030806537
+    },
+    {
+      "a": "screen-51001-tracking16_v3-dark_balance_v3-right-canonical",
+      "a_ticks": 56,
+      "b": "derived-screen-51001-dark_balance_v3-right-dark",
+      "b_ticks": 56,
+      "different_inputs": 56,
+      "different_motor_actions": 56,
+      "different_positions": 56,
+      "endpoint_separation_pixels": 45.67209149367095,
+      "includes_exact_reuse": true,
+      "kind": "visual_vs_black",
+      "last_common_tick": 56,
+      "matched_ticks": 56,
+      "separation_at_last_common_tick_pixels": 45.67209149367095
+    },
+    {
+      "a": "screen-51001-tracking16_v3-upstream_pilot_v1-left-dark",
+      "a_ticks": 56,
+      "b": "derived-screen-51001-upstream_pilot_v1-right-dark",
+      "b_ticks": 56,
+      "different_inputs": 0,
+      "different_motor_actions": 0,
+      "different_positions": 0,
+      "endpoint_separation_pixels": 0.0,
+      "includes_exact_reuse": true,
+      "kind": "mirrored_layout",
+      "last_common_tick": 56,
+      "matched_ticks": 56,
+      "separation_at_last_common_tick_pixels": 0.0
+    },
+    {
+      "a": "screen-51001-tracking16_v3-upstream_pilot_v1-left-dark",
+      "a_ticks": 56,
+      "b": "screen-51001-tracking16_v3-dark_balance_v3-left-dark",
+      "b_ticks": 56,
+      "different_inputs": 0,
+      "different_motor_actions": 56,
+      "different_positions": 56,
+      "endpoint_separation_pixels": 21.471548017494644,
+      "includes_exact_reuse": false,
+      "kind": "motor_only",
+      "last_common_tick": 56,
+      "matched_ticks": 56,
+      "separation_at_last_common_tick_pixels": 21.471548017494644
+    },
+    {
+      "a": "screen-51001-tracking16_v3-dark_balance_v3-left-dark",
+      "a_ticks": 56,
+      "b": "derived-screen-51001-dark_balance_v3-right-dark",
+      "b_ticks": 56,
+      "different_inputs": 0,
+      "different_motor_actions": 0,
+      "different_positions": 0,
+      "endpoint_separation_pixels": 0.0,
+      "includes_exact_reuse": true,
+      "kind": "mirrored_layout",
+      "last_common_tick": 56,
+      "matched_ticks": 56,
+      "separation_at_last_common_tick_pixels": 0.0
+    },
+    {
+      "a": "confirm-51003-tracking16_v3-dark_balance_v3-left-canonical",
+      "a_ticks": 256,
+      "b": "confirm-51003-tracking16_v3-dark_balance_v3-right-canonical",
+      "b_ticks": 256,
+      "different_inputs": 256,
+      "different_motor_actions": 254,
+      "different_positions": 256,
+      "endpoint_separation_pixels": 15.394285930391206,
+      "includes_exact_reuse": false,
+      "kind": "mirrored_layout",
+      "last_common_tick": 256,
+      "matched_ticks": 256,
+      "separation_at_last_common_tick_pixels": 15.394285930391206
+    },
+    {
+      "a": "confirm-51003-tracking16_v3-dark_balance_v3-left-canonical",
+      "a_ticks": 256,
+      "b": "confirm-51003-tracking16_v3-dark_balance_v3-left-dark",
+      "b_ticks": 256,
+      "different_inputs": 256,
+      "different_motor_actions": 256,
+      "different_positions": 256,
+      "endpoint_separation_pixels": 14.119702451342702,
+      "includes_exact_reuse": false,
+      "kind": "visual_vs_black",
+      "last_common_tick": 256,
+      "matched_ticks": 256,
+      "separation_at_last_common_tick_pixels": 14.119702451342702
+    },
+    {
+      "a": "confirm-51003-tracking16_v3-dark_balance_v3-right-canonical",
+      "a_ticks": 256,
+      "b": "derived-confirm-51003-dark_balance_v3-right-dark",
+      "b_ticks": 256,
+      "different_inputs": 256,
+      "different_motor_actions": 256,
+      "different_positions": 256,
+      "endpoint_separation_pixels": 3.60847019232614,
+      "includes_exact_reuse": true,
+      "kind": "visual_vs_black",
+      "last_common_tick": 256,
+      "matched_ticks": 256,
+      "separation_at_last_common_tick_pixels": 3.60847019232614
+    },
+    {
+      "a": "confirm-51003-tracking16_v3-dark_balance_v3-left-dark",
+      "a_ticks": 256,
+      "b": "derived-confirm-51003-dark_balance_v3-right-dark",
+      "b_ticks": 256,
+      "different_inputs": 0,
+      "different_motor_actions": 0,
+      "different_positions": 0,
+      "endpoint_separation_pixels": 0.0,
+      "includes_exact_reuse": true,
+      "kind": "mirrored_layout",
+      "last_common_tick": 256,
+      "matched_ticks": 256,
+      "separation_at_last_common_tick_pixels": 0.0
+    },
+    {
+      "a": "confirm-51004-tracking16_v3-dark_balance_v3-left-canonical",
+      "a_ticks": 256,
+      "b": "confirm-51004-tracking16_v3-dark_balance_v3-right-canonical",
+      "b_ticks": 256,
+      "different_inputs": 256,
+      "different_motor_actions": 255,
+      "different_positions": 256,
+      "endpoint_separation_pixels": 0.43807509634657676,
+      "includes_exact_reuse": false,
+      "kind": "mirrored_layout",
+      "last_common_tick": 256,
+      "matched_ticks": 256,
+      "separation_at_last_common_tick_pixels": 0.43807509634657676
+    },
+    {
+      "a": "confirm-51004-tracking16_v3-dark_balance_v3-left-canonical",
+      "a_ticks": 256,
+      "b": "confirm-51004-tracking16_v3-dark_balance_v3-left-dark",
+      "b_ticks": 256,
+      "different_inputs": 256,
+      "different_motor_actions": 256,
+      "different_positions": 256,
+      "endpoint_separation_pixels": 9.173152594153496,
+      "includes_exact_reuse": false,
+      "kind": "visual_vs_black",
+      "last_common_tick": 256,
+      "matched_ticks": 256,
+      "separation_at_last_common_tick_pixels": 9.173152594153496
+    },
+    {
+      "a": "confirm-51004-tracking16_v3-dark_balance_v3-right-canonical",
+      "a_ticks": 256,
+      "b": "derived-confirm-51004-dark_balance_v3-right-dark",
+      "b_ticks": 256,
+      "different_inputs": 256,
+      "different_motor_actions": 256,
+      "different_positions": 255,
+      "endpoint_separation_pixels": 9.519992871963012,
+      "includes_exact_reuse": true,
+      "kind": "visual_vs_black",
+      "last_common_tick": 256,
+      "matched_ticks": 256,
+      "separation_at_last_common_tick_pixels": 9.519992871963012
+    },
+    {
+      "a": "confirm-51004-tracking16_v3-dark_balance_v3-left-dark",
+      "a_ticks": 256,
+      "b": "derived-confirm-51004-dark_balance_v3-right-dark",
+      "b_ticks": 256,
+      "different_inputs": 0,
+      "different_motor_actions": 0,
+      "different_positions": 0,
+      "endpoint_separation_pixels": 0.0,
+      "includes_exact_reuse": true,
+      "kind": "mirrored_layout",
+      "last_common_tick": 256,
+      "matched_ticks": 256,
+      "separation_at_last_common_tick_pixels": 0.0
+    },
+    {
+      "a": "derived-screen-51001-upstream_pilot_v1-right-dark",
+      "a_ticks": 56,
+      "b": "derived-screen-51001-dark_balance_v3-right-dark",
+      "b_ticks": 56,
+      "different_inputs": 0,
+      "different_motor_actions": 56,
+      "different_positions": 56,
+      "endpoint_separation_pixels": 21.471548017494644,
+      "includes_exact_reuse": true,
+      "kind": "motor_only",
+      "last_common_tick": 56,
+      "matched_ticks": 56,
+      "separation_at_last_common_tick_pixels": 21.471548017494644
+    },
+    {
+      "a": "derived-confirm-51003-upstream_pilot_v1-left-dark",
+      "a_ticks": 256,
+      "b": "derived-confirm-51003-upstream_pilot_v1-right-dark",
+      "b_ticks": 256,
+      "different_inputs": 0,
+      "different_motor_actions": 0,
+      "different_positions": 0,
+      "endpoint_separation_pixels": 0.0,
+      "includes_exact_reuse": true,
+      "kind": "mirrored_layout",
+      "last_common_tick": 256,
+      "matched_ticks": 256,
+      "separation_at_last_common_tick_pixels": 0.0
+    },
+    {
+      "a": "derived-confirm-51003-upstream_pilot_v1-left-dark",
+      "a_ticks": 256,
+      "b": "confirm-51003-tracking16_v3-dark_balance_v3-left-dark",
+      "b_ticks": 256,
+      "different_inputs": 0,
+      "different_motor_actions": 256,
+      "different_positions": 248,
+      "endpoint_separation_pixels": 3.0990844358972076,
+      "includes_exact_reuse": true,
+      "kind": "motor_only",
+      "last_common_tick": 256,
+      "matched_ticks": 256,
+      "separation_at_last_common_tick_pixels": 3.0990844358972076
+    },
+    {
+      "a": "derived-confirm-51003-upstream_pilot_v1-right-dark",
+      "a_ticks": 256,
+      "b": "derived-confirm-51003-dark_balance_v3-right-dark",
+      "b_ticks": 256,
+      "different_inputs": 0,
+      "different_motor_actions": 256,
+      "different_positions": 248,
+      "endpoint_separation_pixels": 3.0990844358972076,
+      "includes_exact_reuse": true,
+      "kind": "motor_only",
+      "last_common_tick": 256,
+      "matched_ticks": 256,
+      "separation_at_last_common_tick_pixels": 3.0990844358972076
+    },
+    {
+      "a": "derived-confirm-51004-upstream_pilot_v1-left-dark",
+      "a_ticks": 256,
+      "b": "derived-confirm-51004-upstream_pilot_v1-right-dark",
+      "b_ticks": 256,
+      "different_inputs": 0,
+      "different_motor_actions": 0,
+      "different_positions": 0,
+      "endpoint_separation_pixels": 0.0,
+      "includes_exact_reuse": true,
+      "kind": "mirrored_layout",
+      "last_common_tick": 256,
+      "matched_ticks": 256,
+      "separation_at_last_common_tick_pixels": 0.0
+    },
+    {
+      "a": "derived-confirm-51004-upstream_pilot_v1-left-dark",
+      "a_ticks": 256,
+      "b": "confirm-51004-tracking16_v3-dark_balance_v3-left-dark",
+      "b_ticks": 256,
+      "different_inputs": 0,
+      "different_motor_actions": 256,
+      "different_positions": 254,
+      "endpoint_separation_pixels": 6.761728904888389,
+      "includes_exact_reuse": true,
+      "kind": "motor_only",
+      "last_common_tick": 256,
+      "matched_ticks": 256,
+      "separation_at_last_common_tick_pixels": 6.761728904888389
+    },
+    {
+      "a": "derived-confirm-51004-upstream_pilot_v1-right-dark",
+      "a_ticks": 256,
+      "b": "derived-confirm-51004-dark_balance_v3-right-dark",
+      "b_ticks": 256,
+      "different_inputs": 0,
+      "different_motor_actions": 256,
+      "different_positions": 254,
+      "endpoint_separation_pixels": 6.761728904888389,
+      "includes_exact_reuse": true,
+      "kind": "motor_only",
+      "last_common_tick": 256,
+      "matched_ticks": 256,
+      "separation_at_last_common_tick_pixels": 6.761728904888389
+    }
+  ],
+  "config_sha256": "94e74d6a0756b245e6682be6703217aacbae235c1dabb6a9e06423d59b59eeb7",
+  "elapsed_wall_seconds": 714.8200327219965,
+  "engineering_status": "PASS",
+  "historical_exact_prefixes": [
+    {
+      "matching_ticks": 56,
+      "source": "artifacts/milestones/05/revision/primary/tangent_v2-crop16_v1-51001-left-canonical/trace.jsonl",
+      "source_sha256": "0780a1dfdd9d44550a50f6488a52ff46e67c212e8e189f8b368b5b02af8d792f",
+      "trial": "screen-51001-crop16_v1-upstream_pilot_v1-left-canonical"
+    },
+    {
+      "matching_ticks": 56,
+      "source": "artifacts/milestones/05/revision/primary/tangent_v2-crop16_v1-51001-right-canonical/trace.jsonl",
+      "source_sha256": "2b2183a4139753203bbb1b1949fbc163fccd37f7014d9896b6082775f63e322b",
+      "trial": "screen-51001-crop16_v1-upstream_pilot_v1-right-canonical"
+    },
+    {
+      "matching_ticks": 56,
+      "source": "artifacts/milestones/05/revision/primary/tangent_v2-crop16_v1-51001-left-dark/trace.jsonl",
+      "source_sha256": "390f7d54ad2d6da2a8938bea3d3784847d810acc5a2d243caa1c7e1fc744db21",
+      "trial": "screen-51001-tracking16_v3-upstream_pilot_v1-left-dark"
+    }
+  ],
+  "human_review": "CHANGES_REQUESTED",
+  "interaction_status": "FAIL",
+  "latency_seconds": {
+    "max": 0.4856923750194255,
+    "median": 0.3572086535132257,
+    "min": 0.22546548099489883,
+    "p95": 0.4025557200075127
+  },
+  "learning_claim_status": "NOT_RUN",
+  "learning_enabled": false,
+  "limitations": [
+    "Development seeds only; no held-out task outcomes or learning.",
+    "Uncalibrated visual comparisons stop at 56 diagnostic ticks; only calibrated visual confirmation is full-length.",
+    "Derived black controls reuse identical pixels and window seeds; they are not independent samples.",
+    "Both-pad contrast counts in trial metrics describe the 16x16 envelope. Both full patterns do not reach the retina throughout the operating region.",
+    "Distance totals sum tick-endpoint displacement lengths. Plots join recorded tick positions and omit within-tick collision bends.",
+    "Full real-model browser/worker release remains BLOCKED."
+  ],
+  "matched_neural_groups": 101,
+  "matched_neural_outputs_equal": true,
+  "milestone06": "BLOCKED",
+  "peak_process_rss_bytes": 775966720,
+  "phases": {
+    "confirm": {
+      "calls": 1536,
+      "elapsed_trial_seconds": 552.4727974120178
+    },
+    "screen": {
+      "calls": 448,
+      "elapsed_trial_seconds": 158.7469377819798
+    }
+  },
+  "real_regression_calls": 4,
+  "recommendation": "STOP_NAVIGATION",
+  "retinal_both_pad_contrast_bins": {
+    "L1": 48,
+    "L2": 48
+  },
+  "retinal_camera_bins": 529,
+  "retinal_contrast_by_trial": {
+    "confirm-51003-tracking16_v3-dark_balance_v3-left-canonical": {
+      "L1": 0,
+      "L2": 0
+    },
+    "confirm-51003-tracking16_v3-dark_balance_v3-right-canonical": {
+      "L1": 0,
+      "L2": 0
+    },
+    "confirm-51004-tracking16_v3-dark_balance_v3-left-canonical": {
+      "L1": 0,
+      "L2": 0
+    },
+    "confirm-51004-tracking16_v3-dark_balance_v3-right-canonical": {
+      "L1": 0,
+      "L2": 0
+    },
+    "screen-51001-tracking16_v3-dark_balance_v3-left-canonical": {
+      "L1": 0,
+      "L2": 0
+    },
+    "screen-51001-tracking16_v3-dark_balance_v3-right-canonical": {
+      "L1": 0,
+      "L2": 0
+    },
+    "screen-51001-tracking16_v3-upstream_pilot_v1-left-canonical": {
+      "L1": 0,
+      "L2": 0
+    },
+    "screen-51001-tracking16_v3-upstream_pilot_v1-right-canonical": {
+      "L1": 0,
+      "L2": 0
+    }
+  },
+  "retinal_minimum_layout_changed_cells": {
+    "L1": 48,
+    "L2": 47
+  },
+  "retinal_whole_region_pattern_preservation": "FAIL",
+  "source_head": "f077ceb6d048d59606a9127ba2679b90411c49e5",
+  "source_report_sha256": "cc30ee4b941457bd41f299362bf34e514497da9852be33752369f92a4b20c775",
+  "source_tree_sha256": "7d8f9cd9407d6bc1536284e75e7f305fc240f3b928b07f663161692e4836b36e",
+  "test_counts": {
+    "analysis-metadata.xml": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 32,
+      "skipped": 0,
+      "tests": 32
+    },
+    "final-analysis.xml": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 31,
+      "skipped": 0,
+      "tests": 31
+    },
+    "final-verifier-expanded.xml": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 53,
+      "skipped": 0,
+      "tests": 53
+    },
+    "final-verifier.xml": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 33,
+      "skipped": 0,
+      "tests": 33
+    },
+    "motor.xml": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 40,
+      "skipped": 0,
+      "tests": 40
+    },
+    "preflight.xml": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 644,
+      "skipped": 0,
+      "tests": 644
+    },
+    "python.xml": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 2257,
+      "skipped": 0,
+      "tests": 2257
+    },
+    "real-controller.xml": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 1,
+      "skipped": 0,
+      "tests": 1
+    },
+    "ui.xml": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 9,
+      "skipped": 0,
+      "tests": 9
+    },
+    "upstream.xml": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 150,
+      "skipped": 0,
+      "tests": 150
+    },
+    "web-contract.xml": {
+      "errors": 0,
+      "failures": 0,
+      "passed": 89,
+      "skipped": 0,
+      "tests": 89
+    }
+  },
+  "total_new_model_calls": 1988,
+  "trial_calls": 1984,
+  "trials": [
+    {
+      "crop": "crop16_v1",
+      "derived": false,
+      "directory": "artifacts/milestones/05/final-sensorimotor/trials/screen-51001-crop16_v1-upstream_pilot_v1-left-canonical",
+      "elapsed_wall_seconds": 20.959342996997293,
+      "final_state": {
+        "outcome": null,
+        "tick": 56,
+        "x_q": 2050,
+        "y_q": 23552
+      },
+      "id": "screen-51001-crop16_v1-upstream_pilot_v1-left-canonical",
+      "input": "canonical",
+      "layout": "left",
+      "metrics": {
+        "adjacent_input_changes": 25,
+        "any_pad_visible_inputs": 15,
+        "both_pads_contrast_inputs": 15,
+        "both_pads_visible_inputs": 15,
+        "boundary_band_before_ticks": 44,
+        "boundary_band_fraction": 0.7857142857142857,
+        "directions": {
+          "down": 39,
+          "left": 24,
+          "right": 21,
+          "up": 15
+        },
+        "exact_wall_before_ticks": 25,
+        "first_wall_contact_tick": 18,
+        "mean_rates_hz": {
+          "back": 173.21428571428572,
+          "fwd_L": 151.78571428571428,
+          "fwd_R": 34.82142857142857,
+          "steer_L": 253.57142857142858,
+          "steer_R": 213.39285714285714,
+          "stop": 112.94642857142857
+        },
+        "mean_requested_pixels": [
+          -0.7142857142857144,
+          1.0696649029982366
+        ],
+        "motion_pixels": {
+          "executed": [
+            -39.9921875,
+            16.0
+          ],
+          "quantized": [
+            -39.9921875,
+            59.859375
+          ],
+          "raw_requested": [
+            -40.00000000000001,
+            59.90123456790125
+          ],
+          "requested": [
+            -40.00000000000001,
+            59.90123456790125
+          ]
+        },
+        "moved_steps_with_next_input": 52,
+        "movement_followed_by_changed_input": 25,
+        "outward_at_wall_ticks": 15,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 3,
+          "quantization": 0,
+          "zero_motor": 1
+        },
+        "summary": {
+          "controller_wall_seconds": 20.92738128209021,
+          "environment_ticks": 56,
+          "longest_stationary_streak": 2,
+          "motor_nonzero_fraction": 0.9821428571428571,
+          "neural_ms": 1120.0,
+          "outcome": null,
+          "stationary_step_fraction": 0.07142857142857142,
+          "step_latency_seconds": {
+            "max": 0.4554592400090769,
+            "median": 0.3727447005076101,
+            "min": 0.2973990630125627,
+            "p95": 0.42227539198938757
+          },
+          "steps": 56,
+          "total_distance_pixels": 192.3067130884842,
+          "unique_observation_count": 11
+        },
+        "visited_8px_bins": 11,
+        "visited_bin_coordinates": [
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            3,
+            11
+          ],
+          [
+            4,
+            9
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            6,
+            9
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 25,
+          "left": 0,
+          "left_bottom": 0,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          5.34375,
+          52.44140625
+        ],
+        "y_extent_pixels": [
+          76.0,
+          92.0
+        ]
+      },
+      "motor": "upstream_pilot_v1",
+      "outcome": null,
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "stage": "screen",
+      "status": "PASS",
+      "termination": "diagnostic_cutoff",
+      "tick_limit": 56,
+      "ticks": 56,
+      "trace_sha256": "f99b9f83da288bea357384fda053a2d98b97735240e6eab0b8a509d6bb32e71e"
+    },
+    {
+      "crop": "crop16_v1",
+      "derived": false,
+      "directory": "artifacts/milestones/05/final-sensorimotor/trials/screen-51001-crop16_v1-upstream_pilot_v1-right-canonical",
+      "elapsed_wall_seconds": 20.171209975000238,
+      "final_state": {
+        "outcome": null,
+        "tick": 56,
+        "x_q": 2050,
+        "y_q": 23552
+      },
+      "id": "screen-51001-crop16_v1-upstream_pilot_v1-right-canonical",
+      "input": "canonical",
+      "layout": "right",
+      "metrics": {
+        "adjacent_input_changes": 23,
+        "any_pad_visible_inputs": 13,
+        "both_pads_contrast_inputs": 13,
+        "both_pads_visible_inputs": 13,
+        "boundary_band_before_ticks": 45,
+        "boundary_band_fraction": 0.8035714285714286,
+        "directions": {
+          "down": 40,
+          "left": 24,
+          "right": 21,
+          "up": 15
+        },
+        "exact_wall_before_ticks": 27,
+        "first_wall_contact_tick": 15,
+        "mean_rates_hz": {
+          "back": 185.9375,
+          "fwd_L": 148.21428571428572,
+          "fwd_R": 35.714285714285715,
+          "steer_L": 249.10714285714286,
+          "steer_R": 208.92857142857142,
+          "stop": 122.76785714285714
+        },
+        "mean_requested_pixels": [
+          -0.7142857142857143,
+          1.2654320987654324
+        ],
+        "motion_pixels": {
+          "executed": [
+            -39.9921875,
+            16.0
+          ],
+          "quantized": [
+            -39.9921875,
+            70.81640625
+          ],
+          "raw_requested": [
+            -40.0,
+            70.86419753086422
+          ],
+          "requested": [
+            -40.0,
+            70.86419753086422
+          ]
+        },
+        "moved_steps_with_next_input": 53,
+        "movement_followed_by_changed_input": 23,
+        "outward_at_wall_ticks": 17,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 3,
+          "quantization": 0,
+          "zero_motor": 0
+        },
+        "summary": {
+          "controller_wall_seconds": 20.139353884092998,
+          "environment_ticks": 56,
+          "longest_stationary_streak": 2,
+          "motor_nonzero_fraction": 1.0,
+          "neural_ms": 1120.0,
+          "outcome": null,
+          "stationary_step_fraction": 0.05357142857142857,
+          "step_latency_seconds": {
+            "max": 0.39585974300280213,
+            "median": 0.35881742600759026,
+            "min": 0.28846304799662903,
+            "p95": 0.39079272001981735
+          },
+          "steps": 56,
+          "total_distance_pixels": 187.94545476487022,
+          "unique_observation_count": 10
+        },
+        "visited_8px_bins": 10,
+        "visited_bin_coordinates": [
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            3,
+            11
+          ],
+          [
+            4,
+            9
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            6,
+            9
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 27,
+          "left": 0,
+          "left_bottom": 0,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          5.34375,
+          53.33203125
+        ],
+        "y_extent_pixels": [
+          76.0,
+          92.0
+        ]
+      },
+      "motor": "upstream_pilot_v1",
+      "outcome": null,
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "stage": "screen",
+      "status": "PASS",
+      "termination": "diagnostic_cutoff",
+      "tick_limit": 56,
+      "ticks": 56,
+      "trace_sha256": "1371df7293876a2af29aa97927fa49797e3b93075fcb5d8e8d5c3c82c4e9c308"
+    },
+    {
+      "crop": "tracking16_v3",
+      "derived": false,
+      "directory": "artifacts/milestones/05/final-sensorimotor/trials/screen-51001-tracking16_v3-upstream_pilot_v1-left-canonical",
+      "elapsed_wall_seconds": 19.496375602000626,
+      "final_state": {
+        "outcome": null,
+        "tick": 56,
+        "x_q": 2161,
+        "y_q": 23552
+      },
+      "id": "screen-51001-tracking16_v3-upstream_pilot_v1-left-canonical",
+      "input": "canonical",
+      "layout": "left",
+      "metrics": {
+        "adjacent_input_changes": 28,
+        "any_pad_visible_inputs": 56,
+        "both_pads_contrast_inputs": 56,
+        "both_pads_visible_inputs": 56,
+        "boundary_band_before_ticks": 51,
+        "boundary_band_fraction": 0.9107142857142857,
+        "directions": {
+          "down": 36,
+          "left": 29,
+          "right": 17,
+          "up": 11
+        },
+        "exact_wall_before_ticks": 34,
+        "first_wall_contact_tick": 9,
+        "mean_rates_hz": {
+          "back": 151.78571428571428,
+          "fwd_L": 129.46428571428572,
+          "fwd_R": 30.357142857142858,
+          "steer_L": 213.39285714285714,
+          "steer_R": 156.25,
+          "stop": 112.94642857142857
+        },
+        "mean_requested_pixels": [
+          -1.0158730158730158,
+          0.816798941798942
+        ],
+        "motion_pixels": {
+          "executed": [
+            -39.55859375,
+            16.0
+          ],
+          "quantized": [
+            -56.86328125,
+            45.6953125
+          ],
+          "raw_requested": [
+            -56.888888888888886,
+            45.74074074074075
+          ],
+          "requested": [
+            -56.888888888888886,
+            45.74074074074075
+          ]
+        },
+        "moved_steps_with_next_input": 47,
+        "movement_followed_by_changed_input": 28,
+        "outward_at_wall_ticks": 22,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 7,
+          "quantization": 0,
+          "zero_motor": 1
+        },
+        "summary": {
+          "controller_wall_seconds": 19.46403353329515,
+          "environment_ticks": 56,
+          "longest_stationary_streak": 3,
+          "motor_nonzero_fraction": 0.9821428571428571,
+          "neural_ms": 1120.0,
+          "outcome": null,
+          "stationary_step_fraction": 0.14285714285714285,
+          "step_latency_seconds": {
+            "max": 0.4032592860166915,
+            "median": 0.34455636650091037,
+            "min": 0.3016495140036568,
+            "p95": 0.3912790309987031
+          },
+          "steps": 56,
+          "total_distance_pixels": 167.16832660970593,
+          "unique_observation_count": 15
+        },
+        "visited_8px_bins": 10,
+        "visited_bin_coordinates": [
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            11
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            11
+          ],
+          [
+            6,
+            9
+          ],
+          [
+            6,
+            10
+          ],
+          [
+            6,
+            11
+          ],
+          [
+            7,
+            11
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 34,
+          "left": 5,
+          "left_bottom": 5,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          4.0,
+          57.7734375
+        ],
+        "y_extent_pixels": [
+          76.0,
+          92.0
+        ]
+      },
+      "motor": "upstream_pilot_v1",
+      "outcome": null,
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "stage": "screen",
+      "status": "PASS",
+      "termination": "diagnostic_cutoff",
+      "tick_limit": 56,
+      "ticks": 56,
+      "trace_sha256": "05b28bf589c042c4db39df2476098b36c62c143de647ab6902ea774f0be1e197"
+    },
+    {
+      "crop": "tracking16_v3",
+      "derived": false,
+      "directory": "artifacts/milestones/05/final-sensorimotor/trials/screen-51001-tracking16_v3-upstream_pilot_v1-right-canonical",
+      "elapsed_wall_seconds": 19.709434280986898,
+      "final_state": {
+        "outcome": null,
+        "tick": 56,
+        "x_q": 1478,
+        "y_q": 23552
+      },
+      "id": "screen-51001-tracking16_v3-upstream_pilot_v1-right-canonical",
+      "input": "canonical",
+      "layout": "right",
+      "metrics": {
+        "adjacent_input_changes": 26,
+        "any_pad_visible_inputs": 56,
+        "both_pads_contrast_inputs": 56,
+        "both_pads_visible_inputs": 56,
+        "boundary_band_before_ticks": 50,
+        "boundary_band_fraction": 0.8928571428571429,
+        "directions": {
+          "down": 44,
+          "left": 27,
+          "right": 16,
+          "up": 10
+        },
+        "exact_wall_before_ticks": 35,
+        "first_wall_contact_tick": 12,
+        "mean_rates_hz": {
+          "back": 173.88392857142858,
+          "fwd_L": 155.35714285714286,
+          "fwd_R": 21.428571428571427,
+          "steer_L": 242.85714285714286,
+          "steer_R": 160.71428571428572,
+          "stop": 104.91071428571429
+        },
+        "mean_requested_pixels": [
+          -1.4603174603174605,
+          1.1426366843033509
+        ],
+        "motion_pixels": {
+          "executed": [
+            -42.2265625,
+            16.0
+          ],
+          "quantized": [
+            -81.75,
+            63.91796875
+          ],
+          "raw_requested": [
+            -81.77777777777779,
+            63.98765432098765
+          ],
+          "requested": [
+            -81.77777777777779,
+            63.98765432098765
+          ]
+        },
+        "moved_steps_with_next_input": 44,
+        "movement_followed_by_changed_input": 26,
+        "outward_at_wall_ticks": 25,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 11,
+          "quantization": 0,
+          "zero_motor": 0
+        },
+        "summary": {
+          "controller_wall_seconds": 19.67683040400152,
+          "environment_ticks": 56,
+          "longest_stationary_streak": 3,
+          "motor_nonzero_fraction": 1.0,
+          "neural_ms": 1120.0,
+          "outcome": null,
+          "stationary_step_fraction": 0.19642857142857142,
+          "step_latency_seconds": {
+            "max": 0.4016515589901246,
+            "median": 0.3514744315034477,
+            "min": 0.30943210297846235,
+            "p95": 0.39341324698762037
+          },
+          "steps": 56,
+          "total_distance_pixels": 141.8195216738318,
+          "unique_observation_count": 13
+        },
+        "visited_8px_bins": 9,
+        "visited_bin_coordinates": [
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            11
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            6,
+            9
+          ],
+          [
+            6,
+            10
+          ],
+          [
+            7,
+            9
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 31,
+          "left": 15,
+          "left_bottom": 11,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          4.0,
+          56.88671875
+        ],
+        "y_extent_pixels": [
+          76.0,
+          92.0
+        ]
+      },
+      "motor": "upstream_pilot_v1",
+      "outcome": null,
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "stage": "screen",
+      "status": "PASS",
+      "termination": "diagnostic_cutoff",
+      "tick_limit": 56,
+      "ticks": 56,
+      "trace_sha256": "49d2eb95441518be08e8ddcc6dd03cf2c82a72abfdceefed7b53d7e436a0b22d"
+    },
+    {
+      "crop": "tracking16_v3",
+      "derived": false,
+      "directory": "artifacts/milestones/05/final-sensorimotor/trials/screen-51001-tracking16_v3-dark_balance_v3-left-canonical",
+      "elapsed_wall_seconds": 19.59142754098866,
+      "final_state": {
+        "outcome": null,
+        "tick": 56,
+        "x_q": 9288,
+        "y_q": 23077
+      },
+      "id": "screen-51001-tracking16_v3-dark_balance_v3-left-canonical",
+      "input": "canonical",
+      "layout": "left",
+      "metrics": {
+        "adjacent_input_changes": 26,
+        "any_pad_visible_inputs": 56,
+        "both_pads_contrast_inputs": 56,
+        "both_pads_visible_inputs": 56,
+        "boundary_band_before_ticks": 37,
+        "boundary_band_fraction": 0.6607142857142857,
+        "directions": {
+          "down": 36,
+          "left": 26,
+          "right": 30,
+          "up": 19
+        },
+        "exact_wall_before_ticks": 11,
+        "first_wall_contact_tick": 38,
+        "mean_rates_hz": {
+          "back": 206.91964285714286,
+          "fwd_L": 133.92857142857142,
+          "fwd_R": 31.25,
+          "steer_L": 216.96428571428572,
+          "steer_R": 196.42857142857142,
+          "stop": 97.76785714285714
+        },
+        "mean_requested_pixels": [
+          -0.2089005745447463,
+          0.48966097058316777
+        ],
+        "motion_pixels": {
+          "executed": [
+            -11.71875,
+            14.14453125
+          ],
+          "quantized": [
+            -11.71875,
+            27.390625
+          ],
+          "raw_requested": [
+            -20.44444444444445,
+            101.85185185185186
+          ],
+          "requested": [
+            -11.698432174505793,
+            27.421014352657394
+          ]
+        },
+        "moved_steps_with_next_input": 55,
+        "movement_followed_by_changed_input": 26,
+        "outward_at_wall_ticks": 6,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 0,
+          "quantization": 0,
+          "zero_motor": 0
+        },
+        "summary": {
+          "controller_wall_seconds": 19.558440869208425,
+          "environment_ticks": 56,
+          "longest_stationary_streak": 0,
+          "motor_nonzero_fraction": 1.0,
+          "neural_ms": 1120.0,
+          "outcome": null,
+          "stationary_step_fraction": 0.0,
+          "step_latency_seconds": {
+            "max": 0.3937800510029774,
+            "median": 0.3498615740099922,
+            "min": 0.3108602380088996,
+            "p95": 0.38644345800275914
+          },
+          "steps": 56,
+          "total_distance_pixels": 174.24503197018993,
+          "unique_observation_count": 9
+        },
+        "visited_8px_bins": 9,
+        "visited_bin_coordinates": [
+          [
+            4,
+            9
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            5,
+            11
+          ],
+          [
+            6,
+            9
+          ],
+          [
+            6,
+            10
+          ],
+          [
+            6,
+            11
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 11,
+          "left": 0,
+          "left_bottom": 0,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          33.29296875,
+          51.3125
+        ],
+        "y_extent_pixels": [
+          76.0,
+          92.0
+        ]
+      },
+      "motor": "dark_balance_v3",
+      "outcome": null,
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "stage": "screen",
+      "status": "PASS",
+      "termination": "diagnostic_cutoff",
+      "tick_limit": 56,
+      "ticks": 56,
+      "trace_sha256": "25cd90af5690c20a54979f4e0d98d0bb2e04a45e4fbb2980be5a50b870e755e3"
+    },
+    {
+      "crop": "tracking16_v3",
+      "derived": false,
+      "directory": "artifacts/milestones/05/final-sensorimotor/trials/screen-51001-tracking16_v3-dark_balance_v3-right-canonical",
+      "elapsed_wall_seconds": 19.473336263006786,
+      "final_state": {
+        "outcome": null,
+        "tick": 56,
+        "x_q": 3681,
+        "y_q": 21789
+      },
+      "id": "screen-51001-tracking16_v3-dark_balance_v3-right-canonical",
+      "input": "canonical",
+      "layout": "right",
+      "metrics": {
+        "adjacent_input_changes": 24,
+        "any_pad_visible_inputs": 56,
+        "both_pads_contrast_inputs": 56,
+        "both_pads_visible_inputs": 56,
+        "boundary_band_before_ticks": 37,
+        "boundary_band_fraction": 0.6607142857142857,
+        "directions": {
+          "down": 34,
+          "left": 29,
+          "right": 27,
+          "up": 20
+        },
+        "exact_wall_before_ticks": 10,
+        "first_wall_contact_tick": 31,
+        "mean_rates_hz": {
+          "back": 193.30357142857142,
+          "fwd_L": 141.96428571428572,
+          "fwd_R": 21.428571428571427,
+          "steer_L": 231.25,
+          "steer_R": 149.10714285714286,
+          "stop": 117.41071428571429
+        },
+        "mean_requested_pixels": [
+          -1.293855292628299,
+          0.21768712180096714
+        ],
+        "motion_pixels": {
+          "executed": [
+            -33.62109375,
+            9.11328125
+          ],
+          "quantized": [
+            -72.4609375,
+            12.16796875
+          ],
+          "raw_requested": [
+            -81.7777777777778,
+            74.55555555555553
+          ],
+          "requested": [
+            -72.45589638718474,
+            12.19047882085416
+          ]
+        },
+        "moved_steps_with_next_input": 55,
+        "movement_followed_by_changed_input": 24,
+        "outward_at_wall_ticks": 6,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 0,
+          "quantization": 0,
+          "zero_motor": 0
+        },
+        "summary": {
+          "controller_wall_seconds": 19.44024114793865,
+          "environment_ticks": 56,
+          "longest_stationary_streak": 0,
+          "motor_nonzero_fraction": 1.0,
+          "neural_ms": 1120.0,
+          "outcome": null,
+          "stationary_step_fraction": 0.0,
+          "step_latency_seconds": {
+            "max": 0.40239849998033606,
+            "median": 0.3496270574978553,
+            "min": 0.24270253902068362,
+            "p95": 0.38846879301127046
+          },
+          "steps": 56,
+          "total_distance_pixels": 172.24917844589172,
+          "unique_observation_count": 14
+        },
+        "visited_8px_bins": 13,
+        "visited_bin_coordinates": [
+          [
+            0,
+            10
+          ],
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            10
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            3,
+            11
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            6,
+            9
+          ],
+          [
+            6,
+            10
+          ],
+          [
+            7,
+            9
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 5,
+          "left": 7,
+          "left_bottom": 2,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          4.0,
+          59.0546875
+        ],
+        "y_extent_pixels": [
+          75.4296875,
+          92.0
+        ]
+      },
+      "motor": "dark_balance_v3",
+      "outcome": null,
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "stage": "screen",
+      "status": "PASS",
+      "termination": "diagnostic_cutoff",
+      "tick_limit": 56,
+      "ticks": 56,
+      "trace_sha256": "2f3baa0117ec89ea5cdbec377e1f6d1d45c10399f409aab84ed111674ea5379a"
+    },
+    {
+      "crop": "tracking16_v3",
+      "derived": false,
+      "directory": "artifacts/milestones/05/final-sensorimotor/trials/screen-51001-tracking16_v3-upstream_pilot_v1-left-dark",
+      "elapsed_wall_seconds": 19.67400566599099,
+      "final_state": {
+        "outcome": null,
+        "tick": 56,
+        "x_q": 12972,
+        "y_q": 23552
+      },
+      "id": "screen-51001-tracking16_v3-upstream_pilot_v1-left-dark",
+      "input": "dark",
+      "layout": "left",
+      "metrics": {
+        "adjacent_input_changes": 0,
+        "any_pad_visible_inputs": 0,
+        "both_pads_contrast_inputs": 0,
+        "both_pads_visible_inputs": 0,
+        "boundary_band_before_ticks": 50,
+        "boundary_band_fraction": 0.8928571428571429,
+        "directions": {
+          "down": 41,
+          "left": 23,
+          "right": 21,
+          "up": 12
+        },
+        "exact_wall_before_ticks": 26,
+        "first_wall_contact_tick": 12,
+        "mean_rates_hz": {
+          "back": 166.29464285714286,
+          "fwd_L": 147.32142857142858,
+          "fwd_R": 48.214285714285715,
+          "steer_L": 184.82142857142858,
+          "steer_R": 187.5,
+          "stop": 112.05357142857143
+        },
+        "mean_requested_pixels": [
+          0.04761904761904758,
+          0.9118165784832456
+        ],
+        "motion_pixels": {
+          "executed": [
+            2.671875,
+            16.0
+          ],
+          "quantized": [
+            2.671875,
+            51.00390625
+          ],
+          "raw_requested": [
+            2.6666666666666647,
+            51.061728395061756
+          ],
+          "requested": [
+            2.6666666666666647,
+            51.061728395061756
+          ]
+        },
+        "moved_steps_with_next_input": 46,
+        "movement_followed_by_changed_input": 0,
+        "outward_at_wall_ticks": 19,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 8,
+          "quantization": 0,
+          "zero_motor": 1
+        },
+        "summary": {
+          "controller_wall_seconds": 19.642529806122184,
+          "environment_ticks": 56,
+          "longest_stationary_streak": 2,
+          "motor_nonzero_fraction": 0.9821428571428571,
+          "neural_ms": 1120.0,
+          "outcome": null,
+          "stationary_step_fraction": 0.16071428571428573,
+          "step_latency_seconds": {
+            "max": 0.4132746740069706,
+            "median": 0.35237654150114395,
+            "min": 0.27453768299892545,
+            "p95": 0.3926944920094684
+          },
+          "steps": 56,
+          "total_distance_pixels": 170.61222379440306,
+          "unique_observation_count": 1
+        },
+        "visited_8px_bins": 9,
+        "visited_bin_coordinates": [
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            11
+          ],
+          [
+            6,
+            9
+          ],
+          [
+            6,
+            11
+          ],
+          [
+            7,
+            9
+          ],
+          [
+            7,
+            10
+          ],
+          [
+            7,
+            11
+          ],
+          [
+            8,
+            10
+          ],
+          [
+            8,
+            11
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 26,
+          "left": 0,
+          "left_bottom": 0,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          38.234375,
+          66.66015625
+        ],
+        "y_extent_pixels": [
+          76.0,
+          92.0
+        ]
+      },
+      "motor": "upstream_pilot_v1",
+      "outcome": null,
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "stage": "screen",
+      "status": "PASS",
+      "termination": "diagnostic_cutoff",
+      "tick_limit": 56,
+      "ticks": 56,
+      "trace_sha256": "b14a7d9784f0065e3a7950d8840cdadbd8b76de880f115dbdf68fb15f420e34b"
+    },
+    {
+      "crop": "tracking16_v3",
+      "derived": false,
+      "directory": "artifacts/milestones/05/final-sensorimotor/trials/screen-51001-tracking16_v3-dark_balance_v3-left-dark",
+      "elapsed_wall_seconds": 19.671805457008304,
+      "final_state": {
+        "outcome": null,
+        "tick": 56,
+        "x_q": 14869,
+        "y_q": 18393
+      },
+      "id": "screen-51001-tracking16_v3-dark_balance_v3-left-dark",
+      "input": "dark",
+      "layout": "left",
+      "metrics": {
+        "adjacent_input_changes": 0,
+        "any_pad_visible_inputs": 0,
+        "both_pads_contrast_inputs": 0,
+        "both_pads_visible_inputs": 0,
+        "boundary_band_before_ticks": 0,
+        "boundary_band_fraction": 0.0,
+        "directions": {
+          "down": 30,
+          "left": 23,
+          "right": 33,
+          "up": 26
+        },
+        "exact_wall_before_ticks": 0,
+        "first_wall_contact_tick": null,
+        "mean_rates_hz": {
+          "back": 166.29464285714286,
+          "fwd_L": 147.32142857142858,
+          "fwd_R": 48.214285714285715,
+          "steer_L": 184.82142857142858,
+          "steer_R": 187.5,
+          "stop": 112.05357142857143
+        },
+        "mean_requested_pixels": [
+          0.18066023955594498,
+          -0.07397576369736461
+        ],
+        "motion_pixels": {
+          "executed": [
+            10.08203125,
+            -4.15234375
+          ],
+          "quantized": [
+            10.08203125,
+            -4.15234375
+          ],
+          "raw_requested": [
+            2.6666666666666647,
+            51.061728395061756
+          ],
+          "requested": [
+            10.11697341513292,
+            -4.142642767052418
+          ]
+        },
+        "moved_steps_with_next_input": 55,
+        "movement_followed_by_changed_input": 0,
+        "outward_at_wall_ticks": 0,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 0,
+          "quantization": 0,
+          "zero_motor": 0
+        },
+        "summary": {
+          "controller_wall_seconds": 19.63980378198903,
+          "environment_ticks": 56,
+          "longest_stationary_streak": 0,
+          "motor_nonzero_fraction": 1.0,
+          "neural_ms": 1120.0,
+          "outcome": null,
+          "stationary_step_fraction": 0.0,
+          "step_latency_seconds": {
+            "max": 0.41840282501652837,
+            "median": 0.35330581601010635,
+            "min": 0.2712491330166813,
+            "p95": 0.38876616398920305
+          },
+          "steps": 56,
+          "total_distance_pixels": 169.65332349699528,
+          "unique_observation_count": 1
+        },
+        "visited_8px_bins": 8,
+        "visited_bin_coordinates": [
+          [
+            5,
+            9
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            6,
+            8
+          ],
+          [
+            6,
+            9
+          ],
+          [
+            6,
+            10
+          ],
+          [
+            7,
+            8
+          ],
+          [
+            7,
+            9
+          ],
+          [
+            8,
+            9
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 0,
+          "left": 0,
+          "left_bottom": 0,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          43.4609375,
+          67.08984375
+        ],
+        "y_extent_pixels": [
+          69.83984375,
+          82.49609375
+        ]
+      },
+      "motor": "dark_balance_v3",
+      "outcome": null,
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "stage": "screen",
+      "status": "PASS",
+      "termination": "diagnostic_cutoff",
+      "tick_limit": 56,
+      "ticks": 56,
+      "trace_sha256": "d904fab2167b736146c9d8772577ca3a591d76d296ba949ba12e5ca7f64007e8"
+    },
+    {
+      "crop": "tracking16_v3",
+      "derived": false,
+      "directory": "artifacts/milestones/05/final-sensorimotor/trials/confirm-51003-tracking16_v3-dark_balance_v3-left-canonical",
+      "elapsed_wall_seconds": 89.93641223700251,
+      "final_state": {
+        "outcome": "trial_timeout",
+        "tick": 256,
+        "x_q": 4929,
+        "y_q": 23451
+      },
+      "id": "confirm-51003-tracking16_v3-dark_balance_v3-left-canonical",
+      "input": "canonical",
+      "layout": "left",
+      "metrics": {
+        "adjacent_input_changes": 133,
+        "any_pad_visible_inputs": 256,
+        "both_pads_contrast_inputs": 256,
+        "both_pads_visible_inputs": 256,
+        "boundary_band_before_ticks": 220,
+        "boundary_band_fraction": 0.859375,
+        "directions": {
+          "down": 165,
+          "left": 117,
+          "right": 139,
+          "up": 85
+        },
+        "exact_wall_before_ticks": 122,
+        "first_wall_contact_tick": 34,
+        "mean_rates_hz": {
+          "back": 191.943359375,
+          "fwd_L": 116.015625,
+          "fwd_R": 28.7109375,
+          "steer_L": 205.859375,
+          "steer_R": 173.2421875,
+          "stop": 101.85546875
+        },
+        "mean_requested_pixels": [
+          -0.43167603953646877,
+          0.4557638342263465
+        ],
+        "motion_pixels": {
+          "executed": [
+            -28.74609375,
+            15.60546875
+          ],
+          "quantized": [
+            -110.56640625,
+            116.546875
+          ],
+          "raw_requested": [
+            -148.44444444444446,
+            420.3333333333336
+          ],
+          "requested": [
+            -110.509066121336,
+            116.6755415619447
+          ]
+        },
+        "moved_steps_with_next_input": 254,
+        "movement_followed_by_changed_input": 133,
+        "outward_at_wall_ticks": 65,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 1,
+          "quantization": 0,
+          "zero_motor": 0
+        },
+        "summary": {
+          "controller_wall_seconds": 89.78363096970133,
+          "environment_ticks": 256,
+          "longest_stationary_streak": 1,
+          "motor_nonzero_fraction": 1.0,
+          "neural_ms": 5120.0,
+          "outcome": "trial_timeout",
+          "stationary_step_fraction": 0.00390625,
+          "step_latency_seconds": {
+            "max": 0.4856923750194255,
+            "median": 0.3506663614825811,
+            "min": 0.22546548099489883,
+            "p95": 0.3937210919975769
+          },
+          "steps": 256,
+          "total_distance_pixels": 697.3393593807848,
+          "unique_observation_count": 26
+        },
+        "visited_8px_bins": 20,
+        "visited_bin_coordinates": [
+          [
+            0,
+            10
+          ],
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            10
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            10
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            3,
+            11
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            5,
+            11
+          ],
+          [
+            6,
+            9
+          ],
+          [
+            6,
+            10
+          ],
+          [
+            6,
+            11
+          ],
+          [
+            7,
+            9
+          ],
+          [
+            7,
+            10
+          ],
+          [
+            7,
+            11
+          ],
+          [
+            8,
+            11
+          ],
+          [
+            9,
+            11
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 100,
+          "left": 23,
+          "left_bottom": 1,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          4.0,
+          75.3515625
+        ],
+        "y_extent_pixels": [
+          74.84765625,
+          92.0
+        ]
+      },
+      "motor": "dark_balance_v3",
+      "outcome": "trial_timeout",
+      "physics": "tangent_v2",
+      "seed": 51003,
+      "stage": "confirm",
+      "status": "PASS",
+      "termination": "terminal",
+      "tick_limit": 256,
+      "ticks": 256,
+      "trace_sha256": "dcead266df66a13c9424c6924c13626894fdb7b736a25d85e8d862e8d396fa14"
+    },
+    {
+      "crop": "tracking16_v3",
+      "derived": false,
+      "directory": "artifacts/milestones/05/final-sensorimotor/trials/confirm-51003-tracking16_v3-dark_balance_v3-right-canonical",
+      "elapsed_wall_seconds": 89.8343200700183,
+      "final_state": {
+        "outcome": "trial_timeout",
+        "tick": 256,
+        "x_q": 1024,
+        "y_q": 22920
+      },
+      "id": "confirm-51003-tracking16_v3-dark_balance_v3-right-canonical",
+      "input": "canonical",
+      "layout": "right",
+      "metrics": {
+        "adjacent_input_changes": 107,
+        "any_pad_visible_inputs": 256,
+        "both_pads_contrast_inputs": 256,
+        "both_pads_visible_inputs": 256,
+        "boundary_band_before_ticks": 185,
+        "boundary_band_fraction": 0.72265625,
+        "directions": {
+          "down": 157,
+          "left": 125,
+          "right": 131,
+          "up": 94
+        },
+        "exact_wall_before_ticks": 64,
+        "first_wall_contact_tick": 47,
+        "mean_rates_hz": {
+          "back": 186.865234375,
+          "fwd_L": 137.3046875,
+          "fwd_R": 31.0546875,
+          "steer_L": 218.9453125,
+          "steer_R": 181.25,
+          "stop": 108.984375
+        },
+        "mean_requested_pixels": [
+          -0.5125340831629177,
+          0.21492621132193587
+        ],
+        "motion_pixels": {
+          "executed": [
+            -44.0,
+            13.53125
+          ],
+          "quantized": [
+            -131.2734375,
+            54.875
+          ],
+          "raw_requested": [
+            -171.5555555555556,
+            341.75308641975334
+          ],
+          "requested": [
+            -131.20872528970693,
+            55.02111009841558
+          ]
+        },
+        "moved_steps_with_next_input": 253,
+        "movement_followed_by_changed_input": 107,
+        "outward_at_wall_ticks": 36,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 2,
+          "quantization": 0,
+          "zero_motor": 0
+        },
+        "summary": {
+          "controller_wall_seconds": 89.6825121458096,
+          "environment_ticks": 256,
+          "longest_stationary_streak": 1,
+          "motor_nonzero_fraction": 1.0,
+          "neural_ms": 5120.0,
+          "outcome": "trial_timeout",
+          "stationary_step_fraction": 0.0078125,
+          "step_latency_seconds": {
+            "max": 0.4038176600006409,
+            "median": 0.35021974248229526,
+            "min": 0.29123183301999234,
+            "p95": 0.3865124480216764
+          },
+          "steps": 256,
+          "total_distance_pixels": 767.206861291358,
+          "unique_observation_count": 20
+        },
+        "visited_8px_bins": 16,
+        "visited_bin_coordinates": [
+          [
+            0,
+            9
+          ],
+          [
+            0,
+            10
+          ],
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            9
+          ],
+          [
+            1,
+            10
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            9
+          ],
+          [
+            2,
+            10
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            9
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            4,
+            9
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            5,
+            8
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            6,
+            9
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 44,
+          "left": 26,
+          "left_bottom": 6,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          4.0,
+          49.53515625
+        ],
+        "y_extent_pixels": [
+          70.5859375,
+          92.0
+        ]
+      },
+      "motor": "dark_balance_v3",
+      "outcome": "trial_timeout",
+      "physics": "tangent_v2",
+      "seed": 51003,
+      "stage": "confirm",
+      "status": "PASS",
+      "termination": "terminal",
+      "tick_limit": 256,
+      "ticks": 256,
+      "trace_sha256": "f9bc103d2a251ac8eb9571af2fc37f53c1c9af60320d80bc6ff0a2bbf72fba32"
+    },
+    {
+      "crop": "tracking16_v3",
+      "derived": false,
+      "directory": "artifacts/milestones/05/final-sensorimotor/trials/confirm-51003-tracking16_v3-dark_balance_v3-left-dark",
+      "elapsed_wall_seconds": 93.31985126298969,
+      "final_state": {
+        "outcome": "trial_timeout",
+        "tick": 256,
+        "x_q": 1552,
+        "y_q": 22162
+      },
+      "id": "confirm-51003-tracking16_v3-dark_balance_v3-left-dark",
+      "input": "dark",
+      "layout": "left",
+      "metrics": {
+        "adjacent_input_changes": 0,
+        "any_pad_visible_inputs": 0,
+        "both_pads_contrast_inputs": 0,
+        "both_pads_visible_inputs": 0,
+        "boundary_band_before_ticks": 176,
+        "boundary_band_fraction": 0.6875,
+        "directions": {
+          "down": 146,
+          "left": 129,
+          "right": 127,
+          "up": 109
+        },
+        "exact_wall_before_ticks": 69,
+        "first_wall_contact_tick": 73,
+        "mean_rates_hz": {
+          "back": 190.8203125,
+          "fwd_L": 135.7421875,
+          "fwd_R": 54.296875,
+          "steer_L": 232.8125,
+          "steer_R": 187.3046875,
+          "stop": 115.8203125
+        },
+        "mean_requested_pixels": [
+          -0.6414408657123376,
+          0.11174879282090933
+        ],
+        "motion_pixels": {
+          "executed": [
+            -41.9375,
+            10.5703125
+          ],
+          "quantized": [
+            -164.21484375,
+            28.515625
+          ],
+          "raw_requested": [
+            -207.11111111111106,
+            320.222222222222
+          ],
+          "requested": [
+            -164.20886162235843,
+            28.607690962152788
+          ]
+        },
+        "moved_steps_with_next_input": 253,
+        "movement_followed_by_changed_input": 0,
+        "outward_at_wall_ticks": 34,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 2,
+          "quantization": 0,
+          "zero_motor": 0
+        },
+        "summary": {
+          "controller_wall_seconds": 93.1714157401293,
+          "environment_ticks": 256,
+          "longest_stationary_streak": 1,
+          "motor_nonzero_fraction": 1.0,
+          "neural_ms": 5120.0,
+          "outcome": "trial_timeout",
+          "stationary_step_fraction": 0.0078125,
+          "step_latency_seconds": {
+            "max": 0.4724127690133173,
+            "median": 0.36373896899749525,
+            "min": 0.2609447239956353,
+            "p95": 0.4084417480044067
+          },
+          "steps": 256,
+          "total_distance_pixels": 617.7489294719983,
+          "unique_observation_count": 1
+        },
+        "visited_8px_bins": 15,
+        "visited_bin_coordinates": [
+          [
+            0,
+            9
+          ],
+          [
+            0,
+            10
+          ],
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            9
+          ],
+          [
+            1,
+            10
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            9
+          ],
+          [
+            2,
+            10
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            9
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            4,
+            9
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            6,
+            9
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 27,
+          "left": 49,
+          "left_bottom": 7,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          4.0,
+          48.63671875
+        ],
+        "y_extent_pixels": [
+          75.3984375,
+          92.0
+        ]
+      },
+      "motor": "dark_balance_v3",
+      "outcome": "trial_timeout",
+      "physics": "tangent_v2",
+      "seed": 51003,
+      "stage": "confirm",
+      "status": "PASS",
+      "termination": "terminal",
+      "tick_limit": 256,
+      "ticks": 256,
+      "trace_sha256": "d11e85084371158868aa297673abdac9537ba39b582263281cd8e8c38f8b1ce3"
+    },
+    {
+      "crop": "tracking16_v3",
+      "derived": false,
+      "directory": "artifacts/milestones/05/final-sensorimotor/trials/confirm-51004-tracking16_v3-dark_balance_v3-left-canonical",
+      "elapsed_wall_seconds": 89.86616551899351,
+      "final_state": {
+        "outcome": "trial_timeout",
+        "tick": 256,
+        "x_q": 4994,
+        "y_q": 23509
+      },
+      "id": "confirm-51004-tracking16_v3-dark_balance_v3-left-canonical",
+      "input": "canonical",
+      "layout": "left",
+      "metrics": {
+        "adjacent_input_changes": 115,
+        "any_pad_visible_inputs": 256,
+        "both_pads_contrast_inputs": 256,
+        "both_pads_visible_inputs": 256,
+        "boundary_band_before_ticks": 210,
+        "boundary_band_fraction": 0.8203125,
+        "directions": {
+          "down": 163,
+          "left": 121,
+          "right": 135,
+          "up": 88
+        },
+        "exact_wall_before_ticks": 86,
+        "first_wall_contact_tick": 83,
+        "mean_rates_hz": {
+          "back": 185.25390625,
+          "fwd_L": 134.375,
+          "fwd_R": 27.5390625,
+          "steer_L": 219.921875,
+          "steer_R": 183.7890625,
+          "stop": 105.2734375
+        },
+        "mean_requested_pixels": [
+          -0.4840533401499661,
+          0.23422777075795648
+        ],
+        "motion_pixels": {
+          "executed": [
+            -28.4921875,
+            15.83203125
+          ],
+          "quantized": [
+            -123.9609375,
+            59.828125
+          ],
+          "raw_requested": [
+            -164.4444444444445,
+            346.4074074074069
+          ],
+          "requested": [
+            -123.91765507839132,
+            59.96230931403686
+          ]
+        },
+        "moved_steps_with_next_input": 251,
+        "movement_followed_by_changed_input": 115,
+        "outward_at_wall_ticks": 55,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 4,
+          "quantization": 0,
+          "zero_motor": 0
+        },
+        "summary": {
+          "controller_wall_seconds": 89.71496803418268,
+          "environment_ticks": 256,
+          "longest_stationary_streak": 1,
+          "motor_nonzero_fraction": 1.0,
+          "neural_ms": 5120.0,
+          "outcome": "trial_timeout",
+          "stationary_step_fraction": 0.015625,
+          "step_latency_seconds": {
+            "max": 0.4249330430175178,
+            "median": 0.3500974964990746,
+            "min": 0.270139341999311,
+            "p95": 0.39509552498930134
+          },
+          "steps": 256,
+          "total_distance_pixels": 744.354273833852,
+          "unique_observation_count": 19
+        },
+        "visited_8px_bins": 17,
+        "visited_bin_coordinates": [
+          [
+            0,
+            10
+          ],
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            10
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            10
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            3,
+            11
+          ],
+          [
+            4,
+            9
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            6,
+            9
+          ],
+          [
+            6,
+            10
+          ],
+          [
+            7,
+            9
+          ],
+          [
+            7,
+            10
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 65,
+          "left": 28,
+          "left_bottom": 7,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          4.0,
+          60.54296875
+        ],
+        "y_extent_pixels": [
+          72.89453125,
+          92.0
+        ]
+      },
+      "motor": "dark_balance_v3",
+      "outcome": "trial_timeout",
+      "physics": "tangent_v2",
+      "seed": 51004,
+      "stage": "confirm",
+      "status": "PASS",
+      "termination": "terminal",
+      "tick_limit": 256,
+      "ticks": 256,
+      "trace_sha256": "b22a464da63f49f8d9df37edbebedf63a056ec3b93141e65c3d13b846a352aa3"
+    },
+    {
+      "crop": "tracking16_v3",
+      "derived": false,
+      "directory": "artifacts/milestones/05/final-sensorimotor/trials/confirm-51004-tracking16_v3-dark_balance_v3-right-canonical",
+      "elapsed_wall_seconds": 92.13342240700149,
+      "final_state": {
+        "outcome": "trial_timeout",
+        "tick": 256,
+        "x_q": 4883,
+        "y_q": 23493
+      },
+      "id": "confirm-51004-tracking16_v3-dark_balance_v3-right-canonical",
+      "input": "canonical",
+      "layout": "right",
+      "metrics": {
+        "adjacent_input_changes": 98,
+        "any_pad_visible_inputs": 256,
+        "both_pads_contrast_inputs": 256,
+        "both_pads_visible_inputs": 256,
+        "boundary_band_before_ticks": 226,
+        "boundary_band_fraction": 0.8828125,
+        "directions": {
+          "down": 162,
+          "left": 120,
+          "right": 136,
+          "up": 89
+        },
+        "exact_wall_before_ticks": 102,
+        "first_wall_contact_tick": 17,
+        "mean_rates_hz": {
+          "back": 189.2578125,
+          "fwd_L": 128.125,
+          "fwd_R": 33.203125,
+          "steer_L": 216.015625,
+          "steer_R": 172.65625,
+          "stop": 105.46875
+        },
+        "mean_requested_pixels": [
+          -0.6153374233128837,
+          0.28348835918008475
+        ],
+        "motion_pixels": {
+          "executed": [
+            -28.92578125,
+            15.76953125
+          ],
+          "quantized": [
+            -157.5703125,
+            72.4375
+          ],
+          "raw_requested": [
+            -197.33333333333348,
+            366.4938271604939
+          ],
+          "requested": [
+            -157.52638036809822,
+            72.5730199501017
+          ]
+        },
+        "moved_steps_with_next_input": 253,
+        "movement_followed_by_changed_input": 98,
+        "outward_at_wall_ticks": 60,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 2,
+          "quantization": 0,
+          "zero_motor": 0
+        },
+        "summary": {
+          "controller_wall_seconds": 91.98120693402598,
+          "environment_ticks": 256,
+          "longest_stationary_streak": 1,
+          "motor_nonzero_fraction": 1.0,
+          "neural_ms": 5120.0,
+          "outcome": "trial_timeout",
+          "stationary_step_fraction": 0.0078125,
+          "step_latency_seconds": {
+            "max": 0.4533846990088932,
+            "median": 0.3619975585024804,
+            "min": 0.2426074230170343,
+            "p95": 0.4028428839810658
+          },
+          "steps": 256,
+          "total_distance_pixels": 671.9839984058392,
+          "unique_observation_count": 18
+        },
+        "visited_8px_bins": 18,
+        "visited_bin_coordinates": [
+          [
+            0,
+            8
+          ],
+          [
+            0,
+            9
+          ],
+          [
+            0,
+            10
+          ],
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            8
+          ],
+          [
+            1,
+            9
+          ],
+          [
+            1,
+            10
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            8
+          ],
+          [
+            2,
+            9
+          ],
+          [
+            2,
+            10
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            9
+          ],
+          [
+            3,
+            11
+          ],
+          [
+            4,
+            9
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            6,
+            9
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 64,
+          "left": 50,
+          "left_bottom": 12,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          4.0,
+          48.0
+        ],
+        "y_extent_pixels": [
+          70.4921875,
+          92.0
+        ]
+      },
+      "motor": "dark_balance_v3",
+      "outcome": "trial_timeout",
+      "physics": "tangent_v2",
+      "seed": 51004,
+      "stage": "confirm",
+      "status": "PASS",
+      "termination": "terminal",
+      "tick_limit": 256,
+      "ticks": 256,
+      "trace_sha256": "5f2b8b4a6488700bf459ea12e9e8dd33698466c2a28a3604ad44a710819f9bc2"
+    },
+    {
+      "crop": "tracking16_v3",
+      "derived": false,
+      "directory": "artifacts/milestones/05/final-sensorimotor/trials/confirm-51004-tracking16_v3-dark_balance_v3-left-dark",
+      "elapsed_wall_seconds": 97.38262591601233,
+      "final_state": {
+        "outcome": "trial_timeout",
+        "tick": 256,
+        "x_q": 7022,
+        "y_q": 22325
+      },
+      "id": "confirm-51004-tracking16_v3-dark_balance_v3-left-dark",
+      "input": "dark",
+      "layout": "left",
+      "metrics": {
+        "adjacent_input_changes": 0,
+        "any_pad_visible_inputs": 0,
+        "both_pads_contrast_inputs": 0,
+        "both_pads_visible_inputs": 0,
+        "boundary_band_before_ticks": 223,
+        "boundary_band_fraction": 0.87109375,
+        "directions": {
+          "down": 143,
+          "left": 111,
+          "right": 145,
+          "up": 112
+        },
+        "exact_wall_before_ticks": 26,
+        "first_wall_contact_tick": 33,
+        "mean_rates_hz": {
+          "back": 203.90625,
+          "fwd_L": 145.703125,
+          "fwd_R": 53.7109375,
+          "steer_L": 217.3828125,
+          "steer_R": 199.0234375,
+          "stop": 119.82421875
+        },
+        "mean_requested_pixels": [
+          -0.16990882753919553,
+          0.10712707487502404
+        ],
+        "motion_pixels": {
+          "executed": [
+            -20.5703125,
+            11.20703125
+          ],
+          "quantized": [
+            -43.578125,
+            27.375
+          ],
+          "raw_requested": [
+            -83.55555555555557,
+            327.61728395061726
+          ],
+          "requested": [
+            -43.49665985003406,
+            27.424531168006155
+          ]
+        },
+        "moved_steps_with_next_input": 255,
+        "movement_followed_by_changed_input": 0,
+        "outward_at_wall_ticks": 11,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 0,
+          "quantization": 0,
+          "zero_motor": 0
+        },
+        "summary": {
+          "controller_wall_seconds": 97.23341821398935,
+          "environment_ticks": 256,
+          "longest_stationary_streak": 0,
+          "motor_nonzero_fraction": 1.0,
+          "neural_ms": 5120.0,
+          "outcome": "trial_timeout",
+          "stationary_step_fraction": 0.0,
+          "step_latency_seconds": {
+            "max": 0.4742258200130891,
+            "median": 0.3778989815036766,
+            "min": 0.2836427880101837,
+            "p95": 0.4263979190145619
+          },
+          "steps": 256,
+          "total_distance_pixels": 813.7020436607255,
+          "unique_observation_count": 1
+        },
+        "visited_8px_bins": 19,
+        "visited_bin_coordinates": [
+          [
+            0,
+            9
+          ],
+          [
+            0,
+            10
+          ],
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            9
+          ],
+          [
+            1,
+            10
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            10
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            3,
+            11
+          ],
+          [
+            4,
+            9
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            5,
+            11
+          ],
+          [
+            6,
+            9
+          ],
+          [
+            6,
+            10
+          ],
+          [
+            6,
+            11
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 20,
+          "left": 8,
+          "left_bottom": 2,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          4.0,
+          51.8828125
+        ],
+        "y_extent_pixels": [
+          73.4296875,
+          92.0
+        ]
+      },
+      "motor": "dark_balance_v3",
+      "outcome": "trial_timeout",
+      "physics": "tangent_v2",
+      "seed": 51004,
+      "stage": "confirm",
+      "status": "PASS",
+      "termination": "terminal",
+      "tick_limit": 256,
+      "ticks": 256,
+      "trace_sha256": "ec8149b74f82a0cf5ca069fbd5269781cb84559aa97aacf65a6d986ae7fbf9fb"
+    },
+    {
+      "additional_model_calls": 0,
+      "crop": "tracking16_v3",
+      "derived": true,
+      "directory": "artifacts/milestones/05/final-sensorimotor/analysis/derived-screen-51001-dark_balance_v3-right-dark",
+      "elapsed_wall_seconds": 0.0,
+      "final_state": {
+        "outcome": null,
+        "tick": 56,
+        "x_q": 14869,
+        "y_q": 18393
+      },
+      "id": "derived-screen-51001-dark_balance_v3-right-dark",
+      "input": "dark",
+      "layout": "right",
+      "metrics": {
+        "adjacent_input_changes": 0,
+        "any_pad_visible_inputs": 0,
+        "both_pads_contrast_inputs": 0,
+        "both_pads_visible_inputs": 0,
+        "boundary_band_before_ticks": 0,
+        "boundary_band_fraction": 0.0,
+        "directions": {
+          "down": 30,
+          "left": 23,
+          "right": 33,
+          "up": 26
+        },
+        "exact_wall_before_ticks": 0,
+        "first_wall_contact_tick": null,
+        "mean_rates_hz": {
+          "back": 166.29464285714286,
+          "fwd_L": 147.32142857142858,
+          "fwd_R": 48.214285714285715,
+          "steer_L": 184.82142857142858,
+          "steer_R": 187.5,
+          "stop": 112.05357142857143
+        },
+        "mean_requested_pixels": [
+          0.18066023955594498,
+          -0.07397576369736461
+        ],
+        "motion_pixels": {
+          "executed": [
+            10.08203125,
+            -4.15234375
+          ],
+          "quantized": [
+            10.08203125,
+            -4.15234375
+          ],
+          "raw_requested": [
+            2.6666666666666647,
+            51.061728395061756
+          ],
+          "requested": [
+            10.11697341513292,
+            -4.142642767052418
+          ]
+        },
+        "moved_steps_with_next_input": 55,
+        "movement_followed_by_changed_input": 0,
+        "outward_at_wall_ticks": 0,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 0,
+          "quantization": 0,
+          "zero_motor": 0
+        },
+        "summary": {
+          "controller_wall_seconds": 0.0,
+          "environment_ticks": 56,
+          "longest_stationary_streak": 0,
+          "motor_nonzero_fraction": 1.0,
+          "neural_ms": 1120.0,
+          "outcome": null,
+          "stationary_step_fraction": 0.0,
+          "step_latency_seconds": {
+            "max": 0.0,
+            "median": 0.0,
+            "min": 0.0,
+            "p95": 0.0
+          },
+          "steps": 56,
+          "total_distance_pixels": 169.65332349699528,
+          "unique_observation_count": 1
+        },
+        "visited_8px_bins": 8,
+        "visited_bin_coordinates": [
+          [
+            5,
+            9
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            6,
+            8
+          ],
+          [
+            6,
+            9
+          ],
+          [
+            6,
+            10
+          ],
+          [
+            7,
+            8
+          ],
+          [
+            7,
+            9
+          ],
+          [
+            8,
+            9
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 0,
+          "left": 0,
+          "left_bottom": 0,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          43.4609375,
+          67.08984375
+        ],
+        "y_extent_pixels": [
+          69.83984375,
+          82.49609375
+        ]
+      },
+      "motor": "dark_balance_v3",
+      "outcome": null,
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "source_trace_sha256": "d904fab2167b736146c9d8772577ca3a591d76d296ba949ba12e5ca7f64007e8",
+      "source_trial": "screen-51001-tracking16_v3-dark_balance_v3-left-dark",
+      "stage": "screen",
+      "status": "PASS",
+      "termination": "source_prefix_cutoff",
+      "tick_limit": 56,
+      "ticks": 56,
+      "trace_sha256": "d20716d3653de4b0fb2b0a96eeae7ecd89df344baa1e8966336596f3692bdea4"
+    },
+    {
+      "additional_model_calls": 0,
+      "crop": "tracking16_v3",
+      "derived": true,
+      "directory": "artifacts/milestones/05/final-sensorimotor/analysis/derived-screen-51001-upstream_pilot_v1-right-dark",
+      "elapsed_wall_seconds": 0.0,
+      "final_state": {
+        "outcome": null,
+        "tick": 56,
+        "x_q": 12972,
+        "y_q": 23552
+      },
+      "id": "derived-screen-51001-upstream_pilot_v1-right-dark",
+      "input": "dark",
+      "layout": "right",
+      "metrics": {
+        "adjacent_input_changes": 0,
+        "any_pad_visible_inputs": 0,
+        "both_pads_contrast_inputs": 0,
+        "both_pads_visible_inputs": 0,
+        "boundary_band_before_ticks": 50,
+        "boundary_band_fraction": 0.8928571428571429,
+        "directions": {
+          "down": 41,
+          "left": 23,
+          "right": 21,
+          "up": 12
+        },
+        "exact_wall_before_ticks": 26,
+        "first_wall_contact_tick": 12,
+        "mean_rates_hz": {
+          "back": 166.29464285714286,
+          "fwd_L": 147.32142857142858,
+          "fwd_R": 48.214285714285715,
+          "steer_L": 184.82142857142858,
+          "steer_R": 187.5,
+          "stop": 112.05357142857143
+        },
+        "mean_requested_pixels": [
+          0.04761904761904758,
+          0.9118165784832456
+        ],
+        "motion_pixels": {
+          "executed": [
+            2.671875,
+            16.0
+          ],
+          "quantized": [
+            2.671875,
+            51.00390625
+          ],
+          "raw_requested": [
+            2.6666666666666647,
+            51.061728395061756
+          ],
+          "requested": [
+            2.6666666666666647,
+            51.061728395061756
+          ]
+        },
+        "moved_steps_with_next_input": 46,
+        "movement_followed_by_changed_input": 0,
+        "outward_at_wall_ticks": 19,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 8,
+          "quantization": 0,
+          "zero_motor": 1
+        },
+        "summary": {
+          "controller_wall_seconds": 0.0,
+          "environment_ticks": 56,
+          "longest_stationary_streak": 2,
+          "motor_nonzero_fraction": 0.9821428571428571,
+          "neural_ms": 1120.0,
+          "outcome": null,
+          "stationary_step_fraction": 0.16071428571428573,
+          "step_latency_seconds": {
+            "max": 0.0,
+            "median": 0.0,
+            "min": 0.0,
+            "p95": 0.0
+          },
+          "steps": 56,
+          "total_distance_pixels": 170.61222379440306,
+          "unique_observation_count": 1
+        },
+        "visited_8px_bins": 9,
+        "visited_bin_coordinates": [
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            11
+          ],
+          [
+            6,
+            9
+          ],
+          [
+            6,
+            11
+          ],
+          [
+            7,
+            9
+          ],
+          [
+            7,
+            10
+          ],
+          [
+            7,
+            11
+          ],
+          [
+            8,
+            10
+          ],
+          [
+            8,
+            11
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 26,
+          "left": 0,
+          "left_bottom": 0,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          38.234375,
+          66.66015625
+        ],
+        "y_extent_pixels": [
+          76.0,
+          92.0
+        ]
+      },
+      "motor": "upstream_pilot_v1",
+      "outcome": null,
+      "physics": "tangent_v2",
+      "seed": 51001,
+      "source_trace_sha256": "d904fab2167b736146c9d8772577ca3a591d76d296ba949ba12e5ca7f64007e8",
+      "source_trial": "screen-51001-tracking16_v3-dark_balance_v3-left-dark",
+      "stage": "screen",
+      "status": "PASS",
+      "termination": "source_prefix_cutoff",
+      "tick_limit": 56,
+      "ticks": 56,
+      "trace_sha256": "c129a90d9e904f452a191c11456837a794a86c3405cd4e5c959c78d381ba3375"
+    },
+    {
+      "additional_model_calls": 0,
+      "crop": "tracking16_v3",
+      "derived": true,
+      "directory": "artifacts/milestones/05/final-sensorimotor/analysis/derived-confirm-51003-dark_balance_v3-right-dark",
+      "elapsed_wall_seconds": 0.0,
+      "final_state": {
+        "outcome": "trial_timeout",
+        "tick": 256,
+        "x_q": 1552,
+        "y_q": 22162
+      },
+      "id": "derived-confirm-51003-dark_balance_v3-right-dark",
+      "input": "dark",
+      "layout": "right",
+      "metrics": {
+        "adjacent_input_changes": 0,
+        "any_pad_visible_inputs": 0,
+        "both_pads_contrast_inputs": 0,
+        "both_pads_visible_inputs": 0,
+        "boundary_band_before_ticks": 176,
+        "boundary_band_fraction": 0.6875,
+        "directions": {
+          "down": 146,
+          "left": 129,
+          "right": 127,
+          "up": 109
+        },
+        "exact_wall_before_ticks": 69,
+        "first_wall_contact_tick": 73,
+        "mean_rates_hz": {
+          "back": 190.8203125,
+          "fwd_L": 135.7421875,
+          "fwd_R": 54.296875,
+          "steer_L": 232.8125,
+          "steer_R": 187.3046875,
+          "stop": 115.8203125
+        },
+        "mean_requested_pixels": [
+          -0.6414408657123376,
+          0.11174879282090933
+        ],
+        "motion_pixels": {
+          "executed": [
+            -41.9375,
+            10.5703125
+          ],
+          "quantized": [
+            -164.21484375,
+            28.515625
+          ],
+          "raw_requested": [
+            -207.11111111111106,
+            320.222222222222
+          ],
+          "requested": [
+            -164.20886162235843,
+            28.607690962152788
+          ]
+        },
+        "moved_steps_with_next_input": 253,
+        "movement_followed_by_changed_input": 0,
+        "outward_at_wall_ticks": 34,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 2,
+          "quantization": 0,
+          "zero_motor": 0
+        },
+        "summary": {
+          "controller_wall_seconds": 0.0,
+          "environment_ticks": 256,
+          "longest_stationary_streak": 1,
+          "motor_nonzero_fraction": 1.0,
+          "neural_ms": 5120.0,
+          "outcome": "trial_timeout",
+          "stationary_step_fraction": 0.0078125,
+          "step_latency_seconds": {
+            "max": 0.0,
+            "median": 0.0,
+            "min": 0.0,
+            "p95": 0.0
+          },
+          "steps": 256,
+          "total_distance_pixels": 617.7489294719983,
+          "unique_observation_count": 1
+        },
+        "visited_8px_bins": 15,
+        "visited_bin_coordinates": [
+          [
+            0,
+            9
+          ],
+          [
+            0,
+            10
+          ],
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            9
+          ],
+          [
+            1,
+            10
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            9
+          ],
+          [
+            2,
+            10
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            9
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            4,
+            9
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            6,
+            9
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 27,
+          "left": 49,
+          "left_bottom": 7,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          4.0,
+          48.63671875
+        ],
+        "y_extent_pixels": [
+          75.3984375,
+          92.0
+        ]
+      },
+      "motor": "dark_balance_v3",
+      "outcome": "trial_timeout",
+      "physics": "tangent_v2",
+      "seed": 51003,
+      "source_trace_sha256": "d11e85084371158868aa297673abdac9537ba39b582263281cd8e8c38f8b1ce3",
+      "source_trial": "confirm-51003-tracking16_v3-dark_balance_v3-left-dark",
+      "stage": "confirm",
+      "status": "PASS",
+      "termination": "terminal",
+      "tick_limit": 256,
+      "ticks": 256,
+      "trace_sha256": "8b97143084f306c5e71dbe5d435b709ac34fdab3ce3e11400d04c52147a58e14"
+    },
+    {
+      "additional_model_calls": 0,
+      "crop": "tracking16_v3",
+      "derived": true,
+      "directory": "artifacts/milestones/05/final-sensorimotor/analysis/derived-confirm-51003-upstream_pilot_v1-left-dark",
+      "elapsed_wall_seconds": 0.0,
+      "final_state": {
+        "outcome": "trial_timeout",
+        "tick": 256,
+        "x_q": 1479,
+        "y_q": 22952
+      },
+      "id": "derived-confirm-51003-upstream_pilot_v1-left-dark",
+      "input": "dark",
+      "layout": "left",
+      "metrics": {
+        "adjacent_input_changes": 0,
+        "any_pad_visible_inputs": 0,
+        "both_pads_contrast_inputs": 0,
+        "both_pads_visible_inputs": 0,
+        "boundary_band_before_ticks": 250,
+        "boundary_band_fraction": 0.9765625,
+        "directions": {
+          "down": 192,
+          "left": 129,
+          "right": 82,
+          "up": 48
+        },
+        "exact_wall_before_ticks": 201,
+        "first_wall_contact_tick": 10,
+        "mean_rates_hz": {
+          "back": 190.8203125,
+          "fwd_L": 135.7421875,
+          "fwd_R": 54.296875,
+          "steer_L": 232.8125,
+          "steer_R": 187.3046875,
+          "stop": 115.8203125
+        },
+        "mean_requested_pixels": [
+          -0.8090277777777776,
+          1.2508680555555547
+        ],
+        "motion_pixels": {
+          "executed": [
+            -42.22265625,
+            13.65625
+          ],
+          "quantized": [
+            -207.02734375,
+            319.92578125
+          ],
+          "raw_requested": [
+            -207.11111111111106,
+            320.222222222222
+          ],
+          "requested": [
+            -207.11111111111106,
+            320.222222222222
+          ]
+        },
+        "moved_steps_with_next_input": 206,
+        "movement_followed_by_changed_input": 0,
+        "outward_at_wall_ticks": 150,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 47,
+          "quantization": 0,
+          "zero_motor": 2
+        },
+        "summary": {
+          "controller_wall_seconds": 0.0,
+          "environment_ticks": 256,
+          "longest_stationary_streak": 5,
+          "motor_nonzero_fraction": 0.9921875,
+          "neural_ms": 5120.0,
+          "outcome": "trial_timeout",
+          "stationary_step_fraction": 0.19140625,
+          "step_latency_seconds": {
+            "max": 0.0,
+            "median": 0.0,
+            "min": 0.0,
+            "p95": 0.0
+          },
+          "steps": 256,
+          "total_distance_pixels": 557.0374608207887,
+          "unique_observation_count": 1
+        },
+        "visited_8px_bins": 12,
+        "visited_bin_coordinates": [
+          [
+            0,
+            10
+          ],
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            3,
+            11
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            5,
+            11
+          ],
+          [
+            6,
+            9
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 180,
+          "left": 76,
+          "left_bottom": 55,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          4.0,
+          48.0
+        ],
+        "y_extent_pixels": [
+          76.0,
+          92.0
+        ]
+      },
+      "motor": "upstream_pilot_v1",
+      "outcome": "trial_timeout",
+      "physics": "tangent_v2",
+      "seed": 51003,
+      "source_trace_sha256": "d11e85084371158868aa297673abdac9537ba39b582263281cd8e8c38f8b1ce3",
+      "source_trial": "confirm-51003-tracking16_v3-dark_balance_v3-left-dark",
+      "stage": "confirm",
+      "status": "PASS",
+      "termination": "terminal",
+      "tick_limit": 256,
+      "ticks": 256,
+      "trace_sha256": "224f7f0d95fc65a0a1c7fbc6ab3140083fe9ae416e8976382c827e92b22b3630"
+    },
+    {
+      "additional_model_calls": 0,
+      "crop": "tracking16_v3",
+      "derived": true,
+      "directory": "artifacts/milestones/05/final-sensorimotor/analysis/derived-confirm-51003-upstream_pilot_v1-right-dark",
+      "elapsed_wall_seconds": 0.0,
+      "final_state": {
+        "outcome": "trial_timeout",
+        "tick": 256,
+        "x_q": 1479,
+        "y_q": 22952
+      },
+      "id": "derived-confirm-51003-upstream_pilot_v1-right-dark",
+      "input": "dark",
+      "layout": "right",
+      "metrics": {
+        "adjacent_input_changes": 0,
+        "any_pad_visible_inputs": 0,
+        "both_pads_contrast_inputs": 0,
+        "both_pads_visible_inputs": 0,
+        "boundary_band_before_ticks": 250,
+        "boundary_band_fraction": 0.9765625,
+        "directions": {
+          "down": 192,
+          "left": 129,
+          "right": 82,
+          "up": 48
+        },
+        "exact_wall_before_ticks": 201,
+        "first_wall_contact_tick": 10,
+        "mean_rates_hz": {
+          "back": 190.8203125,
+          "fwd_L": 135.7421875,
+          "fwd_R": 54.296875,
+          "steer_L": 232.8125,
+          "steer_R": 187.3046875,
+          "stop": 115.8203125
+        },
+        "mean_requested_pixels": [
+          -0.8090277777777776,
+          1.2508680555555547
+        ],
+        "motion_pixels": {
+          "executed": [
+            -42.22265625,
+            13.65625
+          ],
+          "quantized": [
+            -207.02734375,
+            319.92578125
+          ],
+          "raw_requested": [
+            -207.11111111111106,
+            320.222222222222
+          ],
+          "requested": [
+            -207.11111111111106,
+            320.222222222222
+          ]
+        },
+        "moved_steps_with_next_input": 206,
+        "movement_followed_by_changed_input": 0,
+        "outward_at_wall_ticks": 150,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 47,
+          "quantization": 0,
+          "zero_motor": 2
+        },
+        "summary": {
+          "controller_wall_seconds": 0.0,
+          "environment_ticks": 256,
+          "longest_stationary_streak": 5,
+          "motor_nonzero_fraction": 0.9921875,
+          "neural_ms": 5120.0,
+          "outcome": "trial_timeout",
+          "stationary_step_fraction": 0.19140625,
+          "step_latency_seconds": {
+            "max": 0.0,
+            "median": 0.0,
+            "min": 0.0,
+            "p95": 0.0
+          },
+          "steps": 256,
+          "total_distance_pixels": 557.0374608207887,
+          "unique_observation_count": 1
+        },
+        "visited_8px_bins": 12,
+        "visited_bin_coordinates": [
+          [
+            0,
+            10
+          ],
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            3,
+            11
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            5,
+            11
+          ],
+          [
+            6,
+            9
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 180,
+          "left": 76,
+          "left_bottom": 55,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          4.0,
+          48.0
+        ],
+        "y_extent_pixels": [
+          76.0,
+          92.0
+        ]
+      },
+      "motor": "upstream_pilot_v1",
+      "outcome": "trial_timeout",
+      "physics": "tangent_v2",
+      "seed": 51003,
+      "source_trace_sha256": "d11e85084371158868aa297673abdac9537ba39b582263281cd8e8c38f8b1ce3",
+      "source_trial": "confirm-51003-tracking16_v3-dark_balance_v3-left-dark",
+      "stage": "confirm",
+      "status": "PASS",
+      "termination": "terminal",
+      "tick_limit": 256,
+      "ticks": 256,
+      "trace_sha256": "224f7f0d95fc65a0a1c7fbc6ab3140083fe9ae416e8976382c827e92b22b3630"
+    },
+    {
+      "additional_model_calls": 0,
+      "crop": "tracking16_v3",
+      "derived": true,
+      "directory": "artifacts/milestones/05/final-sensorimotor/analysis/derived-confirm-51004-dark_balance_v3-right-dark",
+      "elapsed_wall_seconds": 0.0,
+      "final_state": {
+        "outcome": "trial_timeout",
+        "tick": 256,
+        "x_q": 7022,
+        "y_q": 22325
+      },
+      "id": "derived-confirm-51004-dark_balance_v3-right-dark",
+      "input": "dark",
+      "layout": "right",
+      "metrics": {
+        "adjacent_input_changes": 0,
+        "any_pad_visible_inputs": 0,
+        "both_pads_contrast_inputs": 0,
+        "both_pads_visible_inputs": 0,
+        "boundary_band_before_ticks": 223,
+        "boundary_band_fraction": 0.87109375,
+        "directions": {
+          "down": 143,
+          "left": 111,
+          "right": 145,
+          "up": 112
+        },
+        "exact_wall_before_ticks": 26,
+        "first_wall_contact_tick": 33,
+        "mean_rates_hz": {
+          "back": 203.90625,
+          "fwd_L": 145.703125,
+          "fwd_R": 53.7109375,
+          "steer_L": 217.3828125,
+          "steer_R": 199.0234375,
+          "stop": 119.82421875
+        },
+        "mean_requested_pixels": [
+          -0.16990882753919553,
+          0.10712707487502404
+        ],
+        "motion_pixels": {
+          "executed": [
+            -20.5703125,
+            11.20703125
+          ],
+          "quantized": [
+            -43.578125,
+            27.375
+          ],
+          "raw_requested": [
+            -83.55555555555557,
+            327.61728395061726
+          ],
+          "requested": [
+            -43.49665985003406,
+            27.424531168006155
+          ]
+        },
+        "moved_steps_with_next_input": 255,
+        "movement_followed_by_changed_input": 0,
+        "outward_at_wall_ticks": 11,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 0,
+          "quantization": 0,
+          "zero_motor": 0
+        },
+        "summary": {
+          "controller_wall_seconds": 0.0,
+          "environment_ticks": 256,
+          "longest_stationary_streak": 0,
+          "motor_nonzero_fraction": 1.0,
+          "neural_ms": 5120.0,
+          "outcome": "trial_timeout",
+          "stationary_step_fraction": 0.0,
+          "step_latency_seconds": {
+            "max": 0.0,
+            "median": 0.0,
+            "min": 0.0,
+            "p95": 0.0
+          },
+          "steps": 256,
+          "total_distance_pixels": 813.7020436607255,
+          "unique_observation_count": 1
+        },
+        "visited_8px_bins": 19,
+        "visited_bin_coordinates": [
+          [
+            0,
+            9
+          ],
+          [
+            0,
+            10
+          ],
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            9
+          ],
+          [
+            1,
+            10
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            10
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            10
+          ],
+          [
+            3,
+            11
+          ],
+          [
+            4,
+            9
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            5,
+            11
+          ],
+          [
+            6,
+            9
+          ],
+          [
+            6,
+            10
+          ],
+          [
+            6,
+            11
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 20,
+          "left": 8,
+          "left_bottom": 2,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          4.0,
+          51.8828125
+        ],
+        "y_extent_pixels": [
+          73.4296875,
+          92.0
+        ]
+      },
+      "motor": "dark_balance_v3",
+      "outcome": "trial_timeout",
+      "physics": "tangent_v2",
+      "seed": 51004,
+      "source_trace_sha256": "ec8149b74f82a0cf5ca069fbd5269781cb84559aa97aacf65a6d986ae7fbf9fb",
+      "source_trial": "confirm-51004-tracking16_v3-dark_balance_v3-left-dark",
+      "stage": "confirm",
+      "status": "PASS",
+      "termination": "terminal",
+      "tick_limit": 256,
+      "ticks": 256,
+      "trace_sha256": "02ea2ec56f186646bc014c1805082713e00b507127741245fd4c70740e160bdf"
+    },
+    {
+      "additional_model_calls": 0,
+      "crop": "tracking16_v3",
+      "derived": true,
+      "directory": "artifacts/milestones/05/final-sensorimotor/analysis/derived-confirm-51004-upstream_pilot_v1-left-dark",
+      "elapsed_wall_seconds": 0.0,
+      "final_state": {
+        "outcome": "trial_timeout",
+        "tick": 256,
+        "x_q": 5801,
+        "y_q": 23552
+      },
+      "id": "derived-confirm-51004-upstream_pilot_v1-left-dark",
+      "input": "dark",
+      "layout": "left",
+      "metrics": {
+        "adjacent_input_changes": 0,
+        "any_pad_visible_inputs": 0,
+        "both_pads_contrast_inputs": 0,
+        "both_pads_visible_inputs": 0,
+        "boundary_band_before_ticks": 247,
+        "boundary_band_fraction": 0.96484375,
+        "directions": {
+          "down": 188,
+          "left": 111,
+          "right": 104,
+          "up": 51
+        },
+        "exact_wall_before_ticks": 176,
+        "first_wall_contact_tick": 18,
+        "mean_rates_hz": {
+          "back": 203.90625,
+          "fwd_L": 145.703125,
+          "fwd_R": 53.7109375,
+          "steer_L": 217.3828125,
+          "steer_R": 199.0234375,
+          "stop": 119.82421875
+        },
+        "mean_requested_pixels": [
+          -0.32638888888888895,
+          1.2797550154320987
+        ],
+        "motion_pixels": {
+          "executed": [
+            -25.33984375,
+            16.0
+          ],
+          "quantized": [
+            -83.55078125,
+            327.35546875
+          ],
+          "raw_requested": [
+            -83.55555555555557,
+            327.61728395061726
+          ],
+          "requested": [
+            -83.55555555555557,
+            327.61728395061726
+          ]
+        },
+        "moved_steps_with_next_input": 237,
+        "movement_followed_by_changed_input": 0,
+        "outward_at_wall_ticks": 121,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 16,
+          "quantization": 0,
+          "zero_motor": 2
+        },
+        "summary": {
+          "controller_wall_seconds": 0.0,
+          "environment_ticks": 256,
+          "longest_stationary_streak": 1,
+          "motor_nonzero_fraction": 0.9921875,
+          "neural_ms": 5120.0,
+          "outcome": "trial_timeout",
+          "stationary_step_fraction": 0.0703125,
+          "step_latency_seconds": {
+            "max": 0.0,
+            "median": 0.0,
+            "min": 0.0,
+            "p95": 0.0
+          },
+          "steps": 256,
+          "total_distance_pixels": 764.7864571599226,
+          "unique_observation_count": 1
+        },
+        "visited_8px_bins": 13,
+        "visited_bin_coordinates": [
+          [
+            0,
+            10
+          ],
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            10
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            11
+          ],
+          [
+            4,
+            9
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            5,
+            11
+          ],
+          [
+            6,
+            9
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 171,
+          "left": 18,
+          "left_bottom": 13,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          4.0,
+          48.0
+        ],
+        "y_extent_pixels": [
+          75.4453125,
+          92.0
+        ]
+      },
+      "motor": "upstream_pilot_v1",
+      "outcome": "trial_timeout",
+      "physics": "tangent_v2",
+      "seed": 51004,
+      "source_trace_sha256": "ec8149b74f82a0cf5ca069fbd5269781cb84559aa97aacf65a6d986ae7fbf9fb",
+      "source_trial": "confirm-51004-tracking16_v3-dark_balance_v3-left-dark",
+      "stage": "confirm",
+      "status": "PASS",
+      "termination": "terminal",
+      "tick_limit": 256,
+      "ticks": 256,
+      "trace_sha256": "a81530d4e3c5d45a1b18abf1d9cd137f7f66ba6187fd9fd706f4ea2daa7ac0bf"
+    },
+    {
+      "additional_model_calls": 0,
+      "crop": "tracking16_v3",
+      "derived": true,
+      "directory": "artifacts/milestones/05/final-sensorimotor/analysis/derived-confirm-51004-upstream_pilot_v1-right-dark",
+      "elapsed_wall_seconds": 0.0,
+      "final_state": {
+        "outcome": "trial_timeout",
+        "tick": 256,
+        "x_q": 5801,
+        "y_q": 23552
+      },
+      "id": "derived-confirm-51004-upstream_pilot_v1-right-dark",
+      "input": "dark",
+      "layout": "right",
+      "metrics": {
+        "adjacent_input_changes": 0,
+        "any_pad_visible_inputs": 0,
+        "both_pads_contrast_inputs": 0,
+        "both_pads_visible_inputs": 0,
+        "boundary_band_before_ticks": 247,
+        "boundary_band_fraction": 0.96484375,
+        "directions": {
+          "down": 188,
+          "left": 111,
+          "right": 104,
+          "up": 51
+        },
+        "exact_wall_before_ticks": 176,
+        "first_wall_contact_tick": 18,
+        "mean_rates_hz": {
+          "back": 203.90625,
+          "fwd_L": 145.703125,
+          "fwd_R": 53.7109375,
+          "steer_L": 217.3828125,
+          "steer_R": 199.0234375,
+          "stop": 119.82421875
+        },
+        "mean_requested_pixels": [
+          -0.32638888888888895,
+          1.2797550154320987
+        ],
+        "motion_pixels": {
+          "executed": [
+            -25.33984375,
+            16.0
+          ],
+          "quantized": [
+            -83.55078125,
+            327.35546875
+          ],
+          "raw_requested": [
+            -83.55555555555557,
+            327.61728395061726
+          ],
+          "requested": [
+            -83.55555555555557,
+            327.61728395061726
+          ]
+        },
+        "moved_steps_with_next_input": 237,
+        "movement_followed_by_changed_input": 0,
+        "outward_at_wall_ticks": 121,
+        "pad_contacts": 0,
+        "stationary_causes": {
+          "collision": 16,
+          "quantization": 0,
+          "zero_motor": 2
+        },
+        "summary": {
+          "controller_wall_seconds": 0.0,
+          "environment_ticks": 256,
+          "longest_stationary_streak": 1,
+          "motor_nonzero_fraction": 0.9921875,
+          "neural_ms": 5120.0,
+          "outcome": "trial_timeout",
+          "stationary_step_fraction": 0.0703125,
+          "step_latency_seconds": {
+            "max": 0.0,
+            "median": 0.0,
+            "min": 0.0,
+            "p95": 0.0
+          },
+          "steps": 256,
+          "total_distance_pixels": 764.7864571599226,
+          "unique_observation_count": 1
+        },
+        "visited_8px_bins": 13,
+        "visited_bin_coordinates": [
+          [
+            0,
+            10
+          ],
+          [
+            0,
+            11
+          ],
+          [
+            1,
+            11
+          ],
+          [
+            2,
+            10
+          ],
+          [
+            2,
+            11
+          ],
+          [
+            3,
+            11
+          ],
+          [
+            4,
+            9
+          ],
+          [
+            4,
+            10
+          ],
+          [
+            4,
+            11
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            5,
+            10
+          ],
+          [
+            5,
+            11
+          ],
+          [
+            6,
+            9
+          ]
+        ],
+        "wall_corner_before_ticks": {
+          "bottom": 171,
+          "left": 18,
+          "left_bottom": 13,
+          "left_top": 0,
+          "right": 0,
+          "right_bottom": 0,
+          "right_top": 0,
+          "top": 0
+        },
+        "x_extent_pixels": [
+          4.0,
+          48.0
+        ],
+        "y_extent_pixels": [
+          75.4453125,
+          92.0
+        ]
+      },
+      "motor": "upstream_pilot_v1",
+      "outcome": "trial_timeout",
+      "physics": "tangent_v2",
+      "seed": 51004,
+      "source_trace_sha256": "ec8149b74f82a0cf5ca069fbd5269781cb84559aa97aacf65a6d986ae7fbf9fb",
+      "source_trial": "confirm-51004-tracking16_v3-dark_balance_v3-left-dark",
+      "stage": "confirm",
+      "status": "PASS",
+      "termination": "terminal",
+      "tick_limit": 256,
+      "ticks": 256,
+      "trace_sha256": "a81530d4e3c5d45a1b18abf1d9cd137f7f66ba6187fd9fd706f4ea2daa7ac0bf"
+    }
+  ]
+}
