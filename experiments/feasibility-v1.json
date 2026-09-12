@@ -1,0 +1,25 @@
+{
+  "schema_version": "flytrap-development-1",
+  "purpose": "Development-only feasibility; no held-out evaluation or learning claim",
+  "seeds": [51001, 51002],
+  "probe_conditions": ["dark", "bright", "midgray", "stripes", "checkerboard", "arena_left", "arena_right"],
+  "probe_repetitions": 2,
+  "episode_conditions": [
+    {"id": "left", "destination_side": "left", "input": "canonical", "motor_multiplier": 1.0},
+    {"id": "right", "destination_side": "right", "input": "canonical", "motor_multiplier": 1.0},
+    {"id": "blank_left", "destination_side": "left", "input": "dark", "motor_multiplier": 1.0},
+    {"id": "half_left", "destination_side": "left", "input": "canonical", "motor_multiplier": 0.5}
+  ],
+  "preset": "two_choice_v1",
+  "renderer": "grayscale_v1",
+  "crop": "crop16_v1",
+  "target_texture": "stripes",
+  "distractions": [],
+  "base_movement_pixels_per_axis": 8,
+  "max_ticks": 256,
+  "model_parameters": "config/flytrap-model-v1.json",
+  "visual_calibration": "config/flytrap-visual-v1.json",
+  "learning_enabled": false,
+  "stopping_rule": "Every scheduled episode reaches a pad or 256 ticks; preserve failures, no replacement seeds",
+  "scaling_scope": "half_left explicitly halves both real motor axes before frozen physics; no sign changes or steering"
+}

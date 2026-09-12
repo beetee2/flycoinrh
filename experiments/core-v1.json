@@ -1,0 +1,54 @@
+{
+  "schema_version": "flytrap-core-condition-1",
+  "condition_id": "untrained-two-choice-queued-v1",
+  "human_review": "PENDING",
+  "interaction_mode": "queued_computation_then_labeled_replay",
+  "controller_id": "fly_v1",
+  "checkpoint": {
+    "checkpoint_id": "fly-baseline-v1",
+    "graph_sha256": "4279e2222475b986a096634ea5f6ac9518d0f8feff3f3c2ed52ad1139d3cd2ed",
+    "model_mode": "windowed_reset",
+    "schema_version": "1",
+    "sha256": "adfa5cc48f476d99b39ac61779143f5f22e88f5940ebf0226a143c5585410ccc"
+  },
+  "preset_version": "two_choice_v1",
+  "renderer_version": "grayscale_v1",
+  "crop_version": "crop16_v1",
+  "target_texture": "stripes",
+  "distractions": [],
+  "start_pixels": [
+    48,
+    76
+  ],
+  "action_mapping": "upstream-pilot-divide-90-v1",
+  "physics_action_mapping": "bounded_xy_v1",
+  "motor_multiplier": 1.0,
+  "movement_pixels_per_axis_per_tick": 8,
+  "max_ticks": 256,
+  "coordinate_quantum": "1/256 pixel",
+  "reward_version": "destination_v1",
+  "neural_state_mode": "windowed_reset",
+  "model_parameters_sha256": "5d7530f19cd986e72c93505ea2b721c87016ad26b859700d100cdb7d31276358",
+  "calibration_sha256": "d024fa0d282c3db935299d0adab3be43763593e6b94eddc53aa31386a0935404",
+  "model_source_sha256": {
+    "adapter": "6b73b75785b757f5221e9cac12ee1a572b1c2d4e0b973f053f8cfe1c7e36e3c0",
+    "flyeye": "8c924a1e68c74d8d3bb0f586637c65bd0666633f4bd7f50466bc97a742aacbc8",
+    "flysim": "e9a3132e60df65600fef2f4bc1348ae53f9cf3f4e4ef8d395f990bab2569f42e"
+  },
+  "gains": "all-one-float32",
+  "learning_enabled": false,
+  "learning_claim_status": "NOT_RUN",
+  "development_config_sha256": "e92adc67fdc5fb20f9cd78f0d54b6597ce45af1e7b3380f72aac40af119906a5",
+  "development_report_sha256": "6f37c02bf4c1160a0758de9b43ff2a41cf27872ecd3536265cfd95f7b5f93c85",
+  "held_out_evaluation": "NOT_RUN",
+  "proposed_operational_limits": {
+    "active_simulations": 1,
+    "max_queued": 1,
+    "episode_wall_seconds": 240,
+    "simulator_memory_bytes": 1610612736,
+    "progress_interval_seconds": 1,
+    "maximum_estimated_wait_seconds": 240,
+    "status": "PROPOSED; enforce and remeasure in worker/operations milestones",
+    "basis": "Episode deadline=2*(baseline preparation+controller load+256*p95), rounded up to 10 s; memory=2*process peak RSS rounded up to 256 MiB; one queued job bounds nominal waiting to one deadline; progress interval=ceil(p95) s"
+  }
+}

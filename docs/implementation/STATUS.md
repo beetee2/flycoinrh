@@ -1,49 +1,52 @@
 # FLYTRAP status
 
-Milestones **00–04 complete**. Latest validation ran on 2026-09-12 UTC
-(2026-09-11 US/Central). HEAD remains
-`8748e5bd30794d14afeb3441904221b52a002cac`; implementation is local and uncommitted.
+Milestones **00–04 complete**. **05 automated work complete; human review PENDING.**
+Latest validation: 2026-09-12 UTC (2026-09-11 US/Central).
+HEAD is `e999df631277d94277747271bc0a8b1359682b29`; milestone 05 changes are local
+and uncommitted. All prior source hashes matched at entry.
 
-**04 automated_status: PASS · human_review: NOT_REQUIRED.**
-No pending human reviews. Learning evidence: **NOT_RUN**; learning disabled.
+**05 automated_status: PASS · human_review: PENDING.**
+Learning evidence: **NOT_RUN**; learning and improvement claims remain disabled.
+**Do not start 06 before explicit human approval of 05.** An identical resume
+instruction is not approval.
 
 | Boundary | Status | Actual result |
 |---|---|---|
-| Prior work / preservation | PASS | Entry hashes match 03; kit/user edits, LICENSE, NOTICE and attribution preserved. |
-| Locked runtime | PASS | Python 3.14.7, Node 26.8.2, linked SQLite 3.53.4; locks unchanged. |
-| Data / adapter prerequisite | PASS | Fresh raw/bundle doctor; unchanged source/data/runtime permit reuse of 03 real adapter evidence. |
-| 04 legal arena / physics / scoring | PASS | Fixed reachable presets, explicit cohort mapping, swept contacts, quantized motion and terminal rules. |
-| 04 raster / retina / isolation | PASS | Golden pixels, lossless PNG parity, clipped normalized crop; actual adapter on synthetic graph respects hidden-scoring isolation. |
-| 04 fixture traces / inspection | PASS | Four labeled samples inspected; all 530 actions recompute states and observation hashes. |
-| Python regressions | PASS | 1,329 passed including 137 arena cases; 0 failures/errors/skips. Later doctor-message edit: 12 foundation tests passed. |
-| Web contracts / components / browser startup | PASS | 89 / 9 / 2 passed; desktop/mobile screenshots and trace responses inspected. |
-| Build / package / dependencies | PASS | make verify; final wheel matches package files; lint/types/generated contracts/dependency checks pass. |
-| Fault probes | PASS | Disposable collision, renderer-input and crop-rounding mutations produce intended failures. |
-| Real task feasibility | NOT_RUN | Controlled visual sensitivity and interaction decision belong to 05. |
-| Full real-model E2E / release | BLOCKED | Worker/API/replay/browser run integration pending; make verify-real exits 2. |
-| Learning benefit | NOT_RUN | No trained checkpoint, approved comparison or improvement claim. |
+| Prior work / data / locked runtime | PASS | All 04 source hashes matched; fresh raw/graph doctor passed; locks unchanged. |
+| Real model → arena feasibility | PASS | 8 complete development episodes, 2,048 steps; zero execution failures. |
+| Controlled visual input / repeatability | PASS | 14 matched input/seed pairs × 2 repeats; changed pixels affect motors; repeats match. |
+| Task outcomes | No competence demonstrated | 8/8 scored timeouts; all paths retained, substantial lower-wall trapping. |
+| Measured cost | Recorded | 0.399 s median step; 101–103 s episodes; 739.1 MiB peak process RSS. |
+| Artifact reconstruction | PASS | All 2,048 actions, states and observation hashes independently replayed. |
+| Python checks | PASS | 1,405 full-suite passes; final verifier edit and added case: 41 focused passes; no failures/skips. |
+| Web / build / dependencies | PASS | 89 contracts, 9 components, 2 browser startup checks; lint/types/build/locks/audit pass. |
+| Interaction / condition decision | PENDING human review | Proposed GO for queued experimental core; frozen baseline mapping, zero distractions. |
+| Full real-model browser release | BLOCKED | Later durable worker/API/replay/browser integration pending; make verify-real exits 2. |
+| Learning benefit / held-out evaluation | NOT_RUN | No checkpoint training, comparison promotion or positive claim. |
 
-Read [milestone 04](milestones/04.md) for commands, outputs and handoff;
-[ARENA](ARENA.md) freezes geometry, scoring, raster, crop and movement.
-[CONTROLLER](CONTROLLER.md) documents the adapter. Prior [03](milestones/03.md),
-[02](milestones/02.md), [01](milestones/01.md), [00](milestones/00.md),
-[DATA](DATA.md), [contracts](contracts/README.md), [architecture](ARCHITECTURE.md)
-and [threat model](THREAT_MODEL.md) remain available.
+Read [milestone 05](milestones/05.md), [FEASIBILITY](FEASIBILITY.md), and the
+[frozen condition](../../experiments/core-v1.json). Review
+[all eight trajectories](../../artifacts/milestones/05/trajectories.png),
+[exact input pixels](../../artifacts/milestones/05/probe-inputs.png), the roughly
+102-second episode cost and proposed queued/replay mode. This human gate must
+judge whether the observed unsuccessful behavior is a worthwhile interaction.
 
-The verified bundle is `build/flytrap-v1/graph.npz`, SHA256
+Evidence is under ignored
+[`artifacts/milestones/05/`](../../artifacts/milestones/05/); complete model output,
+source/environment/data identity and per-trial traces are in
+[trials/report.json](../../artifacts/milestones/05/trials/report.json).
+Retain the ignored graph, raw files and evidence when moving the checkout.
+
+The graph is `build/flytrap-v1/graph.npz`, SHA256
 `4279e2222475b986a096634ea5f6ac9518d0f8feff3f3c2ed52ad1139d3cd2ed`.
-Run `make data-doctor` to recheck data and `make test-controller-real` for the
-adapter smoke. Neither command is the full release gate.
+`make data-doctor` checks the data; `make verify-feasibility EVIDENCE=artifacts/milestones/05`
+checks these development artifacts. Neither passes the full release gate.
+Use a new evidence root to rerun `make feasibility`; see [experiment methods](../../experiments/README.md).
 
-Evidence is under ignored [`artifacts/milestones/04/`](../../artifacts/milestones/04/).
-Run `make arena-samples EVIDENCE=artifacts/milestones/04` to reproduce the
-**SCRIPTED FIXTURE — NOT REAL MODEL** images and trajectories. These demonstrate
-mechanics, not model competence. Retain ignored raw/graph files and
-prior evidence when moving the checkout. Hosted CI and deployment remain
-unexecuted; no external publication occurred.
+Prior reports: [04](milestones/04.md), [03](milestones/03.md), [02](milestones/02.md),
+[01](milestones/01.md), [00](milestones/00.md). [ARENA](ARENA.md),
+[CONTROLLER](CONTROLLER.md), [DATA](DATA.md), [architecture](ARCHITECTURE.md),
+[contracts](contracts/README.md) and [threat model](THREAT_MODEL.md) retain earlier boundaries.
 
-Next: **05 — real-model feasibility and task calibration**, on the next explicit
-invocation. Preserve the declared configuration while measuring development
-behavior; record any permitted calibration as an explicit versioned condition.
-05 requires human review of behavior and the interaction-mode decision after
-automated validation. No later milestone started.
+Next: **05 human review**, then **06 — database/artifact repositories** after
+approval. No later milestone, hosted CI, deployment or external publication occurred.

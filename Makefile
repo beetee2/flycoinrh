@@ -108,3 +108,10 @@ verify: doctor check-generated lint test-python test-contract-web test-ui test-e
 
 serve-fixture:
 	$(PYTHON) -m flytrap.cli serve --profile fixture
+
+.PHONY: feasibility verify-feasibility
+feasibility:
+	$(PYTHON) -m scripts.feasibility --graph-root $(GRAPH_ROOT) --raw-root $(RAW_ROOT) --output $(EVIDENCE)/trials
+
+verify-feasibility:
+	$(PYTHON) -m scripts.verify_feasibility --graph-root $(GRAPH_ROOT) --output $(EVIDENCE)/trials
