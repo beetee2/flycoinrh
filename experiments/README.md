@@ -58,3 +58,41 @@ counts nonzero dx or dy even when a collision prevents movement. Total distance
 sums actual consecutive state displacements. The longest stationary streak and
 unique observation hashes expose prolonged wall trapping or sensory repetition.
 All scheduled episodes, including failures and timeouts, must remain in reports.
+
+## Milestone 05 human-review revision
+
+`feasibility-revision-v2.json` predeclares one bounded development revision.
+Historical v1 configurations, checkpoints, traces and verifier remain intact.
+The new runner uses the same baseline checkpoint bytes and records six passive
+motor population rates. Both versions retain positive-down y and the original
+motor mapping. `tangent_v2` is an explicit opt-in physics candidate in
+`flytrap/arena/sliding.py`; the default `arena.core.step` still uses v1.
+
+The primary comparison schedules two fixed development seeds, both layouts,
+canonical and black inputs, and both physics versions: 16 episodes of at most
+96 ticks. A cutoff at 96 is **incomplete**, not a 256-tick scored timeout. Its
+budget is 1,536 neural calls and 900 seconds including load. If at least half the
+canonical candidate ticks sample no pad pixels, a separately recorded observation
+comparison may run eight episodes with candidate physics, at most 768 calls and
+450 seconds. All results are retained; no extensions or replacement seeds.
+
+The one optional `overview16_v2` observation uses fixed full-scene nearest-center
+samples at x,y = 3, 9, ..., 93. It retains visible scene cues throughout the path
+and adds no position, avatar or scoring fields. Because the canonical scene is
+static, this overview also stays constant within a layout; it supplies no visual
+feedback about the avatar's changing position. That limitation must accompany
+its behavioral results. The v1 crop stays available byte-for-byte.
+
+Execution and artifact verification use `scripts.feasibility_revision` and
+`scripts.verify_feasibility_revision`; each accepts an explicit `--output`.
+The execution stage is `--stage physics` or `--stage overview`, with the latter
+requiring completed primary evidence via `--primary`. A new evidence parent must
+contain `preregistration.json` with the declared UTC timestamp, exact config and
+SHA256 before execution; the verifier checks this ordering. Existing output
+directories are refused. Retain the complete parent, including `primary/`, when
+verifying `overview/`.
+
+Read the [historical diagnosis](../docs/implementation/FEASIBILITY-05-DIAGNOSIS.md)
+and [revision comparison](../docs/implementation/FEASIBILITY-05-REVISION.md).
+This work does not authorize milestone 06 or establish task competence, learning,
+or suitability for release.

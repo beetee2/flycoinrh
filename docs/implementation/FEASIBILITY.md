@@ -1,5 +1,11 @@
 # Real-model feasibility — development report
 
+**Historical v1 report.** Human review requested changes. The bounded
+[milestone-05 revision](FEASIBILITY-05-REVISION.md) supersedes the proposed GO
+below with a **NO-GO recommendation for the playable core**. Human review remains
+PENDING; milestone 06 is stopped. The original measurements and configuration
+below are retained as historical evidence.
+
 **Automated PASS · human review PENDING · learning NOT_RUN.**
 
 Decision: **GO for a queued experimental core with explicitly labeled replay**,
