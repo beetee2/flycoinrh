@@ -1,0 +1,19 @@
+{
+  "reviewed_commit": "a1af684f5dbcf88f75cc23da5b0df6621a7efd5a",
+  "type": "implementation_instructions_only",
+  "files_sha256": {
+    "PROMPTS.md": "2b6b5ddeee994da000864ece0d6b437132433e124e2874043bae715d41c2a42b",
+    "README.md": "89d48312432d8e16cf3c9e12ca9aa74070479bfce871247af265d42ce0c1ed03",
+    "RESUME.md": "10eda949cfee07ea2f8cb9673c9f1efc659a7f8bef3ed97e0c55913343d77061",
+    "SOURCES.md": "c65dfe352b06c614a9237e06c5fbc923f98a0dfaded660537042d0db280c49a1",
+    "SPEC.md": "f88bc79a72b2547153d90890e8be593ad26cdd31a3e85802a7dd62f072486b55",
+    "TEST_MATRIX.md": "83cd1df078d555692dad4e31e085ad97826fa309849750f6f55e0342de0b9cce",
+    "prompts/00-scope-and-contracts.md": "b4333d8d44efcdd1de6a7820341eb15fd0fa89b1632c78059cdf6730084eab54",
+    "prompts/01-capture.md": "b7be57db24b2a7a146c6abb9a70ebe50ef84d0b6b1a9f0f5ddb279e995c607df",
+    "prompts/02-neural-session.md": "d11c73c96c49e42c0892c208f97718beca56917d4efc8c376a14c51a73e113bf",
+    "prompts/03-flight.md": "a62882995a026d877177add4a2311e02dd1a4b6f8d0a7ff61b4b41eec1a5e11d",
+    "prompts/04-api-and-replay.md": "cb78677757c56732a928fc36f4cf9f032c2a697baabb280c4f6c842ab3dee662",
+    "prompts/05-browser.md": "dbe0b25bf56d59990fe8b004451871fce5f0a028c02f09cd41a60f064085071e",
+    "prompts/06-validation-and-handoff.md": "1e3b8581b2a720259bfffdc510a0da29ab6c25b6de245143615b4f19a4efaae1"
+  }
+}
