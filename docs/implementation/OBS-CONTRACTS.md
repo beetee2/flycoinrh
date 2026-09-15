@@ -1,13 +1,65 @@
 # Flyjam live v1 foundation and operating policy
 
+## OBS02 neural session operations
+
+`NeuralSession(config, purpose=...)` is an internal coordinator. Construction and
+snapshots are idle; `start()` is explicit and idempotent. Each new session has a
+new ID, one continuous reader and one persistent isolated model process. A caller
+must renew its control lease while working. Terminal sessions never restart.
+Real sources require an operator-confirmed device configuration and verified
+producer health. Initial model validation explicitly uses `fixture-pattern` pixels
+with the actual full graph; fixture-source identity does not imply a fixture model.
+
+The coordinator acquires `artifacts/live/session.lock`, then the existing P00
+model lock, without waiting. The worker inherits both open lock descriptors.
+Linux parent-death guards are installed before exec for the model and FFmpeg.
+Stop prevents new scheduling, clears applicable output, and reaps the model.
+If capture cleanup exceeds its bound, status becomes failed and ownership remains
+held until the actual reader/child terminates. A failed cleanup cannot admit a
+second live session. Lock files are never replaced during normal ownership.
+
+The worker compiles raw-annotation retinal indices once and checks them against
+the independent P00 oracle at load. The passive live tap checks actual retinal
+drive before each ordinary inference, retaining original pilot action, motor
+rates, adapter output and statistics. Frame sequences and model step indices are
+distinct; one request is in flight and each next request takes the latest frame.
+It keeps the original 100 × 0.2 ms integration and internal step-seed sequence.
+
+`SessionSnapshot.sample` is present only when applicable and fresh. Its separately
+named `last_inferred` and `last_completed` are historical measurements, never
+commands. Snapshots also report waiting state, completed/attempted calls, drops,
+receipt age, last step wall time, completed neural milliseconds and observed
+average model Hz since readiness. The final rate is frozen at termination.
+Producer-to-consumer latency remains unknown for sources without producer timing.
+Full graph/annotation payloads never enter IPC responses or snapshots; session
+provenance is retrieved separately and hashed once during startup.
+
+Each real call is charged and fsynced before execution. Automated calls use both
+the fixed workstream ledger and a per-session ledger; human Start uses its own
+bounded session ledger. A hash chain and durable checkpoint reject partial,
+edited, missing or truncated accounting. Interrupted accounting fails closed.
+Removing all accounting artifacts is outside this local corruption protection;
+never reset them to obtain another allowance. Fixture model tests use disposable
+roots and cannot satisfy real validation.
+
+`make test-live-real LIVE_REAL_EVIDENCE=<new-directory>` runs the fixed nine-call
+OBS02 gate under a 90-second process-group deadline: three safe-source live steps,
+three untapped adapter references and three historical-tap references. It refuses
+existing evidence directories and fails nonzero for missing data. It persists
+synthetic input measurements only, with recording disabled. Do not rerun it simply
+to obtain another demonstration; the workstream allowance persists across runs.
+The OBS02 execution report is [OBS02](milestones/OBS02.md).
+
 ## Scope and executable boundary
 
-OBS01 adds explicit CLI source inspection/preview, continuous capture, a pure
+OBS02 adds a supervised neural session, compiled retinal verification and separate
+durable accounting. OBS01 adds explicit CLI source inspection/preview, continuous capture, a pure
 encoder and driver/authenticated producer monitoring. See [OBS01](milestones/OBS01.md)
 for actual hardware checks. OBS00 provides strict Pydantic contracts, generated JSON Schema and TypeScript,
 AJV runtime parsing with shared synthetic positive/negative cases, metadata-only
-device discovery, a prerequisite doctor and an idle local application. Model
-calls, decoder execution, physics, session writes, streaming and
+device discovery, a prerequisite doctor and an idle local application. Neural
+sessions run through the internal coordinator and the dedicated real-model gate.
+Decoder execution, physics, browser session control, streaming and
 replay execution are later numbered deliverables. The idle browser API explicitly reports
 `capture_implemented: false` and `inference_implemented: false`.
 Those flags describe its still-idle browser controls; source preview is currently
@@ -101,21 +153,21 @@ or executable code are never accepted.
 
 ## Ownership, compute and storage
 
-One future active live session across processes; capture continuously drains into
+One active live session across processes; capture continuously drains into
 a capacity-one latest-frame slot, and one persistent model worker loads once per
 session. A persistent worker does not change the model's `windowed_reset` dynamics:
 reset controller once at session start, preserve internal step-seed progression,
 100 × 0.2 ms integration, all-one immutable gains/weights and disabled learning.
 The live adapter/tap stays outside source-bound historical model files.
 
-OBS02 must acquire the same exclusive flock at
+OBS02 acquires the same exclusive flock at
 `artifacts/milestones/P00/model.lock` for the full model-worker lifetime, together
 with an independent live-session lock under `artifacts/live/`. Keep a consistent
 lock acquisition order and fail busy rather than queue. Do not replace the lock
 inode. P00's 256-call ledger stays separate and unchanged.
 
 Automated validation across OBS00–OBS06 has a total ceiling of 1,024 full-model
-attempts. OBS00 uses zero. Planned append-before-call/fsync ledger:
+attempts. OBS00/OBS01 use zero; OBS02 validation used nine. Append-before-call/fsync ledger:
 `artifacts/live/validation/attempts.jsonl`; hold model/accounting locks, fail closed
 on corruption/exhaustion, count failures/restarts and never reset it when choosing
 a new evidence directory. Fixture calls cannot satisfy a real gate. Explicit human

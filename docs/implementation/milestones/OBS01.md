@@ -1,5 +1,41 @@
 # OBS01 — selected source, continuous capture and exact encoding
 
+## CI prerequisite repair — 2026-09-15
+
+The historical hardware results below remain completed local validation. A later
+[hosted run 34979022968](https://github.com/beetee2/flycoinrh/actions/runs/34979022968)
+for `f0be7863abb86715916e37c7265287087c84820e` failed in job `104414146212`:
+`make verify test-upstream` reached **2,657 passed / six failed**, all six actual
+FFmpeg capture tests raising `FileNotFoundError: ffmpeg`. The live workflow step
+was skipped. Initial repair inspection found a clean checkout and remote main at
+that same commit, with no newer run or existing dependency fix.
+
+`.github/workflows/foundation.yml` now installs `ffmpeg` using Ubuntu's official
+apt repositories on the existing Ubuntu 24.04 runner, before bootstrap/test steps,
+and logs `command -v ffmpeg` plus `ffmpeg -version`. Actual FFmpeg integration
+tests remain required. Repair evidence is under
+`artifacts/milestones/OBS01/ci-repair/`; it is separate from historical hardware
+evidence. Local verification is **PASS**: 39 capture tests;
+`make verify test-upstream` (2,663 Python, 150 upstream, 89 web contracts,
+nine UI and two browser passes); `make verify-live` (281 live Python, 93 live
+UI/contracts, 124 lab Python, 15 lab UI and two idle-browser passes).
+All three commands exited 0; test failures/errors/skips were zero. Schema checks,
+lint, builds and dependency checks passed. Commands, exits, logs and JUnit counts
+are in `ci-repair/local/`. This uses local Arch FFmpeg `n9.0.1`.
+Clean-Ubuntu compatibility validation is **PASS**: all 39 capture tests passed
+(zero failures/errors/skips), container command exit 0, official Ubuntu 24.04
+image digest `sha256:224a1869083a311ef3f13648a154ba79832fbef6364d31493642ca03082da254`.
+Ubuntu's signed noble/universe package `7:6.1.1-3ubuntu5` provides FFmpeg 6.1.1
+at `/usr/bin/ffmpeg`. Actual tests exercised `nullsrc`/`geq`, BT.601 `scale`,
+RGB24/BGR24/YUYV422/NV12, PPM/image2pipe and passthrough/flushed timing. Installed
+help confirmed V4L2 input and buffering/timing options without opening a device.
+See `ci-repair/ubuntu/compatibility.md` for exact environment differences and logs.
+No OBS or kernel devices were installed. Hosted verification
+of this repair is **PENDING**; no push or hosted execution is authorized here.
+This repair uses zero neural calls and performs no desktop capture or OBS changes.
+
+## Historical OBS01 execution
+
 Date: 2026-09-15 US/Central. Initial HEAD `2a170a7` (OBS00); initial tree clean.
 Executed only [OBS01](../../../flyjam-obs-kit/prompts/01-capture.md), using the
 current [resume policy](../../../flyjam-obs-kit/RESUME.md).

@@ -171,3 +171,9 @@ verify-live: check-live-generated check-lab-generated lint test-live test-live-u
 	VITEST_JUNIT_PATH=../$(LIVE_EVIDENCE)/lab-ui.xml npm --prefix web test -- tests/Lab.test.tsx
 	npm --prefix web run build
 	$(MAKE) test-live-e2e
+
+# OBS02 model gate: fixed safe source, actual baseline, separate durable budget.
+LIVE_REAL_EVIDENCE ?= artifacts/milestones/OBS02/real
+.PHONY: test-live-real
+test-live-real:
+	timeout --signal=TERM --kill-after=5s 90s $(PYTHON) -m scripts.live_real --output $(LIVE_REAL_EVIDENCE)

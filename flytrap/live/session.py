@@ -1,0 +1,338 @@
+"""Explicitly started session: one continuous reader and one supervised worker.
+
+No constructor or status read starts capture or inference. Browser ownership and
+flight are downstream milestones; callers must explicitly renew the owner lease.
+"""
+from copy import deepcopy
+import os
+from pathlib import Path
+import socket
+import subprocess
+import sys
+import threading
+import time
+import uuid
+
+from .accounting import LiveLedger, LiveOwnership
+from .capture import Capture
+from .child import command
+from .contracts import NeuralSample, SessionConfig, SessionStatus
+from .encoding import encode_frame
+from .neural import SessionSnapshot, StepRequest, StepResult, receive_packet, send_packet
+from .worker import REPOSITORY, model_files
+
+TERMINAL = {"stopped", "source_lost", "failed", "limit_reached"}
+
+
+class NeuralSession:
+    def __init__(self, config: SessionConfig, *, purpose: str, repository_root=REPOSITORY,
+                 files=None, expected_device=None, monitor=None, capture_factory=Capture,
+                 worker_command=None):
+        self.config = SessionConfig.model_validate(config.model_dump())
+        if self.config.recording:
+            raise ValueError("OBS02 does not implement recording")
+        if purpose not in ("automated", "human", "fixture"):
+            raise ValueError("explicit execution purpose required")
+        self.root = Path(repository_root).resolve()
+        self.files = files or model_files()
+        if purpose != "fixture" and (self.root != REPOSITORY or worker_command is not None):
+            raise ValueError("real execution requires fixed accounting and model worker")
+        if purpose == "fixture" and not self.files.get("allow_fixture", False):
+            raise ValueError("fixture execution requires explicitly synthetic model files")
+        if self.config.source_id == "fixture-pattern":
+            if self.config.evidence_kind != "fixture":
+                raise ValueError("synthetic source must be labeled fixture")
+        elif expected_device is None or self.config.evidence_kind != "real":
+            raise ValueError("real session requires operator-confirmed source identity")
+        self.purpose = purpose
+        self.session_id, self.generation = uuid.uuid4().hex, 1
+        self.capture = capture_factory(source_id=config.source_id, session_id=self.session_id,
+                                       generation=self.generation, duration_s=config.duration_seconds,
+                                       inactivity_s=config.source_deadline_ms / 1000,
+                                       expected_device=expected_device, monitor=monitor,
+                                       verified=config.source_id != "fixture-pattern")
+        self._worker_command = worker_command
+        self._lock = threading.RLock()
+        self._stop = threading.Event()
+        self._done = threading.Event()
+        self._thread = self._child = self._channel = self._ownership = None
+        self._state, self._reason = "idle", None
+        self._started = self._lease = self._ready_time = None
+        self._pending = self._inferred = self._result = None
+        self._attempted = self._completed = self._rejected = 0
+        self._last_sequence = -1
+        self._step_started = self._last_step_ms = None
+        self._provenance = None
+        self._latest_receipt = self._ended = None
+
+    def start(self):
+        with self._lock:
+            if self._state != "idle":
+                return self  # A terminal session cannot resume; new Start needs a new ID.
+            ownership = LiveOwnership(self.root).acquire()
+            self._ownership = ownership
+            self._started = self._lease = time.monotonic()
+            self._state = "starting"
+            self._thread = threading.Thread(target=self._run, name="live-session", daemon=True)
+            try:
+                self._thread.start()
+            except Exception:
+                ownership.close()
+                self._state = "failed"
+                raise
+        return self
+
+    def renew_lease(self):
+        with self._lock:
+            if self._state in ("starting", "running"):
+                # An already expired lease can never be revived by a late heartbeat.
+                if time.monotonic() - self._lease >= self.config.lease_ms / 1000:
+                    self._finish("stopped", "Control lease expired; explicit Start required.")
+                    return False
+                self._lease = time.monotonic()
+                return True
+            return False
+
+    def _finish(self, state, reason):
+        with self._lock:
+            if self._state not in TERMINAL:
+                self._state, self._reason = state, reason
+                self._ended = time.monotonic()
+            self._stop.set()
+
+    def stop(self):
+        with self._lock:
+            if self._state == "idle":
+                self._state, self._reason = "stopped", "Stopped before Start."
+                self._done.set()
+            elif self._state not in TERMINAL:
+                self._state, self._reason = "stopping", "Operator stopped session."
+                self._ended = time.monotonic()
+            self._stop.set()
+        if self._thread is not threading.current_thread():
+            self._done.wait(self.config.stop_grace_ms / 1000)
+        return self.snapshot()
+
+    def wait(self, timeout=None):
+        return self._done.wait(timeout)
+
+    @property
+    def provenance(self):
+        with self._lock:
+            return deepcopy(self._provenance)
+
+    def _launch(self):
+        parent, child = socket.socketpair(socket.AF_UNIX, socket.SOCK_SEQPACKET)
+        self._channel = parent
+        try:
+            arguments = (self._worker_command or [sys.executable, "-m", "flytrap.live.worker"]) + [str(child.fileno())]
+            self._child = subprocess.Popen(command(arguments), cwd=REPOSITORY,
+                                           pass_fds=(*self._ownership.filenos, child.fileno()),
+                                           stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                                           stderr=subprocess.DEVNULL,
+                                           env={**os.environ, "OMP_NUM_THREADS": "1",
+                                                "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1"})
+            parent.settimeout(.05)
+            send_packet(parent, {"config": self.config.model_dump(mode="json"), "purpose": self.purpose,
+                                 "repository_root": str(self.root), "session_id": self.session_id,
+                                 "generation": self.generation, "lock_fds": self._ownership.filenos,
+                                 "files": {k: str(v) if isinstance(v, Path) else v for k, v in self.files.items()}})
+            parent.setblocking(False)
+        finally:
+            child.close()
+
+    def _deadlines(self, now):
+        self._ownership.require_active(self.root)
+        if now - self._lease >= self.config.lease_ms / 1000:
+            return "stopped", "Control lease expired; explicit Start required."
+        if now - self._started >= self.config.duration_seconds:
+            return "limit_reached", "Session duration limit reached."
+        if self._ready_time is None and now - self._started >= self.config.startup_deadline_ms / 1000:
+            return "failed", "Neural startup deadline exceeded."
+        if self._pending and now - self._step_started >= self.config.step_deadline_ms / 1000:
+            return "failed", "Neural step deadline exceeded; attempt remains counted."
+        status = self.capture.status()
+        if status.state in TERMINAL:
+            return ("limit_reached" if status.state == "limit_reached" else "source_lost"), "Source stopped or lost."
+        if not self._producer_active(status):
+            return "source_lost", "Source producer status lost."
+        latest = self.capture.slot.latest()
+        if latest:
+            self._latest_receipt = latest.identity.receipt_monotonic_ms
+        receipt = self._latest_receipt if self._latest_receipt is not None else self._started * 1000
+        if now * 1000 - receipt >= self.config.source_deadline_ms:
+            return "source_lost", "Source receipt deadline exceeded."
+        return None
+
+    def _producer_active(self, status):
+        return status.producer == "active" or (self.config.source_id == "fixture-pattern"
+                and self.config.evidence_kind == "fixture" and status.producer == "synthetic")
+
+    def _receive(self, payload):
+        kind = payload.get("kind")
+        with self._lock:
+            if self._stop.is_set():
+                return
+            if kind == "ready" and self._ready_time is None:
+                self._provenance = payload["provenance"]
+                self._ready_time = time.monotonic()
+                self._state = "running"
+                return
+            if kind == "failed":
+                self._finish("failed", "Neural worker failed; attempts remain counted.")
+                return
+            if kind == "attempt" and self._pending is not None and payload.get("step_index") == self._completed:
+                if self._attempted != self._completed:
+                    raise ValueError("duplicate attempt notification")
+                self._attempted += 1
+                return
+            result = StepResult.model_validate(payload)
+            if self._pending is None or (result.session_id, result.generation, result.step_index) != (
+                    self.session_id, self.generation, self._completed):
+                raise ValueError("foreign or unexpected result")
+            if self._attempted != self._completed + 1:
+                raise ValueError("result without prior attempt")
+            now = time.monotonic()
+            if result.completed_monotonic_ms > now * 1000:
+                raise ValueError("result timestamp is in the future")
+            self._last_step_ms = (now - self._step_started) * 1000
+            self._result = result
+            self._inferred = NeuralSample(schema_version="obs-neural-1",
+                response_id=f"{self.session_id}-{self._completed}", frame=self._pending.frame,
+                observation_u8=list(self._pending.u8), encoder_id=self._pending.encoder_id,
+                model_id=self._provenance["model_id"], step_index=self._completed,
+                completed_monotonic_ms=result.completed_monotonic_ms, neural_ms=20.,
+                neural_state_mode="windowed_reset", motor_rates_hz=result.motor_rates_hz,
+                raw_action=result.raw_action)
+            self._completed += 1
+            if now * 1000 - self._pending.frame.receipt_monotonic_ms >= self.config.response_max_age_ms:
+                self._rejected += 1
+            self._pending = None
+            if self._completed >= self.config.max_model_calls:
+                self._finish("limit_reached", "Session model-call limit reached.")
+
+    def _schedule(self):
+        with self._lock:
+            if self._stop.is_set() or self._ready_time is None or self._pending is not None:
+                return
+            frame = self.capture.slot.take()
+            if frame is None:
+                return
+            identity = frame.identity
+            if (identity.source_id, identity.session_id, identity.generation, identity.evidence_kind) != (
+                    self.config.source_id, self.session_id, self.generation, self.config.evidence_kind):
+                raise ValueError("foreign source frame")
+            if identity.sequence <= self._last_sequence:
+                raise ValueError("source sequence did not advance")
+            now = time.monotonic()
+            age = now * 1000 - identity.receipt_monotonic_ms
+            if age < 0 or age >= min(self.config.source_deadline_ms, self.config.response_max_age_ms):
+                return
+            self._pending = encode_frame(frame)
+            self._latest_receipt = identity.receipt_monotonic_ms
+            self._last_sequence = identity.sequence
+            self._step_started = now
+            request = StepRequest(session_id=self.session_id, generation=self.generation,
+                                  step_index=self._completed, observation_u8=list(self._pending.u8))
+            send_packet(self._channel, request.model_dump(mode="json"))
+
+    def _run(self):
+        try:
+            if not self._stop.is_set():
+                self.capture.start()
+            if not self._stop.is_set():
+                self._launch()
+            while not self._stop.is_set():
+                expired = self._deadlines(time.monotonic())
+                if expired:
+                    self._finish(*expired)
+                    break
+                try:
+                    payload = receive_packet(self._channel)
+                except BlockingIOError:
+                    payload = None
+                if payload is not None:
+                    self._receive(payload)
+                if self._child.poll() is not None and not self._stop.is_set():
+                    self._finish("failed", "Neural worker exited; explicit Start required.")
+                    break
+                self._schedule()
+                self._stop.wait(.005)
+        except Exception:
+            self._finish("failed", "Session worker, source or accounting failed; explicit Start required.")
+        finally:
+            self._cleanup()
+
+    def _cleanup(self):
+        deadline = time.monotonic() + self.config.stop_grace_ms / 1000
+        capture_stop = threading.Thread(target=self.capture.stop, daemon=True)
+        capture_stop.start()
+        child = self._child
+        if child is not None and child.poll() is None:
+            child.terminate()
+            try:
+                child.wait(timeout=min(.25, max(.001, deadline - time.monotonic())))
+            except subprocess.TimeoutExpired:
+                child.kill()
+        if child is not None:
+            try:
+                child.wait(timeout=max(.001, deadline - time.monotonic()))
+            except subprocess.TimeoutExpired:
+                self._state, self._reason = "failed", "Neural process cleanup deadline exceeded."
+                # Keep the shared lock until the killed child is actually reaped.
+                child.wait()
+        if self._channel is not None:
+            self._channel.close()
+        ledger = LiveLedger.session(self.root, self.session_id, cap=self.config.max_model_calls,
+                                    mode="human" if self.purpose == "human" else "automated")
+        if ledger.path.exists() or ledger.checkpoint.exists():
+            try:
+                self._attempted = ledger.attempted
+            except (ValueError, OSError, RuntimeError):
+                self._attempted = self.config.max_model_calls
+                self._state, self._reason = "failed", "Accounting unavailable; displayed attempts conservatively capped."
+        capture_stop.join(max(0, deadline - time.monotonic()))
+        if capture_stop.is_alive():
+            self._state, self._reason = "failed", "Capture cleanup deadline exceeded."
+            # Stop returns at its deadline. Keep exclusion while background cleanup
+            # remains unresolved; a new owner must never overlap this reader.
+            capture_stop.join()
+        if not self.capture.wait_closed(max(0., deadline - time.monotonic())):
+            self._state, self._reason = "failed", "Capture resources remain active after cleanup deadline."
+            while not self.capture.wait_closed(.25):
+                pass  # Retain ownership; no model is left running or rescheduled.
+        if self._ownership is not None:
+            self._ownership.close()
+        with self._lock:
+            if self._state not in TERMINAL:
+                self._state = "stopped"
+            self._pending = None
+            self._done.set()
+
+    def snapshot(self):
+        with self._lock:
+            now = time.monotonic()
+            captured = self.capture.status()
+            frame = self.capture.slot.latest()
+            if frame is not None:
+                self._latest_receipt = frame.identity.receipt_monotonic_ms
+            age = None if self._latest_receipt is None else max(0., now * 1000 - self._latest_receipt)
+            sample = self._inferred
+            if (self._state != "running" or self._stop.is_set() or sample is None
+                    or now - self._lease >= self.config.lease_ms / 1000
+                    or now * 1000 - sample.frame.receipt_monotonic_ms >= self.config.response_max_age_ms
+                    or captured.state != "previewing" or not self._producer_active(captured)
+                    or age is None or age >= self.config.source_deadline_ms):
+                sample = None
+            status = SessionStatus(schema_version="obs-session-status-1", session_id=self.session_id,
+                generation=self.generation, evidence_kind=self.config.evidence_kind, state=self._state,
+                reason=self._reason, attempted_calls=self._attempted, accepted_frames=captured.accepted_frames,
+                overwritten_frames=captured.overwritten_frames, content_unchanged_ms=captured.content_unchanged_ms,
+                producer_health="active" if self._producer_active(captured) else captured.producer,
+                last_frame_sequence=None if self._last_sequence < 0 else self._last_sequence,
+                last_response_id=None if sample is None else sample.response_id)
+            elapsed = 0 if self._ready_time is None else (self._ended or now) - self._ready_time
+            return SessionSnapshot(status, deepcopy(sample), deepcopy(self._inferred), deepcopy(self._result),
+                                   self._pending is not None, self._completed, self._rejected,
+                                   self._completed * 20., self._completed / elapsed if elapsed > 0 else 0.,
+                                   self._last_step_ms, age, self.purpose if self.purpose == "fixture" else "real")

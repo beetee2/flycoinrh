@@ -1,16 +1,21 @@
 # Active routing — Flyjam local OBS-to-flight
 
 The 2026-09-15 assignment authorizes the new OBS00–OBS06 workstream, one numbered
-prompt per instruction. Current execution: **OBS01 implementation and fixture checks
-PASS / COMPLETE**. Selected real OBS preview, producer stop/restart and
-patterned-source checks are **PASS**. Follow
-[OBS-STATUS](OBS-STATUS.md) and [OBS01](milestones/OBS01.md). This supersedes the
+prompt per instruction. Current execution repairs OBS01's missing CI FFmpeg
+dependency, then executes **OBS02 only**. The dependency repair passed locally
+and on clean Ubuntu 24.04; matching hosted verification is **PENDING**.
+OBS02 is **PASS / COMPLETE**: safe-source real-model gate passed with **nine
+automated attempts**, and final repository/live checks passed. Prior OBS01 local hardware preview,
+stop/restart and patterned-source evidence remains **PASS**. Follow
+[OBS-STATUS](OBS-STATUS.md), [OBS01](milestones/OBS01.md) and
+[OBS02](milestones/OBS02.md). This supersedes the
 P00-only resume stop for this workstream. Historical navigation remains STOPPED,
 original 06 remains BLOCKED, and P00 human product review remains PENDING.
 Public release, token work and unrelated milestones are not authorized.
-OBS01 opened only the subsequently authorized `/dev/video0`; zero neural calls.
-On the next resume,
-OBS02 may proceed with the declared synthetic source. Stop after OBS01 this turn.
+This turn used no desktop capture or recording. Selected OBS identity remains
+`/dev/video0`, OBS Virtual Camera, scene `FLYJAM_INPUT`, 1920×1080 YUYV at 60 fps.
+OBS automated allowance is **9 / 1,024**, with **1,015 remaining**; P00 is preserved.
+Stop after OBS02. OBS03 is the next milestone on a new authorized invocation.
 
 The P00 and navigation records below remain historical evidence.
 

@@ -192,7 +192,8 @@ class Capture:
                     self._finish("stopped", "Operator stopped during selected-device inspection.")
                     return self
                 arguments = ffmpeg_arguments(self._config)
-                self._child = subprocess.Popen(arguments, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                from .child import command
+                self._child = subprocess.Popen(command(arguments), stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
                                                stderr=subprocess.PIPE, bufsize=0, shell=False)
                 self._thread = threading.Thread(target=self._pipe_loop, daemon=True)
                 self._watcher = threading.Thread(target=self._watch_loop, daemon=True)
@@ -358,3 +359,18 @@ class Capture:
                                  self.slot.rejected, producer,
                                  self._state == "previewing" and fresh and producer == "active",
                                  0. if self._changed is None else (now - self._changed) * 1000)
+
+    def wait_closed(self, timeout: float) -> bool:
+        """Confirm actual owned-resource termination, including failed Stop paths."""
+        if not 0 <= timeout <= 3:
+            raise ValueError("capture cleanup wait must be bounded to three seconds")
+        deadline = time.monotonic() + timeout
+        for thread in (self._thread, self._watcher):
+            if thread is not None and thread is not threading.current_thread():
+                thread.join(max(0., deadline - time.monotonic()))
+        if self._child is not None:
+            try:
+                self._child.wait(timeout=max(0., deadline - time.monotonic()))
+            except subprocess.TimeoutExpired:
+                return False
+        return all(thread is None or not thread.is_alive() for thread in (self._thread, self._watcher))
