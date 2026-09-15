@@ -161,7 +161,7 @@ test-live:
 	$(PYTEST) tests/live -q --junitxml=$(LIVE_EVIDENCE)/python.xml
 
 test-live-ui:
-	VITEST_JUNIT_PATH=../$(LIVE_EVIDENCE)/ui.xml npm --prefix web test -- tests/live-contracts.test.ts tests/Live.test.tsx
+	VITEST_JUNIT_PATH=../$(LIVE_EVIDENCE)/ui.xml npm --prefix web test -- tests/live-contracts.test.ts tests/Live.test.tsx tests/FlightStage.test.tsx tests/flight-preview.test.ts tests/flight-renderer.test.ts
 
 test-live-e2e:
 	cd web && FLYJAM_LIVE_EVIDENCE=$(LIVE_EVIDENCE)/browser npx --no-install playwright test --config=playwright.live.config.ts

@@ -12,9 +12,11 @@ run failed because FFmpeg was absent: six failures, 2,657 passes; live checks
 were skipped. The workflow now installs Ubuntu's official `ffmpeg` package and
 logs its executable/version before tests. Repair checks passed locally and all
 39 capture tests passed on clean Ubuntu 24.04, FFmpeg `7:6.1.1-3ubuntu5`.
-See [OBS01's repair record](OBS01.md). **Hosted verification remains PENDING**:
-the latest observed run is still [34979022968](https://github.com/beetee2/flycoinrh/actions/runs/34979022968).
-No push or new hosted run occurred.
+See [OBS01's repair record](OBS01.md). **Hosted verification PASS**, verified
+during OBS03: [34982619140](https://github.com/beetee2/flycoinrh/actions/runs/34982619140)
+completed successfully for `7c35af0299d918f6294e2ba64452ec89108372d8`.
+The original OBS02 execution made no push or hosted-run request. See the
+[upstream review](../OBS-UPSTREAM-REVIEW.md) for the fresh verification.
 
 | Boundary | Result |
 |---|---|
@@ -155,5 +157,6 @@ LICENSE/NOTICE, prior evidence, graph/checkpoint and P00 accounting are retained
 No push, public deployment, paid service, token action or social post occurred.
 
 Next milestone: **OBS03 — decoder and authoritative flight**, on a new invocation.
-Stop after OBS02. Hosted verification and later full-pipeline/human gates remain
-separate; no broader OBS workstream completion is claimed.
+OBS02 stopped at its boundary. Hosted verification was subsequently confirmed
+PASS during OBS03; later full-pipeline/human gates remain separate. No broader
+OBS workstream completion is claimed.

@@ -1,7 +1,7 @@
 """Explicitly started session: one continuous reader and one supervised worker.
 
-No constructor or status read starts capture or inference. Browser ownership and
-flight are downstream milestones; callers must explicitly renew the owner lease.
+No constructor or status read starts capture or inference. The session owns the
+fixed-step flight clock; callers must explicitly renew the owner lease.
 """
 from copy import deepcopy
 import os
@@ -18,6 +18,7 @@ from .capture import Capture
 from .child import command
 from .contracts import NeuralSample, SessionConfig, SessionStatus
 from .encoding import encode_frame
+from .flight import FlightAuthority, decode, neutralize
 from .neural import SessionSnapshot, StepRequest, StepResult, receive_packet, send_packet
 from .worker import REPOSITORY, model_files
 
@@ -64,6 +65,8 @@ class NeuralSession:
         self._step_started = self._last_step_ms = None
         self._provenance = None
         self._latest_receipt = self._ended = None
+        self._flight = FlightAuthority(self.session_id, self.generation, self.config.evidence_kind,
+                                       origin_ms=time.monotonic()*1000)
 
     def start(self):
         with self._lock:
@@ -72,6 +75,8 @@ class NeuralSession:
             ownership = LiveOwnership(self.root).acquire()
             self._ownership = ownership
             self._started = self._lease = time.monotonic()
+            self._flight = FlightAuthority(self.session_id, self.generation, self.config.evidence_kind,
+                                           origin_ms=self._started*1000)
             self._state = "starting"
             self._thread = threading.Thread(target=self._run, name="live-session", daemon=True)
             try:
@@ -95,6 +100,7 @@ class NeuralSession:
 
     def _finish(self, state, reason):
         with self._lock:
+            self._flight.stop()
             if self._state not in TERMINAL:
                 self._state, self._reason = state, reason
                 self._ended = time.monotonic()
@@ -102,6 +108,7 @@ class NeuralSession:
 
     def stop(self):
         with self._lock:
+            self._flight.stop()
             if self._state == "idle":
                 self._state, self._reason = "stopped", "Stopped before Start."
                 self._done.set()
@@ -207,6 +214,13 @@ class NeuralSession:
             self._completed += 1
             if now * 1000 - self._pending.frame.receipt_monotonic_ms >= self.config.response_max_age_ms:
                 self._rejected += 1
+            else:
+                self._flight.apply(decode(self._inferred.motor_rates_hz,
+                    response_id=self._inferred.response_id, session_id=self.session_id,
+                    generation=self.generation, evidence_kind=self.config.evidence_kind,
+                    receipt_ms=self._pending.frame.receipt_monotonic_ms,
+                    completed_ms=result.completed_monotonic_ms, now_ms=now*1000,
+                    max_age_ms=float(self.config.response_max_age_ms)), now_ms=now*1000)
             self._pending = None
             if self._completed >= self.config.max_model_calls:
                 self._finish("limit_reached", "Session model-call limit reached.")
@@ -247,6 +261,8 @@ class NeuralSession:
                 if expired:
                     self._finish(*expired)
                     break
+                with self._lock:
+                    self._flight.advance_to(time.monotonic()*1000)
                 try:
                     payload = receive_packet(self._channel)
                 except BlockingIOError:
@@ -304,6 +320,7 @@ class NeuralSession:
         if self._ownership is not None:
             self._ownership.close()
         with self._lock:
+            self._flight.stop()
             if self._state not in TERMINAL:
                 self._state = "stopped"
             self._pending = None
@@ -324,6 +341,11 @@ class NeuralSession:
                     or captured.state != "previewing" or not self._producer_active(captured)
                     or age is None or age >= self.config.source_deadline_ms):
                 sample = None
+            # Reads never integrate elapsed time. They still neutralize immediately
+            # if safety validity is lost before the coordinator next polls.
+            flight = self._flight.current.snapshot
+            if sample is None and not flight.neutral:
+                flight = neutralize(self._flight.current).snapshot
             status = SessionStatus(schema_version="obs-session-status-1", session_id=self.session_id,
                 generation=self.generation, evidence_kind=self.config.evidence_kind, state=self._state,
                 reason=self._reason, attempted_calls=self._attempted, accepted_frames=captured.accepted_frames,
@@ -335,4 +357,17 @@ class NeuralSession:
             return SessionSnapshot(status, deepcopy(sample), deepcopy(self._inferred), deepcopy(self._result),
                                    self._pending is not None, self._completed, self._rejected,
                                    self._completed * 20., self._completed / elapsed if elapsed > 0 else 0.,
-                                   self._last_step_ms, age, self.purpose if self.purpose == "fixture" else "real")
+                                   self._last_step_ms, age, self.purpose if self.purpose == "fixture" else "real",
+                                   deepcopy(flight))
+
+    @property
+    def flight_events(self):
+        """Bounded control applications in memory; no recording is enabled."""
+        with self._lock:
+            return deepcopy(self._flight.events)
+
+    @property
+    def flight_trace(self):
+        """Complete replay inputs, held only in memory while recording is off."""
+        with self._lock:
+            return deepcopy(self._flight.trace())

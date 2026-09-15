@@ -1,21 +1,21 @@
 # Active routing — Flyjam local OBS-to-flight
 
-The 2026-09-15 assignment authorizes the new OBS00–OBS06 workstream, one numbered
-prompt per instruction. Current execution repairs OBS01's missing CI FFmpeg
-dependency, then executes **OBS02 only**. The dependency repair passed locally
-and on clean Ubuntu 24.04; matching hosted verification is **PENDING**.
-OBS02 is **PASS / COMPLETE**: safe-source real-model gate passed with **nine
-automated attempts**, and final repository/live checks passed. Prior OBS01 local hardware preview,
-stop/restart and patterned-source evidence remains **PASS**. Follow
-[OBS-STATUS](OBS-STATUS.md), [OBS01](milestones/OBS01.md) and
-[OBS02](milestones/OBS02.md). This supersedes the
-P00-only resume stop for this workstream. Historical navigation remains STOPPED,
-original 06 remains BLOCKED, and P00 human product review remains PENDING.
-Public release, token work and unrelated milestones are not authorized.
-This turn used no desktop capture or recording. Selected OBS identity remains
-`/dev/video0`, OBS Virtual Camera, scene `FLYJAM_INPUT`, 1920×1080 YUYV at 60 fps.
-OBS automated allowance is **9 / 1,024**, with **1,015 remaining**; P00 is preserved.
-Stop after OBS02. OBS03 is the next milestone on a new authorized invocation.
+**OBS03 PASS / COMPLETE. Stop after OBS03.** The decoder consumes typed motor
+rates independently of the CPU backend; the session owns deterministic 20 ms
+flight physics. The local browser offers an explicitly labeled synthetic preview.
+Read [OBS-STATUS](OBS-STATUS.md), [OBS03](milestones/OBS03.md),
+[fixed flight mapping](OBS-FLIGHT.md) and [upstream review](OBS-UPSTREAM-REVIEW.md).
+
+The hosted prerequisite is **PASS** for reviewed commit `7c35af0`, verified via
+run 34982619140. Final local repository/live checks and desktop/mobile browser
+checks pass. OBS accounting remains **9 / 1,024**, **1,015 remaining**; P00
+accounting remains **144 attempts**. Model/checkpoint semantics are preserved.
+
+Idle preview: http://127.0.0.1:8767/live — Load synthetic preview, then Play.
+No capture or recording occurred. Real source-to-browser integration and human
+appearance/motion review remain pending. Next invocation may authorize **OBS04**;
+no later milestone started. No remote push or public deployment occurred.
+Historical navigation remains STOPPED and original 06 remains BLOCKED.
 
 The P00 and navigation records below remain historical evidence.
 

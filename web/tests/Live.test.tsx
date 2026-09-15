@@ -4,6 +4,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { Live } from '../src/live/Live';
 import examples from '../src/live/generated/examples.json';
 
+vi.mock('../src/live/flightRenderer', () => ({ createFlightRenderer: () => ({ draw: vi.fn(), resize: vi.fn(), dispose: vi.fn() }) }));
+
 // Mocked idle HTTP fixtures only; no device or neural worker is involved.
 const health = examples.find(example => example.contract === 'LiveHealth' && example.valid)!.value;
 const config = examples.find(example => example.contract === 'LiveConfig' && example.valid)!.value;
@@ -15,15 +17,16 @@ function mockReads() {
   return fetcher;
 }
 
-describe('OBS00 live idle page', () => {
+describe('OBS03 idle service and preview page', () => {
   it('shows honest idle state and makes only health/config reads', async () => {
     const fetcher = mockReads();
     render(<Live />);
-    expect(await screen.findByText('Idle · foundation service available')).toBeInTheDocument();
-    expect(screen.getByText(/Capture and inference are unavailable in OBS00/)).toBeInTheDocument();
+    expect(await screen.findByText('Idle · local service available')).toBeInTheDocument();
+    expect(await screen.findByText('SYNTHETIC CONTROL REPLAY')).toBeInTheDocument();
+    expect(screen.getByText(/real neural output is not connected/)).toBeInTheDocument();
     expect(screen.getByText('Off by default')).toBeInTheDocument();
     expect(screen.getByText('Explicit selection required')).toBeInTheDocument();
-    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Play synthetic preview' })).toBeDisabled();
     expect(fetcher.mock.calls.map(call => call[0])).toEqual(['/health/live', '/api/live/config']);
     for (const call of fetcher.mock.calls) expect(call[1]).toMatchObject({ method: 'GET', cache: 'no-store' });
   });
@@ -33,7 +36,7 @@ describe('OBS00 live idle page', () => {
     fetcher.mockResolvedValue({ ok: false, status });
     render(<Live />);
     expect(await screen.findByRole('alert')).toHaveTextContent(`HTTP ${status}`);
-    expect(screen.queryByText('Idle · foundation service available')).not.toBeInTheDocument();
+    expect(screen.queryByText('Idle · local service available')).not.toBeInTheDocument();
     expect(fetcher).toHaveBeenCalledTimes(2);
   });
 
@@ -52,7 +55,7 @@ describe('OBS00 live idle page', () => {
     }));
     render(<Live />);
     expect(await screen.findByRole('alert')).toHaveTextContent('Invalid live');
-    expect(screen.queryByText('Idle · foundation service available')).not.toBeInTheDocument();
+    expect(screen.queryByText('Idle · local service available')).not.toBeInTheDocument();
   });
 
   it('aborts reads on cleanup and remains read-only during StrictMode remount', async () => {

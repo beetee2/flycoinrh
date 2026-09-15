@@ -40,7 +40,9 @@ def corpus():
     good = dict(SourceCapability=source, FrameIdentity=frame, EncoderConfig=EncoderConfig().model_dump(),
                 NeuralSample=sample, FlightControls=controls, FlightSnapshot=flight, SessionConfig=config,
                 SessionStatus=status, StreamEnvelope=stream, ReplayManifest=replay,
-                LiveHealth=LiveHealth().model_dump(), LiveConfig=LiveConfig().model_dump())
+                LiveHealth=LiveHealth().model_dump(), LiveConfig=LiveConfig().model_dump(),
+                SyntheticFlightPreview=dict(schema_version="obs-flight-preview-1", evidence_kind="synthetic",
+                    dt_ms=20, snapshots=[flight, {**flight, "tick": 1}]))
     cases = [dict(name=f"{name} valid synthetic", contract=name, valid=True, value=value)
              for name, value in good.items()]
     cases.append(dict(name="real source metadata shape only, no hardware evidence", contract="SourceCapability",
@@ -87,6 +89,11 @@ def corpus():
         ("FlightControls", "expires_monotonic_ms", 2201.0, "overlong expiry"),
         ("FlightControls", "yaw_rate_rad_s", 4.0, "unbounded turn"),
         ("FlightSnapshot", "position", [0, 0], "wrong vector shape"),
+        ("SyntheticFlightPreview", "dt_ms", 21, "preview variable step rejected"),
+        ("SyntheticFlightPreview", "snapshots", [flight, {**flight, "tick": 2}], "preview tick gap"),
+        ("SyntheticFlightPreview", "snapshots", [flight, {**flight, "tick": 1, "generation": 2}], "preview foreign epoch"),
+        ("SyntheticFlightPreview", "snapshots", [flight, {**flight, "tick": 1, "evidence_kind": "real"}], "preview false real label"),
+        ("SyntheticFlightPreview", "snapshots", [flight], "preview too short"),
         ("SessionConfig", "recording", "false", "coerced consent"),
         ("SessionConfig", "learning_enabled", 0, "numeric false literal"),
         ("EncoderConfig", "padding_u8", False, "boolean padding literal"),

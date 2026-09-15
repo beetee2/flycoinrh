@@ -1,4 +1,5 @@
-"""OBS00 idle local service. No device or neural worker imports."""
+"""Idle local service and bounded synthetic OBS03 presentation. No model imports."""
+from functools import lru_cache
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -7,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from .contracts import LiveConfig, LiveHealth
+from .flight import SyntheticFlightPreview, synthetic_preview
 
 DIST = Path(__file__).resolve().parents[2] / "web/dist"
 
@@ -41,6 +43,13 @@ def create_live_app(*, dist: Path = DIST):
     @app.get("/api/live/config", response_model=LiveConfig)
     async def config():
         return LiveConfig()
+
+    # Safe precomputed synthetic content only. No session, recording or inference.
+    preview = lru_cache(maxsize=1)(synthetic_preview)
+
+    @app.get("/api/live/flight-preview", response_model=SyntheticFlightPreview)
+    def flight_preview():
+        return preview()
 
     @app.get("/")
     async def home():

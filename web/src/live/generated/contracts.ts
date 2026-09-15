@@ -511,6 +511,54 @@ export interface FlightSnapshot {
 }
 export type FlightSnapshot = FlightSnapshotContract.FlightSnapshot;
 
+export namespace SyntheticFlightPreviewContract {
+export type SchemaVersion = "obs-flight-preview-1";
+export type EvidenceKind = "synthetic";
+export type DtMs = 20;
+/**
+ * @minItems 2
+ * @maxItems 601
+ */
+export type Snapshots = [FlightSnapshot, FlightSnapshot, ...FlightSnapshot[]];
+export type SchemaVersion1 = "obs-flight-1";
+export type SessionId = string;
+export type Generation = number;
+export type EvidenceKind1 = "real" | "fixture";
+export type Tick = number;
+/**
+ * @minItems 3
+ * @maxItems 3
+ */
+export type Position = [number, number, number];
+export type YawRad = number;
+export type PitchRad = number;
+export type SpeedUnitsS = number;
+export type AppliedResponseId = string | null;
+export type Neutral = boolean;
+
+export interface SyntheticFlightPreview {
+  schema_version: SchemaVersion;
+  evidence_kind: EvidenceKind;
+  dt_ms: DtMs;
+  snapshots: Snapshots;
+}
+export interface FlightSnapshot {
+  schema_version: SchemaVersion1;
+  session_id: SessionId;
+  generation: Generation;
+  evidence_kind: EvidenceKind1;
+  tick: Tick;
+  position: Position;
+  yaw_rad: YawRad;
+  pitch_rad: PitchRad;
+  speed_units_s: SpeedUnitsS;
+  applied_response_id: AppliedResponseId;
+  neutral: Neutral;
+}
+
+}
+export type SyntheticFlightPreview = SyntheticFlightPreviewContract.SyntheticFlightPreview;
+
 export namespace SessionConfigContract {
 export type SchemaVersion = "obs-session-config-1";
 export type SourceId = string;

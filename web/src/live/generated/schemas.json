@@ -804,6 +804,142 @@
     "title": "FlightSnapshot",
     "type": "object"
   },
+  "SyntheticFlightPreview": {
+    "$defs": {
+      "FlightSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-flight-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "tick": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Tick",
+            "type": "integer"
+          },
+          "position": {
+            "items": {
+              "maximum": 1000000000.0,
+              "minimum": -1000000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Position",
+            "type": "array"
+          },
+          "yaw_rad": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "title": "Yaw Rad",
+            "type": "number"
+          },
+          "pitch_rad": {
+            "maximum": 0.7853981633974483,
+            "minimum": -0.7853981633974483,
+            "title": "Pitch Rad",
+            "type": "number"
+          },
+          "speed_units_s": {
+            "maximum": 10,
+            "minimum": 0,
+            "title": "Speed Units S",
+            "type": "number"
+          },
+          "applied_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Response Id"
+          },
+          "neutral": {
+            "title": "Neutral",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "tick",
+          "position",
+          "yaw_rad",
+          "pitch_rad",
+          "speed_units_s",
+          "applied_response_id",
+          "neutral"
+        ],
+        "title": "FlightSnapshot",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "schema_version": {
+        "const": "obs-flight-preview-1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "evidence_kind": {
+        "const": "synthetic",
+        "title": "Evidence Kind",
+        "type": "string"
+      },
+      "dt_ms": {
+        "const": 20,
+        "title": "Dt Ms",
+        "type": "integer"
+      },
+      "snapshots": {
+        "items": {
+          "$ref": "#/$defs/FlightSnapshot"
+        },
+        "maxItems": 601,
+        "minItems": 2,
+        "title": "Snapshots",
+        "type": "array"
+      }
+    },
+    "required": [
+      "schema_version",
+      "evidence_kind",
+      "dt_ms",
+      "snapshots"
+    ],
+    "title": "SyntheticFlightPreview",
+    "type": "object"
+  },
   "SessionConfig": {
     "$defs": {
       "EncoderConfig": {

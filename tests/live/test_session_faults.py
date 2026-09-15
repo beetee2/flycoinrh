@@ -98,9 +98,44 @@ def test_stale_response_is_only_historical_and_stop_cannot_revive_it(sessions):
     assert snapshot.sample is None
     assert snapshot.last_inferred is not None
     assert snapshot.rejected_results == 1
+    assert snapshot.flight.neutral
+    assert session.flight_events == []
     session.stop()
     assert session.wait(1)
     assert session.snapshot().sample is None
+    assert_released(session)
+
+
+@pytest.mark.parametrize("ending", ["stop", "source_lost", "lease_lost"])
+def test_typed_worker_response_drives_session_flight_and_terminal_replays(sessions, ending):
+    from flytrap.live.flight import decode, replay
+
+    session = sessions("normal", lease_ms=800).start()
+    wait_until(lambda: session.renew_lease() and session.snapshot().flight.position[0] > .002)
+    before = session.snapshot()
+    assert before.flight.applied_response_id == before.last_inferred.response_id
+    assert before.flight.yaw_rad < 0 and before.flight.pitch_rad > 0
+    sample = before.last_inferred
+    control = session.flight_events[0].controls
+    assert control == decode(sample.motor_rates_hz, response_id=sample.response_id,
+        session_id=session.session_id, generation=session.generation, evidence_kind="fixture",
+        receipt_ms=sample.frame.receipt_monotonic_ms, completed_ms=sample.completed_monotonic_ms,
+        now_ms=control.issued_monotonic_ms)
+    assert sample.raw_action.dx == 22.5  # Flight decoding preserves original output.
+    if ending == "stop":
+        session.stop()
+    elif ending == "source_lost":
+        session.capture.producer = "inactive"
+    # lease_lost simply ceases renewal, with no additional calls or recording.
+    assert session.wait(2)
+    after = session.snapshot()
+    assert after.flight.neutral and after.flight.speed_units_s == 0
+    trace = session.flight_trace
+    states = replay(trace.initial, trace.events, ticks=trace.ticks, origin_ms=trace.origin_ms,
+                    terminal_tick=trace.terminal_tick)
+    assert states[-1].snapshot == after.flight
+    assert session.snapshot().flight == after.flight
+    assert session.config.recording is False
     assert_released(session)
 
 

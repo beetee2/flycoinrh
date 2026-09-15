@@ -58,3 +58,21 @@ assert not any(name in sys.modules for name in (
 """
     result = subprocess.run([sys.executable, "-c", script], capture_output=True, text=True, timeout=10)
     assert result.returncode == 0, result.stderr
+
+
+def test_synthetic_flight_preview_is_bounded_repeatable_and_has_no_side_effects(tmp_path, monkeypatch):
+    from flytrap.live.contracts import SyntheticFlightPreview
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("synthetic presentation cannot spawn capture or inference")
+    monkeypatch.setattr(subprocess, "Popen", forbidden)
+    with TestClient(create_live_app(dist=tmp_path), base_url="http://127.0.0.1") as client:
+        response = client.get("/api/live/flight-preview")
+        assert response.status_code == 200
+        preview = SyntheticFlightPreview.model_validate(response.json())
+        assert preview.evidence_kind == "synthetic" and len(preview.snapshots) == 601
+        assert preview.snapshots[-1].position != preview.snapshots[0].position
+        assert len(response.content) < 400_000
+        assert client.get("/api/live/flight-preview").json() == response.json()
+        assert list(tmp_path.iterdir()) == []
+        assert client.post("/api/live/flight-preview").status_code == 405

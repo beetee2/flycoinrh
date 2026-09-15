@@ -178,6 +178,22 @@ class FlightSnapshot(Contract):
     neutral: bool
 
 
+class SyntheticFlightPreview(Contract):
+    schema_version: Literal["obs-flight-preview-1"]
+    evidence_kind: Literal["synthetic"]
+    dt_ms: Literal[20]
+    snapshots: Annotated[list[FlightSnapshot], Field(min_length=2, max_length=601)]
+
+    @model_validator(mode="after")
+    def sequence(self):
+        first = self.snapshots[0]
+        for tick, snapshot in enumerate(self.snapshots):
+            if (snapshot.tick != tick or snapshot.evidence_kind != "fixture"
+                    or (snapshot.session_id, snapshot.generation) != (first.session_id, first.generation)):
+                raise ValueError("synthetic preview requires sequential fixture snapshots of one session")
+        return self
+
+
 class SessionConfig(Contract):
     schema_version: Literal["obs-session-config-1"] = "obs-session-config-1"
     source_id: Id
@@ -309,5 +325,5 @@ class LiveConfig(Contract):
 
 
 CONTRACTS = {cls.__name__: cls for cls in (SourceCapability, FrameIdentity, EncoderConfig,
-    NeuralSample, FlightControls, FlightSnapshot, SessionConfig, SessionStatus, StreamEnvelope,
+    NeuralSample, FlightControls, FlightSnapshot, SyntheticFlightPreview, SessionConfig, SessionStatus, StreamEnvelope,
     ReplayManifest, LiveHealth, LiveConfig)}

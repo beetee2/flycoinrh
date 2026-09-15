@@ -22,7 +22,8 @@
     "ajv": "8.20.0",
     "ajv-formats": "3.0.1",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "three": "0.186.0"
   },
   "devDependencies": {
     "@playwright/test": "1.63.0",
@@ -32,6 +33,7 @@
     "@types/node": "22.20.2",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
+    "@types/three": "0.186.0",
     "axe-core": "4.13.0",
     "jsdom": "30.0.1",
     "json-schema-to-typescript": "16.0.0",

@@ -10,6 +10,7 @@ export type LiveContracts = {
   NeuralSample: C.NeuralSample;
   FlightControls: C.FlightControls;
   FlightSnapshot: C.FlightSnapshot;
+  SyntheticFlightPreview: C.SyntheticFlightPreview;
   SessionConfig: C.SessionConfig;
   SessionStatus: C.SessionStatus;
   StreamEnvelope: C.StreamEnvelope;
@@ -51,6 +52,14 @@ function checkNeural(sample: C.NeuralSample): void {
 // with flytrap/live/contracts.py and the shared generated compatibility corpus.
 function checkSemantics(name: ContractName, value: LiveContracts[ContractName]): void {
   switch (name) {
+    case 'SyntheticFlightPreview': {
+      const preview = value as C.SyntheticFlightPreview;
+      const first = preview.snapshots[0];
+      requireCondition(preview.snapshots.every((snapshot, tick) => snapshot.tick === tick &&
+        snapshot.evidence_kind === 'fixture' && snapshot.session_id === first.session_id &&
+        snapshot.generation === first.generation), 'synthetic preview requires sequential fixture snapshots of one session');
+      break;
+    }
     case 'SourceCapability':
       checkSource(value as C.SourceCapability);
       break;

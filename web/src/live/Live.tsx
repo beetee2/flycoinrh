@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
+const FlightStage = lazy(() => import('./FlightStage').then(module => ({ default: module.FlightStage })));
 import { parseLiveContract } from './contracts';
 import type { LiveConfig } from './contracts';
 
@@ -24,23 +25,24 @@ export function Live() {
   }, []);
 
   return <div className="shell">
-    <header className="masthead"><a className="wordmark" href="/live">FLYJAM <span>LIVE</span></a><span className="edition">LOCAL · OBS00</span></header>
+    <header className="masthead"><a className="wordmark" href="/live">FLYJAM <span>LIVE</span></a><span className="edition">LOCAL · OBS03</span></header>
     <main>
-      <section className="intro"><p className="eyebrow">OBS TO FLIGHT</p><h1>Live foundation</h1>
-        <p className="lede">Capture and inference are unavailable in OBS00. This page checks the local service and stays idle.</p></section>
+      <section className="intro"><p className="eyebrow">OBS TO FLIGHT</p><h1>A fly, in open air.</h1>
+        <p className="lede">An early third-person flight preview. Load the synthetic sequence, then press Play to explore the scene.</p></section>
+      <Suspense fallback={<p>Loading flight stage…</p>}><FlightStage /></Suspense>
       <section className="status-card" aria-labelledby="live-status-title">
         <h2 id="live-status-title">Local service</h2>
         {error ? <div role="alert" className="error"><p>{error}</p><p>Check that the live service is running, then reload this page.</p></div>
-          : <p role="status" className="availability">{config ? 'Idle · foundation service available' : 'Checking local service…'}</p>}
+          : <p role="status" className="availability">{config ? 'Idle · local service available' : 'Checking local service…'}</p>}
         {config && <dl className="facts">
           <div><dt>Capture backend</dt><dd>{config.backend}</dd></div>
           <div><dt>Source</dt><dd>Explicit selection required</dd></div>
           <div><dt>Recording</dt><dd>Off by default</dd></div>
           <div><dt>Neural calls this page</dt><dd>0</dd></div>
         </dl>}
-        <p className="context">Source selection and explicit preview arrive in OBS01. Select an approved OBS virtual device before any capture. No source is selected here.</p>
+        <p className="context">This stage uses synthetic control snapshots. Live source selection and neural flight controls will be connected in a later milestone.</p>
       </section>
     </main>
-    <footer><span>Private local workspace</span><span>OBS00 · idle service and contracts</span></footer>
+    <footer><span>Private local workspace</span><span>OBS03 · early flight preview</span></footer>
   </div>;
 }
