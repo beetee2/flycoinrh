@@ -54,11 +54,13 @@ jobs:
           EOF
           cat "$profile"
           sudo apparmor_parser --replace "$profile"
-      - run: make verify test-upstream
-      - run: make verify-live LIVE_EVIDENCE=artifacts/milestones/01/obs-fixture
+      - name: Foundation regression and historical navigation checks
+        run: make verify test-upstream EVIDENCE=artifacts/ci/foundation
+      - name: Lab and live schemas, components, and separate fixture browser journeys
+        run: make verify-live LIVE_EVIDENCE=artifacts/ci/live
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: foundation-evidence
-          path: artifacts/milestones/01/
+          path: artifacts/ci/
           if-no-files-found: error

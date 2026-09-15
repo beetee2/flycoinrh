@@ -5,7 +5,7 @@ import path from 'node:path';
 // Real local API and full model. One explicit comparison = 9 attempted calls.
 // No route mocks, cached responses, fixture service, or automatic retries.
 test('real pixels to retina to response and downloadable JSON on desktop and mobile', async ({page}) => {
-  const review=path.resolve('../artifacts/milestones/P00/review');await mkdir(review,{recursive:true});
+  const review=path.resolve('..', process.env.FLYJAM_LAB_EVIDENCE ?? 'artifacts/checks/lab/real-browser', 'review');await mkdir(review,{recursive:true});
   await page.goto('/lab');
   await expect(page.getByRole('status',{name:'Local model status'})).toContainText('Ready');
   await expect(page.getByRole('button',{name:/Run comparison/})).toBeEnabled();

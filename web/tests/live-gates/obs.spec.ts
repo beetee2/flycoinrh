@@ -24,6 +24,36 @@ function inputPng(bytes: number[]) {
   return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', header), chunk('IDAT', deflateSync(rows)), chunk('IEND', Buffer.alloc(0))]);
 }
 
+test('closing the approved OBS preview tab releases capture without neural calls', async ({ page, context }, info) => {
+  const ledger = path.resolve('../artifacts/live/validation/attempts.jsonl');
+  const before = readFileSync(ledger, 'utf8');
+  await selectLive(page, 'v4l2-video0');
+  expect((await (await page.request.get('/api/live/config')).json()).execution_purpose).toBe('automated');
+  await page.getByRole('button', { name: 'Preview source', exact: true }).click();
+  await expect.poll(async () => (await current(page))?.status.state).toBe('previewing');
+  await expect.poll(async () => (await current(page))?.status.accepted_frames).toBeGreaterThan(0);
+  const started = await current(page);
+  expect(started?.kind).toBe('preview');
+  expect(started?.status.attempted_calls).toBe(0);
+  const began = Date.now();
+  await page.close();
+  await expect.poll(async () => {
+    const value = await (await context.request.get('/api/live/status')).json();
+    return value.current?.status.state;
+  }, { timeout: 5000, intervals: [25] }).toBe('stopped');
+  const elapsed = Date.now() - began;
+  expect(elapsed).toBeLessThan(3500);
+  const final = (await (await context.request.get('/api/live/status')).json()).current;
+  expect(final.status.session_id).toBe(started?.status.session_id);
+  expect(final.recording_state).toBe('off');
+  expect(readFileSync(ledger, 'utf8') === before, 'preview and tab closure preserve accounting').toBe(true);
+  await info.attach('OBS preview tab closure numeric evidence', { body: JSON.stringify({
+    session_id: final.status.session_id, state: final.status.state, elapsed_ms: elapsed,
+    accepted_frames: final.status.accepted_frames, attempted_calls: final.status.attempted_calls,
+    recording_state: final.recording_state, ledger_unchanged: true,
+  }, null, 2), contentType: 'application/json' });
+});
+
 test('approved OBS source reaches real neural flight within two automated calls and stops', async ({ page, browser }, info) => {
   const root = path.resolve('..');
   const count = () => readFileSync(path.join(root, 'artifacts/live/validation/attempts.jsonl'), 'utf8').trim().split('\n').length;

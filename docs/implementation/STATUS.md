@@ -1,3 +1,21 @@
+# Active routing — OBS06 technical validation complete
+
+**OBS06 technical validation PASS; final human product and causal-response review PENDING.**
+Read [OBS-LIVE-HANDOFF](OBS-LIVE-HANDOFF.md), [OBS-STATUS](OBS-STATUS.md), and
+[OBS06](milestones/OBS06.md). Operator Start/Stop and updating inferred input are
+confirmed; ordinary OBS visual influence remains inconclusive. Fixed safe-stimulus
+causal comparison passed without model or mapping changes.
+
+Accounting: **OBS 219/1,024 (805 remaining), P00 144 unchanged**. Capture and
+inference are off; manual service remains at http://127.0.0.1:8767/live with human
+execution purpose. Local OBS06 changes are uncommitted/unpushed. Reviewed hosted
+workflow 35000589668 passed exact revision a9688b39caaebb71a0c1058a6bf923ef86aab314.
+
+Stop for final local human review. Historical navigation remains STOPPED and its
+original milestone 06 remains BLOCKED. Previous entries below remain historical.
+
+---
+
 # Active routing — OBS05 browser experience
 
 **OBS05 implementation and required local checks PASS / COMPLETE. Stop for human review.**

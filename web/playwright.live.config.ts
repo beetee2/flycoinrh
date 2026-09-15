@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const evidence = path.resolve(root, process.env.FLYJAM_LIVE_EVIDENCE ?? 'artifacts/milestones/OBS05/browser');
+const evidence = path.resolve(root, process.env.FLYJAM_LIVE_EVIDENCE ?? 'artifacts/checks/live/browser');
 const compatibilityBrowser = process.env.FLYJAM_COMPAT_BROWSER;
 if (compatibilityBrowser && (!path.isAbsolute(compatibilityBrowser) || !existsSync(compatibilityBrowser))) {
   throw new Error('FLYJAM_COMPAT_BROWSER must name an existing absolute browser executable.');

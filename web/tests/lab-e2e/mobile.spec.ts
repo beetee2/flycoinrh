@@ -26,6 +26,6 @@ test('mobile full-width grid supports captured touch drawing without inference',
   await expect(page.getByRole('region',{name:'Comparison result'})).toHaveCount(0);
   expect(comparisons).toBe(0);
   await page.evaluate(()=>window.scrollTo(0,0));
-  const review=path.resolve('../artifacts/milestones/P00/review');await mkdir(review,{recursive:true});
+  const review=path.resolve('..', process.env.FLYJAM_LAB_EVIDENCE ?? 'artifacts/checks/lab/real-browser', 'review');await mkdir(review,{recursive:true});
   await page.screenshot({path:path.join(review,'mobile-editor-final.png'),fullPage:true});
 });

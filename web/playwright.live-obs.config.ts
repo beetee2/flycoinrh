@@ -6,7 +6,7 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 // Playwright otherwise writes an accessibility-tree dump after failures, which
 // would retain the private inspection panel even with screenshots disabled.
 process.env.PLAYWRIGHT_NO_COPY_PROMPT = '1';
-const evidence = path.resolve(root, process.env.FLYJAM_LIVE_EVIDENCE ?? 'artifacts/milestones/OBS05/obs-browser');
+const evidence = path.resolve(root, process.env.FLYJAM_LIVE_EVIDENCE ?? 'artifacts/checks/live/obs-browser');
 if (process.env.FLYJAM_OBS_APPROVED !== '/dev/video0' || process.env.FLYJAM_OBS_CONTENT_READY !== 'yes') {
   throw new Error('BLOCKED: selected /dev/video0 identity and displayed-content readiness must be explicitly confirmed before this gate.');
 }

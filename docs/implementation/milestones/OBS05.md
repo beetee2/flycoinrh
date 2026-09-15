@@ -212,3 +212,36 @@ startup/final resource checks are under `local-service/`.
    responsiveness and appearance before authorizing anything further.
 
 **Stop after OBS05. Human real-flight review remains PENDING; OBS06 is not started.**
+
+
+## OBS06 handoff update — 2026-09-15
+
+This append-only update supersedes the pending operator-control and hosted-CI
+handoff above; the original OBS05 execution record remains historical evidence.
+The operator authorizes OBS06 technical validation only. Final product and
+causal-response approval remain separate.
+
+The operator explicitly confirmed live Start/Stop behavior. Additional hands-on
+report: switching from videos to static content updated the exact last-inferred
+input appropriately; all Start/Stop controls appeared to function correctly.
+The operator could not clearly tell whether the flight path changed and did not
+have enough evidence to contradict a response. This is an inconclusive visual
+influence observation, not confirmation of a strong causal response. Tab hiding,
+producer-stop, replay, rate-label comprehension, and product taste were not
+reported as checked.
+
+Read-only verification of [hosted workflow 35000589668](https://github.com/beetee2/flycoinrh/actions/runs/35000589668)
+confirmed status completed / conclusion success for the exact reviewed revision
+`a9688b39caaebb71a0c1058a6bf923ef86aab314` (completed 2026-09-15 17:24:38 UTC).
+Evidence: `artifacts/milestones/OBS06/hosted-workflow-verified.json`.
+This confirms the pushed OBS05 revision; it does not validate subsequent local
+OBS06 changes. The first lookup used the upstream default repository and returned
+404; explicitly selecting beetee2/flycoinrh resolved the repository mismatch.
+
+OBS06 entry accounting is 142/1,024, 882 remaining. The 81 additional automated
+charges after the historical 61-call handoff belong to sessions
+`71f9619f9ec7447bad378edc609417f5` (34),
+`901efeed2ffe422daf8ddd0663575f24` (33), and
+`6f147eec4b1d4fb6ab576ddeb1171400` (14). They remain charged under their original
+policy. The current port-8767 server reports human execution purpose; agent
+validation uses separate automated services and the same durable allowance.

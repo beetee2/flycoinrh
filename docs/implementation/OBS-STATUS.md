@@ -1,3 +1,45 @@
+# Active routing — OBS06 technical validation complete
+
+**Technical gates PASS. Return for final human review.** Read
+[OBS-LIVE-HANDOFF](OBS-LIVE-HANDOFF.md) and the [OBS06 report](milestones/OBS06.md).
+
+| Status | Current result |
+|---|---|
+| implementation_status | PASS — regression, lifecycle, CI integration |
+| real_model_status | PASS — CPU reference, browser, safe recording/replay |
+| real_obs_status | PASS — approved source, changed input, actual producer stop/restart, preview tab closure |
+| causal_validation_status | PASS for fixed safe-stimulus diagnostic; ordinary OBS visual influence INCONCLUSIVE |
+| human_review | Start/Stop and inferred-input updates confirmed; final product and causal-response approval PENDING |
+
+The operator reported exact inferred-input updates when switching videos to static
+content, correctly behaving Start/Stop controls, and uncertainty about flight-path
+changes. Unreported manual checks are not approved. Historical OBS03 synthetic
+appearance approval remains separate.
+
+[Hosted workflow 35000589668](https://github.com/beetee2/flycoinrh/actions/runs/35000589668)
+is confirmed completed/success for reviewed revision
+`a9688b39caaebb71a0c1058a6bf923ef86aab314`. OBS05 now has an appended handoff
+update. OBS06 changes are local/uncommitted; no new hosted validation or push.
+
+Actual OBS content change altered 143/256 pixels, compared in memory. Recording
+and additional input saving remained off. Producer stop froze flight; producer
+restart required explicit Start. Causal comparison used 32 calls: rates, controls,
+and trajectories differed for predefined safe stimuli; exact repeat matched;
+actually disconnected drive remained neutral. This does not establish strong
+ordinary OBS responsiveness or human product approval.
+
+Final accounting: **219/1,024, 805 remaining; P00 144 unchanged**. OBS06 began
+at the actual 142 and added 77; every earlier automated-policy charge is preserved.
+Human manual use: `.venv/bin/python -m flytrap.live serve --port 8767 --execution-purpose human`.
+Agent runs use automated policy and the same durable remaining allowance.
+
+Capture/inference are off. Existing human service: http://127.0.0.1:8767/live.
+Safe review bundle: `artifacts/milestones/OBS06/review-bundle.zip`.
+**Stop for final human review.** No further model/mapping experiment or remote work
+is authorized. Previous routing below remains historical evidence.
+
+---
+
 # Active routing — OBS05 implemented; hands-on review next
 
 **OBS05 implementation and required local validation PASS / COMPLETE.** Read the

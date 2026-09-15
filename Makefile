@@ -117,7 +117,8 @@ verify-feasibility:
 	$(PYTHON) -m scripts.verify_feasibility --graph-root $(GRAPH_ROOT) --output $(EVIDENCE)/trials
 
 # P00 is an explicitly local prototype; old navigation release gates stay blocked.
-.PHONY: serve-lab test-lab test-lab-real test-lab-ui test-lab-e2e check-lab-generated
+LAB_EVIDENCE ?= artifacts/checks/lab
+.PHONY: serve-lab test-lab test-lab-real test-lab-ui test-lab-e2e test-lab-fixture-e2e check-lab-generated
 serve-lab:
 	$(PYTHON) -m flytrap.lab
 
@@ -125,19 +126,22 @@ check-lab-generated:
 	$(PYTHON) -m scripts.generate_lab_contracts --check
 
 test-lab:
-	$(PYTEST) tests/lab --junitxml=artifacts/milestones/P00/lab-unit.xml
+	$(PYTEST) tests/lab --junitxml=$(LAB_EVIDENCE)/lab-unit.xml
 
 test-lab-real:
-	$(PYTEST) tests/real_model/test_lab_sensory.py tests/real_model/test_lab.py --junitxml=artifacts/milestones/P00/lab-real.xml
+	$(PYTEST) tests/real_model/test_lab_sensory.py tests/real_model/test_lab.py --junitxml=$(LAB_EVIDENCE)/lab-real.xml
 
 test-lab-ui:
-	VITEST_JUNIT_PATH=../artifacts/milestones/P00/lab-ui.xml npm --prefix web test -- tests/Lab.test.tsx
+	VITEST_JUNIT_PATH=../$(LAB_EVIDENCE)/lab-ui.xml npm --prefix web test -- tests/Lab.test.tsx
 
 test-lab-e2e:
-	cd web && npx --no-install playwright test --config=playwright.lab.config.ts
+	cd web && FLYJAM_LAB_EVIDENCE=$(LAB_EVIDENCE)/real-browser npx --no-install playwright test --config=playwright.lab.config.ts
+
+test-lab-fixture-e2e:
+	cd web && FLYJAM_LAB_EVIDENCE=$(LAB_EVIDENCE)/browser npx --no-install playwright test --config=playwright.lab-fixture.config.ts
 
 # Live fast checks use explicitly synthetic sources; no device or model calls.
-LIVE_EVIDENCE ?= artifacts/milestones/OBS05/checks
+LIVE_EVIDENCE ?= artifacts/checks/live
 LIVE_PORT ?= 8767
 .PHONY: live-devices live-doctor serve-live generate-live check-live-generated test-live test-live-ui test-live-e2e verify-live
 live-devices:
@@ -170,10 +174,11 @@ verify-live: check-live-generated check-lab-generated lint test-live test-live-u
 	$(PYTEST) tests/lab -q --junitxml=$(LIVE_EVIDENCE)/lab.xml
 	VITEST_JUNIT_PATH=../$(LIVE_EVIDENCE)/lab-ui.xml npm --prefix web test -- tests/Lab.test.tsx
 	npm --prefix web run build
+	$(MAKE) test-lab-fixture-e2e LAB_EVIDENCE=$(LIVE_EVIDENCE)/lab-fixture
 	$(MAKE) test-live-e2e
 
 # OBS02 model gate: fixed safe source, actual baseline, separate durable budget.
-LIVE_REAL_EVIDENCE ?= artifacts/milestones/OBS02/real
+LIVE_REAL_EVIDENCE ?= $(LIVE_EVIDENCE)/real-reference
 .PHONY: test-live-real
 test-live-real:
 	timeout --signal=TERM --kill-after=5s 90s $(PYTHON) -m scripts.live_real --output $(LIVE_REAL_EVIDENCE)
@@ -188,3 +193,12 @@ test-live-real-browser:
 test-live-obs:
 	npm --prefix web run build
 	cd web && FLYJAM_LIVE_EVIDENCE=$(LIVE_EVIDENCE)/obs-browser npx --no-install playwright test --config=playwright.live-obs.config.ts
+
+# Local only. Check operator approval before consuming any model allowance.
+# The constituent gates also reject missing data, hardware and server policy.
+.PHONY: verify-live-real
+verify-live-real:
+	@test "$(FLYJAM_OBS_APPROVED)" = /dev/video0 && test "$(FLYJAM_OBS_CONTENT_READY)" = yes || { echo "BLOCKED: confirm selected /dev/video0 identity and safe content, then set FLYJAM_OBS_APPROVED=/dev/video0 FLYJAM_OBS_CONTENT_READY=yes."; exit 2; }
+	$(MAKE) test-live-real
+	$(MAKE) test-live-real-browser
+	$(MAKE) test-live-obs
