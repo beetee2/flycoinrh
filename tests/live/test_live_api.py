@@ -7,18 +7,21 @@ from fastapi.testclient import TestClient
 
 from flytrap.live.api import create_live_app
 from flytrap.live.contracts import LiveConfig, LiveHealth
+from flytrap.live.service import LiveService
 
 
 def test_idle_reads_never_discover_capture_or_infer(tmp_path, monkeypatch):
     def forbidden(*args, **kwargs):
         raise AssertionError("idle service must not spawn work")
     monkeypatch.setattr(subprocess, "Popen", forbidden)
-    with TestClient(create_live_app(dist=tmp_path), base_url="http://127.0.0.1") as client:
+    service = LiveService(repository_root=tmp_path)
+    with TestClient(create_live_app(dist=tmp_path, service=service), base_url="http://127.0.0.1") as client:
         for _ in range(3):
             response = client.get("/health/live")
             assert response.status_code == 200
             assert response.json() == LiveHealth().model_dump()
-            assert client.get("/api/live/config").json() == LiveConfig().model_dump()
+            assert client.get("/api/live/config").json() == LiveConfig(
+                validation_attempted=0, validation_remaining=1024).model_dump()
         assert client.get("/live").status_code == 503
         assert list(tmp_path.iterdir()) == []
 

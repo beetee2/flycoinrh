@@ -306,7 +306,7 @@ class ReplayManifest(Contract):
 class LiveHealth(Contract):
     schema_version: Literal["obs-health-1"] = "obs-health-1"
     status: Literal["ok"] = "ok"
-    phase: Literal["OBS04"] = "OBS04"
+    phase: Literal["OBS05"] = "OBS05"
     state: Literal["available"] = "available"
     capture_implemented: Literal[True] = True
     inference_implemented: Literal[True] = True
@@ -314,12 +314,16 @@ class LiveHealth(Contract):
 
 class LiveConfig(Contract):
     schema_version: Literal["obs-config-1"] = "obs-config-1"
-    phase: Literal["OBS04"] = "OBS04"
+    phase: Literal["OBS05"] = "OBS05"
     capture_implemented: Literal[True] = True
     inference_implemented: Literal[True] = True
     recording_default: Literal[False] = False
     source_selection_required: Literal[True] = True
     validation_call_cap: Literal[1024] = 1024
+    execution_purpose: Literal["automated", "human"] = "automated"
+    validation_attempted: Annotated[int, Field(ge=0, le=1024)] | None = None
+    validation_remaining: Annotated[int, Field(ge=0, le=1024)] | None = None
+    obs_recording_allowed: Literal[False] = False
     backend: Literal["ffmpeg-v4l2"] = "ffmpeg-v4l2"
     encoder: EncoderConfig = EncoderConfig()
 

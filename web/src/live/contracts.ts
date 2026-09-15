@@ -1,5 +1,5 @@
-import Ajv2020 from 'ajv/dist/2020';
-import schemas from './generated/schemas.json';
+import Ajv2020 from 'ajv/dist/2020.js';
+import schemas from './generated/schemas.json' with { type: 'json' };
 import type * as C from './generated/contracts';
 
 export type * from './generated/contracts';
@@ -38,6 +38,14 @@ const validators = Object.fromEntries(Object.entries(schemas).map(([name, schema
 
 function requireCondition(condition: boolean, message: string): void {
   if (!condition) throw new Error(`Invalid live contract: ${message}`);
+}
+
+function equalData(a: unknown, b: unknown): boolean {
+  if (a === b) return true;
+  if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return false;
+  const left = a as Record<string, unknown>, right = b as Record<string, unknown>;
+  return Object.keys(left).length === Object.keys(right).length &&
+    Object.keys(left).every(key => Object.hasOwn(right, key) && equalData(left[key], right[key]));
 }
 
 function checkSource(source: C.SourceCapability): void {
@@ -107,6 +115,17 @@ function checkSemantics(name: ContractName, value: LiveContracts[ContractName]):
         requireCondition(['session_id', 'generation', 'evidence_kind'].every(key =>
           stream.last_inferred!.frame[key as keyof C.FrameIdentity] === stream.status[key as keyof C.SessionStatus]),
         'foreign historical observation');
+        requireCondition(!stream.latest_source_frame || stream.last_inferred.frame.source_id === stream.latest_source_frame.source_id,
+          'historical observation source disagrees with capture');
+      }
+      if (stream.schema_version === 'obs-api-snapshot-1') {
+        requireCondition(stream.neural_sample === null || equalData(stream.neural_sample, stream.last_inferred),
+          'active and historical neural observations disagree');
+        if (stream.kind === 'preview') {
+          requireCondition(stream.model_mode === 'none' && stream.neural_sample === null && stream.last_inferred === null &&
+            stream.flight === null && stream.completed_calls === 0 && stream.status.attempted_calls === 0 &&
+            stream.recording_state === 'off' && stream.recording_id === null, 'capture-only preview contains model or recording state');
+        } else requireCondition(stream.model_mode !== 'none', 'neural session must identify its model mode');
       }
       break;
     }
@@ -152,6 +171,39 @@ function checkSemantics(name: ContractName, value: LiveContracts[ContractName]):
       checkSemantics('ReplayManifest', replay.manifest);
       replay.samples.forEach(checkNeural);
       replay.inputs.forEach(input => checkFrame(input.frame));
+      const manifest = replay.manifest;
+      const belongs = (item: {session_id: string; generation: number; evidence_kind: string}) =>
+        item.session_id === manifest.session_id && item.generation === manifest.generation && item.evidence_kind === manifest.evidence_kind;
+      requireCondition(belongs(replay.trace.initial.snapshot) && belongs(replay.final.snapshot), 'foreign replay flight');
+      requireCondition(equalData(replay.trace.initial.snapshot, manifest.initial_flight), 'replay initial pose mismatch');
+      requireCondition(replay.trace.ticks === replay.final.snapshot.tick, 'replay final tick mismatch');
+      requireCondition(replay.samples.length === replay.results.length && replay.inputs.length === replay.samples.length,
+        'replay input/result counts disagree');
+      const responseIds = new Set<string>();
+      replay.samples.forEach((sample, index) => {
+        const input = replay.inputs[index], result = replay.results[index];
+        requireCondition(belongs(input.frame) && input.frame.source_id === manifest.source.source_id &&
+          input.step_index === index && sample.step_index === index && result.step_index === index &&
+          equalData(input.frame, sample.frame) &&
+          input.observation_u8.every((pixel, i) => pixel === sample.observation_u8[i]) &&
+          sample.model_id === manifest.provenance.model_id && !responseIds.has(sample.response_id),
+        'replay input/sample identity mismatch');
+        requireCondition(result.session_id === manifest.session_id && result.generation === manifest.generation &&
+          result.completed_monotonic_ms === sample.completed_monotonic_ms &&
+          Object.entries(sample.motor_rates_hz).every(([key, rate]) => result.motor_rates_hz[key as keyof typeof result.motor_rates_hz] === rate) &&
+          Object.entries(sample.raw_action).every(([key, action]) => result.raw_action[key as keyof typeof result.raw_action] === action),
+        'replay raw neural values disagree');
+        responseIds.add(sample.response_id);
+      });
+      let previousTick = 0;
+      replay.trace.events.forEach(event => {
+        requireCondition(event.tick > previousTick && event.tick <= replay.trace.ticks, 'replay event order mismatch');
+        previousTick = event.tick;
+        if (event.controls) {
+          checkSemantics('FlightControls', event.controls);
+          requireCondition(belongs(event.controls) && responseIds.has(event.controls.response_id), 'foreign replay controls');
+        }
+      });
       checkSemantics('FlightState', replay.final);
       break;
     }

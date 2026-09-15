@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SessionClient } from '../src/live/session-client';
 import { parseLiveContract, type ApiSnapshot, type SessionConfig } from '../src/live/contracts';
 import examples from '../src/live/generated/examples.json';
+import recorded from './fixtures/recorded-flight.json';
 
 function fixture(name: string) {
   return structuredClone(examples.find(example => example.contract === name && example.valid)!.value);
@@ -10,7 +11,8 @@ function snapshot(sequence = 1, overrides: Partial<ApiSnapshot> = {}): ApiSnapsh
   const stream = parseLiveContract('StreamEnvelope', fixture('StreamEnvelope'));
   return parseLiveContract('ApiSnapshot', { ...stream, status: { ...stream.status, state: 'running' }, schema_version: 'obs-api-snapshot-1',
     event_sequence: sequence, kind: 'session', lease_remaining_ms: 3000,
-    source_receipt_age_ms: null, response_age_ms: null, last_inferred: null,
+    source_receipt_age_ms: null, response_age_ms: null, last_inferred: stream.neural_sample,
+    capture_hz: 30, model_mode: 'fixture',
     completed_calls: 0, rejected_results: 0, model_hz: 0, last_step_wall_ms: null,
     recording_id: null, recording_state: 'off', ...overrides });
 }
@@ -46,7 +48,10 @@ describe('OBS04 browser transport and owner lease, synthetic responses only', ()
     const transport = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
       if (handler) return handler(url, init);
-      return reply(url.endsWith('/control') ? bootstrap : snapshot(++sequence));
+      const result = snapshot(++sequence);
+      return reply(url.endsWith('/control') ? bootstrap : url.endsWith('/preview') ? {
+        ...result, kind: 'preview', model_mode: 'none', flight: null, neural_sample: null, last_inferred: null,
+      } : result);
     });
     const client = new SessionClient({ fetch: transport as typeof fetch, document: doc, window: win,
       eventSource: () => { const stream = new TestStream(); streams.push(stream); return stream; },
@@ -248,5 +253,93 @@ describe('OBS04 browser transport and owner lease, synthetic responses only', ()
     clean.streams[0].dispatchEvent(new MessageEvent('snapshot', { data: ' '.repeat(262145) }));
     expect(clean.onNeutral).toHaveBeenCalledWith('Invalid session stream.');
     expect(streams[0].closed).toBe(true);
+  });
+
+  it('binds replay load and seek to the listed session without capture or control requests', async () => {
+    const id = 'f'.repeat(32);
+    let foreign = false;
+    const { client, transport } = setup(async url => {
+      if (url.endsWith('/replays')) return reply({ schema_version: 'obs-replay-list-1', recordings: [
+        { recording_id: id, manifest: recorded.manifest, state: null, error: null },
+      ] });
+      if (url.includes('/seek')) return reply({ ...recorded.final, snapshot: { ...recorded.final.snapshot,
+        session_id: foreign ? 'foreign' : recorded.manifest.session_id } });
+      return reply(recorded);
+    });
+    await expect(client.replay(id)).rejects.toThrow(/Refresh recordings/);
+    await client.replays();
+    const payload = await client.replay(id);
+    expect(payload.samples[0].observation_u8).toEqual(recorded.inputs[0].observation_u8);
+    expect((await client.seek(id, recorded.final.snapshot.tick)).snapshot).toEqual(recorded.final.snapshot);
+    foreign = true;
+    await expect(client.seek(id, recorded.final.snapshot.tick)).rejects.toThrow(/Foreign replay/);
+    await expect(client.seek(id, -1)).rejects.toThrow(/tick/);
+    expect(writes(transport)).toHaveLength(0);
+  });
+
+  it('rejects valid-schema recording data with foreign inputs or altered raw neural values', () => {
+    const foreign = structuredClone(recorded);
+    foreign.inputs[0].frame.session_id = 'foreign';
+    expect(() => parseLiveContract('ReplayPayload', foreign)).toThrow(/identity/);
+    const altered = structuredClone(recorded);
+    altered.results[0].motor_rates_hz.fwd_L += 1;
+    expect(() => parseLiveContract('ReplayPayload', altered)).toThrow(/neural values/);
+    const controls = structuredClone(recorded);
+    controls.trace.events.find(event => event.controls)!.controls!.response_id = 'foreign';
+    expect(() => parseLiveContract('ReplayPayload', controls)).toThrow(/foreign replay controls/);
+  });
+
+  it('does not accept a late passive response after Stop', async () => {
+    const pending = deferred<Response>();
+    const { client, onSnapshot } = setup(async () => pending.promise);
+    const first = snapshot();
+    const connection = client.connect(first.status.session_id, first.status.generation);
+    client.stop();
+    pending.resolve(reply(first));
+    await connection;
+    expect(onSnapshot).not.toHaveBeenCalled();
+  });
+
+  it('rejects source switching and regressing flight ticks even inside newer valid envelopes', async () => {
+    const { client, streams, onSnapshot, onNeutral } = setup();
+    const first = await client.start(config());
+    await client.connect(first.status.session_id, first.status.generation);
+    const progressed = snapshot(10);
+    progressed.flight!.tick = 10;
+    streams[0].send(progressed);
+    streams[0].send(snapshot(11));
+    expect(onSnapshot.mock.calls.at(-1)![0].flight.tick).toBe(10);
+    const switched = snapshot(12);
+    switched.latest_source_frame!.source_id = 'another-source';
+    switched.neural_sample!.frame.source_id = 'another-source';
+    switched.last_inferred!.frame.source_id = 'another-source';
+    streams[0].send(switched);
+    expect(onNeutral).toHaveBeenCalledWith('Session source identity changed.');
+    expect(streams[0].closed).toBe(true);
+  });
+
+  it('rejects a wrong-source Start acknowledgement and sends protected Stop', async () => {
+    const { client, transport } = setup();
+    await expect(client.start({ ...config(), source_id: 'another-source' })).rejects.toThrow(/rejected/);
+    expect(writes(transport).at(-1)![0]).toMatch(/\/stop$/);
+  });
+
+  it('downloads validated original recording JSON without rewriting negative zero', async () => {
+    vi.useRealTimers();
+    const id = 'e'.repeat(32);
+    const data = structuredClone(recorded);
+    data.samples[0].raw_action.dy = data.results[0].raw_action.dy = data.results[0].output.dy = 0;
+    const original = JSON.stringify(data).replaceAll('"dy":0', '"dy":-0.0');
+    const { client, transport } = setup(async url => url.endsWith('/replays') ? reply({
+      schema_version: 'obs-replay-list-1', recordings: [{ recording_id: id, manifest: recorded.manifest }],
+    }) : new Response(original));
+    await client.replays();
+    const blob = await client.download(id);
+    const text = await new Promise<string>(resolve => {
+      const reader = new FileReader(); reader.onload = () => resolve(reader.result as string); reader.readAsText(blob);
+    });
+    expect(text).toBe(original);
+    expect(text).toContain('"dy":-0.0');
+    expect(writes(transport)).toHaveLength(0);
   });
 });

@@ -362,6 +362,7 @@ def test_explicit_http_preview_captures_only_fixture_and_closes_on_stop(api):
     assert response.status_code in (200, 201), response.text
     snapshot = response.json()
     assert snapshot["kind"] == "preview"
+    assert snapshot["model_mode"] == "none" and snapshot["capture_hz"] >= 0
     assert sessions == []
     assert len(settings["captures"]) == 1
     capture = settings["captures"][0]
@@ -482,6 +483,9 @@ def test_opt_in_recording_http_replay_preserves_ledger_and_source_handles(api, a
     response = client.get(f"/api/live/replays/{recording_id}")
     assert response.status_code == 200, response.text
     replay = response.json()
+    downloaded = client.get(f"/api/live/replays/{recording_id}/download")
+    assert downloaded.status_code == 200 and downloaded.json() == replay
+    assert downloaded.headers["content-disposition"] == f'attachment; filename="flyjam-{recording_id}.json"'
     assert replay["manifest"]["state"] == "complete"
     assert replay["manifest"]["evidence_kind"] == "fixture"
     assert len(replay["inputs"]) == len(replay["samples"]) == 2

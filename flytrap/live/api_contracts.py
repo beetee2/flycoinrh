@@ -79,6 +79,8 @@ class ApiSnapshot(StreamEnvelope):
     completed_calls: Annotated[int, Field(ge=0, le=512)]
     rejected_results: Count
     model_hz: Annotated[float, Field(ge=0, le=1e6)]
+    capture_hz: Annotated[float, Field(ge=0, le=1e6)]
+    model_mode: Literal["real", "fixture", "none"]
     last_step_wall_ms: Millis | None
     recording_id: Token | None
     recording_state: Literal["off", "partial", "aborted", "complete"]
@@ -89,6 +91,18 @@ class ApiSnapshot(StreamEnvelope):
             for key in ("session_id", "generation", "evidence_kind"):
                 if getattr(self.last_inferred.frame, key) != getattr(self.status, key):
                     raise ValueError("foreign historical observation")
+            if (self.latest_source_frame and
+                    self.last_inferred.frame.source_id != self.latest_source_frame.source_id):
+                raise ValueError("historical observation source disagrees with capture")
+        if self.neural_sample is not None and self.neural_sample != self.last_inferred:
+            raise ValueError("active and historical neural observations disagree")
+        if self.kind == "preview":
+            if (self.model_mode != "none" or self.neural_sample is not None or self.last_inferred is not None
+                    or self.flight is not None or self.completed_calls != 0 or self.status.attempted_calls != 0
+                    or self.recording_state != "off" or self.recording_id is not None):
+                raise ValueError("capture-only preview cannot contain model or recording state")
+        elif self.model_mode == "none":
+            raise ValueError("neural session must identify its model mode")
         return self
 
 

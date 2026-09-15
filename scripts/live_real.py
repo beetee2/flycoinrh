@@ -72,7 +72,7 @@ def identities(paths):
 
 def snapshot_json(snapshot):
     value = asdict(snapshot)
-    for key in ("status", "sample", "last_inferred", "last_completed"):
+    for key in ("status", "sample", "last_inferred", "last_completed", "flight"):
         model = getattr(snapshot, key)
         value[key] = None if model is None else model.model_dump(mode="json")
     return value

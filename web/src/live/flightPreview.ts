@@ -14,8 +14,15 @@ export function previewPose(preview: FlightPreview, elapsedMs: number): FlightSn
   const a = preview.snapshots[index];
   const b = preview.snapshots[Math.min(index + 1, preview.snapshots.length - 1)];
   const blend = fractionalTick - index;
+  return interpolatePose(a, b, blend);
+}
+
+/** Bounded interpolation of legitimate poses, never extrapolation. */
+export function interpolatePose(a: FlightSnapshot, b: FlightSnapshot, amount: number): FlightSnapshot {
+  if (a.session_id !== b.session_id || a.generation !== b.generation || b.tick < a.tick) return a;
+  const blend = Number.isFinite(amount) ? Math.max(0, Math.min(1, amount)) : 0;
   const yawDelta = Math.atan2(Math.sin(b.yaw_rad - a.yaw_rad), Math.cos(b.yaw_rad - a.yaw_rad));
-  return { ...a, position: a.position.map((coordinate, axis) => coordinate + (b.position[axis] - coordinate) * blend) as [number, number, number],
+  return { ...(blend >= 1 ? b : a), position: a.position.map((coordinate, axis) => coordinate + (b.position[axis] - coordinate) * blend) as [number, number, number],
     yaw_rad: a.yaw_rad + yawDelta * blend, pitch_rad: a.pitch_rad + (b.pitch_rad - a.pitch_rad) * blend,
     speed_units_s: a.speed_units_s + (b.speed_units_s - a.speed_units_s) * blend };
 }

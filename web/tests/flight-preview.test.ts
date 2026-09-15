@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseFlightPreview, previewPose } from '../src/live/flightPreview';
+import { interpolatePose, parseFlightPreview, previewPose } from '../src/live/flightPreview';
 import type { FlightSnapshot } from '../src/live/contracts';
 
 const first: FlightSnapshot = { schema_version: 'obs-flight-1', session_id: 'synthetic-preview', generation: 1,
@@ -45,5 +45,18 @@ describe('synthetic presentation boundary', () => {
   it('takes the short angular path when yaw wraps', () => {
     const preview = fixturePreview(); preview.snapshots[0].yaw_rad = Math.PI - 0.1; preview.snapshots[1].yaw_rad = -Math.PI + 0.1;
     expect(previewPose(preview, 10).yaw_rad).toBeCloseTo(Math.PI);
+  });
+});
+
+
+describe('live snapshot interpolation boundaries', () => {
+  it('clamps blend and rejects foreign or regressing snapshots', () => {
+    const end = { ...first, tick: 5, position: [5, 0, 0] as [number, number, number] };
+    expect(interpolatePose(first, end, 99)).toEqual(end);
+    expect(interpolatePose(first, end, -1)).toEqual(first);
+    expect(interpolatePose(first, end, NaN)).toEqual(first);
+    expect(interpolatePose(first, { ...end, generation: 2 }, .5)).toEqual(first);
+    expect(interpolatePose(first, { ...end, session_id: 'foreign' }, .5)).toEqual(first);
+    expect(interpolatePose(end, first, .5)).toEqual(end);
   });
 });

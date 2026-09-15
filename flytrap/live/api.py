@@ -37,7 +37,7 @@ def create_live_app(*, dist: Path = DIST, service=None):
         finally:
             await service.close()
 
-    app = FastAPI(title="Flyjam local sessions", version="OBS04", lifespan=lifespan,
+    app = FastAPI(title="Flyjam local sessions", version="OBS05", lifespan=lifespan,
                   docs_url=None, redoc_url=None, openapi_url=None)
     app.state.service = service
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "[::1]"])
@@ -184,6 +184,13 @@ def create_live_app(*, dist: Path = DIST, service=None):
         replay = read_replay(recording_id)
         return replay.payload()
 
+    @app.get("/api/live/replays/{recording_id}/download", response_model=ReplayPayload)
+    def download(recording_id: str, response: Response):
+        payload = read_replay(recording_id).payload()
+        # read_replay strictly validates the ID before using it in a header.
+        response.headers["Content-Disposition"] = f'attachment; filename="flyjam-{recording_id}.json"'
+        return payload
+
     @app.get("/api/live/replays/{recording_id}/seek", response_model=FlightState)
     def seek(recording_id: str, tick: Annotated[int, Query(ge=0, le=6000)]):
         try:
@@ -197,7 +204,7 @@ def create_live_app(*, dist: Path = DIST, service=None):
 
     @app.get("/api/live/config", response_model=LiveConfig)
     async def config():
-        return LiveConfig()
+        return await asyncio.to_thread(service.config)
 
     # Safe precomputed synthetic content only. No session, recording or inference.
     preview = lru_cache(maxsize=1)(synthetic_preview)

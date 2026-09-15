@@ -33,6 +33,7 @@ class LatestFrameSlot:
         self.identity = source_id, session_id, generation
         self._condition = threading.Condition()
         self._frame = None
+        self._preview = None
         self._last_sequence = -1
         self._last_receipt = -1
         self.accepted = self.overwritten = self.rejected = 0
@@ -51,12 +52,19 @@ class LatestFrameSlot:
             self._last_sequence = identity.sequence
             self._last_receipt = identity.receipt_monotonic_ms
             self._frame = frame
+            # A separate capacity-one reference survives inference consuming the
+            # pending slot. It never queues frames or changes overwrite accounting.
+            self._preview = frame
             self._condition.notify_all()
             return True
 
     def latest(self):
         with self._condition:
             return self._frame
+
+    def latest_preview(self):
+        with self._condition:
+            return self._preview
 
     def take(self, timeout: float = 0):
         if not 0 <= timeout <= 2:
@@ -70,6 +78,7 @@ class LatestFrameSlot:
         with self._condition:
             self.closed = True
             self._frame = None
+            self._preview = None
             self._condition.notify_all()
 
 

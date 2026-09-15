@@ -137,7 +137,7 @@ test-lab-e2e:
 	cd web && npx --no-install playwright test --config=playwright.lab.config.ts
 
 # Live fast checks use explicitly synthetic sources; no device or model calls.
-LIVE_EVIDENCE ?= artifacts/milestones/OBS01
+LIVE_EVIDENCE ?= artifacts/milestones/OBS05/checks
 LIVE_PORT ?= 8767
 .PHONY: live-devices live-doctor serve-live generate-live check-live-generated test-live test-live-ui test-live-e2e verify-live
 live-devices:
@@ -177,3 +177,14 @@ LIVE_REAL_EVIDENCE ?= artifacts/milestones/OBS02/real
 .PHONY: test-live-real
 test-live-real:
 	timeout --signal=TERM --kill-after=5s 90s $(PYTHON) -m scripts.live_real --output $(LIVE_REAL_EVIDENCE)
+
+# OBS05 browser gates: real model calls are always charged to automated accounting.
+# The OBS gate additionally requires explicit source/content approval environment values.
+.PHONY: test-live-real-browser test-live-obs
+test-live-real-browser:
+	npm --prefix web run build
+	cd web && FLYJAM_LIVE_EVIDENCE=$(LIVE_EVIDENCE)/real-browser npx --no-install playwright test --config=playwright.live-real.config.ts
+
+test-live-obs:
+	npm --prefix web run build
+	cd web && FLYJAM_LIVE_EVIDENCE=$(LIVE_EVIDENCE)/obs-browser npx --no-install playwright test --config=playwright.live-obs.config.ts

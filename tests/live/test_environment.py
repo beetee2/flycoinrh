@@ -172,7 +172,10 @@ def test_serve_binds_only_loopback_without_doctor_or_discovery(monkeypatch):
     assert main(["serve", "--port", "8888"]) == 0
     assert calls[0][1]["host"] == "127.0.0.1"
     assert calls[0][1]["port"] == 8888
-    assert calls[0][0] == ("flytrap.live.api:create_live_app",)
+    app = calls[0][0][0]
+    assert app.state.service.execution_purpose == "automated"
+    assert not app.state.service.sessions
+    assert calls[0][1]["workers"] == 1
 
 
 @pytest.mark.parametrize("arguments", [["serve", "--port", "80"], ["serve", "--port", "65536"],

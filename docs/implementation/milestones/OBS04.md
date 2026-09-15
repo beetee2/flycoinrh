@@ -204,3 +204,16 @@ resource/lease deadlines, protected identities and current accounting. Real-sour
 execution still needs applicable capture consent; public release and remote writes
 remain separate decisions. No push, deployment, paid service, token transaction or
 social post was performed.
+
+
+## OBS05 prerequisite revalidation — 2026-09-15
+
+The OBS05 invocation explicitly supersedes the previous stop. Read-only inspection
+of [hosted workflow 34995107755](https://github.com/beetee2/flycoinrh/actions/runs/34995107755)
+confirmed **completed / success** for exact revision
+`2bc0c675c62b5aeaaa5393697f02406d53a7b195`. The scoped browser sandbox prerequisite,
+`make verify test-upstream`, and `make verify-live` all succeeded. Evidence is
+`artifacts/milestones/OBS05/hosted-workflow.json`. This resolves the prior hosted
+revalidation pending handoff; the original failed run and local repair records
+above remain historical evidence. OBS03 operator appearance/motion approval remains
+approval of the repaired synthetic preview; it does not approve real neural flight.

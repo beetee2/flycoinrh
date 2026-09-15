@@ -1,4 +1,4 @@
-import { parseLiveContract, type ApiSnapshot, type ContractName, type LiveContracts, type SessionConfig } from './contracts';
+import { parseLiveContract, type ApiSnapshot, type ContractName, type LiveContracts, type SessionConfig, type ReplayManifest } from './contracts';
 
 type Identity = { sessionId: string; generation: number };
 type Stream = Pick<EventTarget, 'addEventListener'> & { close(): void };
@@ -25,7 +25,7 @@ function identity(sessionId: string, generation: number): Identity {
   return { sessionId, generation };
 }
 function decode<K extends ContractName>(name: K, text: string): LiveContracts[K] {
-  if (text.length > maxJsonLength) throw new Error('Live response exceeds the client bound.');
+  if (text.length > (name === 'ReplayPayload' || name === 'ReplayList' ? 33554432 : maxJsonLength)) throw new Error('Live response exceeds the client bound.');
   return parseLiveContract(name, JSON.parse(text));
 }
 
@@ -40,6 +40,8 @@ export class SessionClient {
   private csrf: string | null = null;
   private owner: Owner | null = null;
   private watched: Identity | null = null;
+  private watchedSource: string | null = null;
+  private flightTick = -1;
   private sequence = -1;
   private stream: Stream | null = null;
   private renewal: ReturnType<typeof setTimeout> | null = null;
@@ -48,6 +50,7 @@ export class SessionClient {
   private cancelledStart = false;
   private disposed = false;
   private connection = 0;
+  private readonly recordings = new Map<string, ReplayManifest>();
 
   constructor(private readonly options: Options) {
     this.transport = options.fetch ?? globalThis.fetch.bind(globalThis);
@@ -74,7 +77,55 @@ export class SessionClient {
     return result;
   }
   sources() { return this.read('/sources', 'SourceList'); }
+  config() { return this.read('/config', 'LiveConfig'); }
   status() { return this.read('/status', 'ServiceStatus'); }
+  async inspect(sourceId: string) {
+    const body = parseLiveContract('InspectRequest', { source_id: sourceId });
+    if (!this.csrf) await this.control();
+    const source = await this.read('/sources/inspect', 'SourceCapability', { method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Live-CSRF': this.csrf! }, body: JSON.stringify(body) });
+    if (source.source_id !== sourceId) throw new Error('Foreign selected source identity.');
+    return source;
+  }
+  async replays() {
+    const list = await this.read('/replays', 'ReplayList');
+    this.recordings.clear();
+    for (const entry of list.recordings) if (entry.manifest) this.recordings.set(entry.recording_id, entry.manifest);
+    return list;
+  }
+  private recording(id: string) {
+    if (!/^[0-9a-f]{32}$/.test(id)) throw new Error('Invalid recording identity.');
+    const manifest = this.recordings.get(id);
+    if (!manifest) throw new Error('Refresh recordings before loading this recording.');
+    return manifest;
+  }
+  async replay(id: string) {
+    const manifest = this.recording(id);
+    const payload = await this.read(`/replays/${id}`, 'ReplayPayload');
+    if (payload.manifest.session_id !== manifest.session_id || payload.manifest.generation !== manifest.generation ||
+      payload.manifest.events_sha256 !== manifest.events_sha256) throw new Error('Foreign recording identity.');
+    return payload;
+  }
+  async download(id: string): Promise<Blob> {
+    const manifest = this.recording(id);
+    const response = await this.transport(`/api/live/replays/${id}/download`, { credentials: 'same-origin' });
+    if (!response.ok) throw new Error(`Recording download failed (${response.status}).`);
+    const original = await response.text();
+    const payload = decode('ReplayPayload', original);
+    if (payload.manifest.session_id !== manifest.session_id || payload.manifest.generation !== manifest.generation ||
+      payload.manifest.events_sha256 !== manifest.events_sha256) throw new Error('Foreign recording identity.');
+    // Preserve the verified response text, including IEEE negative zero in raw
+    // neural values. JSON.stringify would silently change -0 to +0.
+    return new Blob([original], { type: 'application/json' });
+  }
+  async seek(id: string, tick: number) {
+    const manifest = this.recording(id);
+    if (!Number.isSafeInteger(tick) || tick < 0 || tick > 6000) throw new Error('Invalid replay tick.');
+    const state = await this.read(`/replays/${id}/seek?tick=${tick}`, 'FlightState');
+    if (state.snapshot.session_id !== manifest.session_id || state.snapshot.generation !== manifest.generation ||
+      state.snapshot.evidence_kind !== manifest.evidence_kind || state.snapshot.tick !== tick) throw new Error('Foreign replay state.');
+    return state;
+  }
   previewFrame(sessionId: string, generation: number) {
     const target = identity(sessionId, generation);
     return this.read(`/sessions/${target.sessionId}/preview`, 'PreviewReply').then(reply => {
@@ -93,16 +144,16 @@ export class SessionClient {
   start(config: SessionConfig, recordingConsent = false) {
     const request = parseLiveContract('StartRequest', { schema_version: 'obs-start-1', request_id: token(),
       owner_token: this.ownerToken, config, recording_consent: recordingConsent });
-    return this.acquire('/sessions', request);
+    return this.acquire('/sessions', request, config.source_id);
   }
 
   preview(sourceId: string, durationSeconds = 15) {
     const request = parseLiveContract('PreviewRequest', { schema_version: 'obs-preview-request-1', request_id: token(),
       owner_token: this.ownerToken, source_id: sourceId, duration_seconds: durationSeconds });
-    return this.acquire('/preview', request);
+    return this.acquire('/preview', request, sourceId);
   }
 
-  private async acquire(path: string, body: unknown): Promise<ApiSnapshot> {
+  private async acquire(path: string, body: unknown, sourceId: string): Promise<ApiSnapshot> {
     if (this.disposed || this.doc.hidden || this.owner || this.pendingStart) throw new Error('Control tab cannot start another session.');
     this.pendingStart = true;
     this.cancelledStart = false;
@@ -118,9 +169,16 @@ export class SessionClient {
       }
       this.closeStream();
       this.watched = target;
+      this.watchedSource = sourceId;
+      this.flightTick = -1;
       this.sequence = -1;
       this.owner = { ...target, deadline: 0 };
+      if (snapshot.kind !== (path === '/preview' ? 'preview' : 'session')) {
+        this.release('Unexpected acquired session kind.');
+        throw new Error('Unexpected acquired session kind.');
+      }
       this.accept(snapshot, target);
+      if (!this.owner && !terminal.has(snapshot.status.state)) throw new Error('Acquired session was rejected.');
       if (this.owner) this.scheduleLease(this.owner, snapshot.lease_remaining_ms, this.now() - before);
       return snapshot;
     } finally { this.pendingStart = false; }
@@ -129,6 +187,13 @@ export class SessionClient {
   private accept(snapshot: ApiSnapshot, target: Identity) {
     if (!this.watched || !same(this.watched, target) || snapshot.status.session_id !== target.sessionId ||
         snapshot.status.generation !== target.generation || snapshot.event_sequence <= this.sequence) return;
+    const source = snapshot.latest_source_frame?.source_id ?? snapshot.last_inferred?.frame.source_id;
+    if (source && this.watchedSource && source !== this.watchedSource) {
+      this.release('Session source identity changed.'); return;
+    }
+    if (source) this.watchedSource = source;
+    if (snapshot.flight && snapshot.flight.tick < this.flightTick) return;
+    if (snapshot.flight) this.flightTick = snapshot.flight.tick;
     this.sequence = snapshot.event_sequence;
     if (terminal.has(snapshot.status.state)) {
       this.clearLease();
@@ -145,7 +210,9 @@ export class SessionClient {
     const target = identity(sessionId, generation);
     if (this.owner && !same(this.owner, target)) throw new Error('Release current ownership before watching another session.');
     this.closeStream();
-    if (!this.watched || !same(this.watched, target)) this.sequence = -1;
+    if (!this.watched || !same(this.watched, target)) {
+      this.sequence = -1; this.flightTick = -1; this.watchedSource = null;
+    }
     this.watched = target;
     const connection = this.connection;
     const stream = this.makeStream(`/api/live/sessions/${sessionId}/events?generation=${generation}`);
@@ -210,6 +277,8 @@ export class SessionClient {
     this.owner = null;
     this.clearLease();
     this.closeStream();
+    this.watched = null;
+    this.watchedSource = null;
     this.options.onNeutral(reason);
     if (owner) void this.write(`/sessions/${owner.sessionId}/stop`, { generation: owner.generation, owner_token: this.ownerToken }, true).catch(() => {});
   }

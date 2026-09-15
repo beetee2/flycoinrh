@@ -72,6 +72,21 @@ def test_slot_counts_only_unconsumed_overwrites_and_wakes_on_close():
     assert not worker.is_alive() and result == [None]
 
 
+def test_preview_retains_only_newest_frame_independently_of_inference_consumption():
+    slot = LatestFrameSlot("fixture-pattern", "fixture-session", 1)
+    first = fixture_frame(0, "fixture-session", 1)
+    second = fixture_frame(1, "fixture-session", 1)
+    assert slot.put(first)
+    assert slot.take() == first and slot.latest() is None
+    assert slot.latest_preview() == first
+    assert slot.put(second)
+    assert slot.latest_preview() == second
+    assert slot.overwritten == 0 and slot.accepted == 2
+    assert slot.take() == second
+    slot.close()
+    assert slot.latest_preview() is None
+
+
 def test_same_pixels_new_timing_is_admitted():
     slot = LatestFrameSlot("fixture-pattern", "fixture-session", 1)
     frame = fixture_frame(0, "fixture-session", 1)

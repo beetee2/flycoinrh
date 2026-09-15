@@ -1,3 +1,28 @@
+# Active routing — OBS05 browser experience
+
+**OBS05 implementation and required local checks PASS / COMPLETE. Stop for human review.**
+Read [OBS-STATUS](OBS-STATUS.md) and [OBS05](milestones/OBS05.md).
+
+The operator's OBS03 synthetic appearance/motion approval is preserved separately
+from pending real-flight product review. Reviewed hosted workflow 34995107755
+passed the exact `2bc0c675c62b5aeaaa5393697f02406d53a7b195` prerequisite revision.
+OBS05 connects actual capture/model sessions and recorded playback to the renderer;
+its safe-model and explicitly approved `/dev/video0` checks have executed.
+Recording stayed disabled for OBS; only two approved processed inputs were saved.
+
+Accounting: **OBS 61/1,024 (963 remaining), P00 144 unchanged**. Startup:
+`make serve-live`, http://127.0.0.1:8767/live. Capture/inference stop at handoff.
+**Do not start OBS06.** No remote push or public deployment was authorized.
+
+Agent validation added 18 calls. A later independently started browser session
+added 34 calls under the default automated policy and ended at its bound. The final
+service resource check confirmed capture and inference stopped. No product approval
+was inferred from that session.
+
+Previous entries remain historical evidence.
+
+---
+
 # Active routing — OBS04 complete
 
 **OBS04 implementation and local validation PASS / COMPLETE. Stop before OBS05.**

@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { FlightStage } from '../src/live/FlightStage';
+import type { FlightSnapshot } from '../src/live/contracts';
 import { FlightGraphicsError } from '../src/live/flightRenderer';
 
 const mocks = vi.hoisted(() => ({ create: vi.fn(), draw: vi.fn(), dispose: vi.fn() }));
@@ -152,4 +153,61 @@ describe('flight stage lifecycle', () => {
     await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument());
     expect(screen.getByRole('button', { name: 'Play synthetic preview' })).toBeDisabled(); expect(frames.size).toBe(0);
   });
+});
+
+
+describe('authoritative live presentation', () => {
+  const pose = (tick: number): FlightSnapshot => ({ schema_version: 'obs-flight-1', session_id: 'live-session', generation: 1,
+    evidence_kind: 'fixture', tick, position: [tick, 0, 0], yaw_rad: 0, pitch_rad: 0, speed_units_s: 1,
+    applied_response_id: 'response-1', neutral: false });
+  it('interpolates between server poses for at most 100 ms without prediction', () => {
+    const view = render(<FlightStage mode="live" snapshot={pose(0)} motionAllowed />);
+    view.rerender(<FlightStage mode="live" snapshot={pose(10)} motionAllowed />);
+    expect(frames.size).toBe(1); advance(50);
+    expect(mocks.draw.mock.calls.at(-1)![0].position).toEqual([5, 0, 0]);
+    advance(50); expect(mocks.draw.mock.calls.at(-1)![0]).toEqual(pose(10)); expect(frames.size).toBe(0);
+    advance(2000); expect(mocks.draw.mock.calls.at(-1)![0]).toEqual(pose(10)); expect(fetch).not.toHaveBeenCalled();
+  });
+  it('freezes transport loss at the last rendered pose immediately and accepts a final neutral pose', () => {
+    const end = pose(10); const view = render(<FlightStage mode="live" snapshot={pose(0)} motionAllowed />);
+    view.rerender(<FlightStage mode="live" snapshot={end} motionAllowed />); advance(50);
+    view.rerender(<FlightStage mode="live" snapshot={end} motionAllowed={false} />);
+    expect(frames.size).toBe(0); advance(3000);
+    expect(mocks.draw.mock.calls.at(-1)![0].position).toEqual([5, 0, 0]);
+    const terminal = { ...end, neutral: true, speed_units_s: 0 };
+    view.rerender(<FlightStage mode="live" snapshot={terminal} motionAllowed={false} />);
+    expect(mocks.draw.mock.calls.at(-1)![0]).toEqual(terminal);
+  });
+  it('renders replay seeks exactly while paused without starting any source or animation loop', () => {
+    const view = render(<FlightStage mode="replay" snapshot={pose(10)} />);
+    view.rerender(<FlightStage mode="replay" snapshot={pose(2)} />);
+    expect(mocks.draw.mock.calls.at(-1)![0]).toEqual(pose(2)); expect(frames.size).toBe(0); expect(fetch).not.toHaveBeenCalled();
+    view.unmount(); expect(mocks.dispose).toHaveBeenCalledTimes(1);
+  });
+});
+
+
+it('keeps locally released flight frozen through later terminal packets and graphics Retry', () => {
+  const first: FlightSnapshot = { schema_version: 'obs-flight-1', session_id: 'released-session', generation: 1,
+    evidence_kind: 'fixture', tick: 1, position: [1, 0, 0], yaw_rad: 0, pitch_rad: 0, speed_units_s: 1,
+    applied_response_id: 'response-1', neutral: false };
+  const view = render(<FlightStage mode="live" snapshot={first} motionAllowed />);
+  const terminal: FlightSnapshot = { ...first, tick: 50, position: [2, 0, 0], speed_units_s: 0, neutral: true };
+  view.rerender(<FlightStage mode="live" snapshot={terminal} freezePose />);
+  advance(4000); expect(mocks.draw.mock.calls.at(-1)![0]).toEqual(first); expect(frames.size).toBe(0);
+  act(() => mocks.create.mock.calls.at(-1)![1](new FlightGraphicsError('context-lost', 'Lost')));
+  fireEvent.click(screen.getByRole('button', { name: 'Retry graphics' }));
+  expect(mocks.draw.mock.calls.at(-1)![0]).toEqual(first); expect(frames.size).toBe(0);
+});
+
+
+it('reports measured render calls separately from neural updates and returns to zero while idle', () => {
+  vi.useFakeTimers();
+  try {
+    const rate = vi.fn(); const view = render(<FlightStage onRenderingRate={rate} />);
+    const drawn = mocks.draw.mock.calls.length;
+    now = 500; act(() => vi.advanceTimersByTime(500)); expect(rate).toHaveBeenLastCalledWith(drawn * 2);
+    now = 1000; act(() => vi.advanceTimersByTime(500)); expect(rate).toHaveBeenLastCalledWith(0);
+    view.unmount(); expect(vi.getTimerCount()).toBe(0);
+  } finally { vi.useRealTimers(); }
 });

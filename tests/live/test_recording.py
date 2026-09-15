@@ -73,6 +73,21 @@ def test_exact_roundtrip_private_permissions_seek_and_terminal(tmp_path, sample_
         assert stat.S_IMODE(path.stat().st_mode) == 0o600
     assert {p.name for p in writer.directory.iterdir()} == {"manifest.json", "events.jsonl", "complete.sha256"}
     assert sum(p.stat().st_size for p in writer.directory.iterdir()) <= sample_record[0].recording_max_bytes
+
+
+def test_safe_fixture_source_can_record_real_model_mode_without_relabeling_source(tmp_path, sample_record):
+    # Fabricated worker payload exercises storage semantics only; no real-model claim.
+    config, source, provenance, flight, sample, worker = sample_record
+    provenance = provenance.model_copy(update={"model_id": "baseline-storage-test"})
+    sample = sample.model_copy(update={"model_id": provenance.model_id})
+    worker = worker.model_copy(update={"output": worker.output.model_copy(update={"model_mode": "windowed_reset"})})
+    store = RecordingStore(tmp_path / "private")
+    writer = write_record(store, (config, source, provenance, flight, sample, worker))
+    restored = store.read(writer.recording_id)
+    assert restored.manifest.evidence_kind == "fixture"
+    assert restored.manifest.source.evidence_kind == "fixture"
+    assert restored.results[0].output.model_mode == "windowed_reset"
+    assert restored.manifest.provenance.model_id == "baseline-storage-test"
     with pytest.raises(RecordingError):
         restored.seek(51)
     with pytest.raises(RecordingError):

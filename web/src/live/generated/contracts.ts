@@ -1255,7 +1255,7 @@ export type ReplayManifest = ReplayManifestContract.ReplayManifest;
 export namespace LiveHealthContract {
 export type SchemaVersion = "obs-health-1";
 export type Status = "ok";
-export type Phase = "OBS04";
+export type Phase = "OBS05";
 export type State = "available";
 export type CaptureImplemented = true;
 export type InferenceImplemented = true;
@@ -1274,12 +1274,16 @@ export type LiveHealth = LiveHealthContract.LiveHealth;
 
 export namespace LiveConfigContract {
 export type SchemaVersion = "obs-config-1";
-export type Phase = "OBS04";
+export type Phase = "OBS05";
 export type CaptureImplemented = true;
 export type InferenceImplemented = true;
 export type RecordingDefault = false;
 export type SourceSelectionRequired = true;
 export type ValidationCallCap = 1024;
+export type ExecutionPurpose = "automated" | "human";
+export type ValidationAttempted = number | null;
+export type ValidationRemaining = number | null;
+export type ObsRecordingAllowed = false;
 export type Backend = "ffmpeg-v4l2";
 export type SchemaVersion1 = "obs-encoder-1";
 export type EncoderId = "obs-rgb-letterbox16-v1";
@@ -1297,6 +1301,10 @@ export interface LiveConfig {
   recording_default?: RecordingDefault;
   source_selection_required?: SourceSelectionRequired;
   validation_call_cap?: ValidationCallCap;
+  execution_purpose?: ExecutionPurpose;
+  validation_attempted?: ValidationAttempted;
+  validation_remaining?: ValidationRemaining;
+  obs_recording_allowed?: ObsRecordingAllowed;
   backend?: Backend;
   encoder?: EncoderConfig;
 }
@@ -2135,6 +2143,8 @@ export type ResponseAgeMs = number | null;
 export type CompletedCalls = number;
 export type RejectedResults = number;
 export type ModelHz = number;
+export type CaptureHz = number;
+export type ModelMode = "real" | "fixture" | "none";
 export type LastStepWallMs = number | null;
 export type RecordingId = string | null;
 export type RecordingState = "off" | "partial" | "aborted" | "complete";
@@ -2155,6 +2165,8 @@ export interface ApiSnapshot {
   completed_calls: CompletedCalls;
   rejected_results: RejectedResults;
   model_hz: ModelHz;
+  capture_hz: CaptureHz;
+  model_mode: ModelMode;
   last_step_wall_ms: LastStepWallMs;
   recording_id: RecordingId;
   recording_state: RecordingState;
@@ -2568,6 +2580,8 @@ export type ResponseAgeMs = number | null;
 export type CompletedCalls = number;
 export type RejectedResults = number;
 export type ModelHz = number;
+export type CaptureHz = number;
+export type ModelMode = "real" | "fixture" | "none";
 export type LastStepWallMs = number | null;
 export type RecordingId = string | null;
 export type RecordingState = "off" | "partial" | "aborted" | "complete";
@@ -2592,6 +2606,8 @@ export interface ApiSnapshot {
   completed_calls: CompletedCalls;
   rejected_results: RejectedResults;
   model_hz: ModelHz;
+  capture_hz: CaptureHz;
+  model_mode: ModelMode;
   last_step_wall_ms: LastStepWallMs;
   recording_id: RecordingId;
   recording_state: RecordingState;

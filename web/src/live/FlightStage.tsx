@@ -1,10 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { createFlightRenderer, FlightGraphicsError, type FlightRenderer } from './flightRenderer';
-import { parseFlightPreview, previewPose, type FlightPreview } from './flightPreview';
+import { interpolatePose, parseFlightPreview, previewPose, type FlightPreview } from './flightPreview';
+import type { FlightSnapshot } from './contracts';
 import './flight.css';
 import threeLicenseUrl from './three-LICENSE.txt?url&no-inline';
 
-export function FlightStage() {
+export type StageMode = 'synthetic' | 'preview' | 'live' | 'replay';
+type Props = { mode?: StageMode; modelMode?: 'real' | 'fixture' | 'none'; snapshot?: FlightSnapshot | null; motionAllowed?: boolean; freezePose?: boolean;
+  onGraphicsFailure?: () => void; onGraphicsReady?: (ready: boolean) => void; onRenderingRate?: (hz: number) => void };
+export function FlightStage({ mode = 'synthetic', modelMode = 'none', snapshot = null, motionAllowed = false, freezePose = false,
+  onGraphicsFailure, onGraphicsReady, onRenderingRate }: Props) {
+  const callbacks = useRef({ onGraphicsFailure, onGraphicsReady, onRenderingRate });
+  callbacks.current = { onGraphicsFailure, onGraphicsReady, onRenderingRate };
+  const displayed = useRef<FlightSnapshot | null>(null);
+  const [rendered, setRendered] = useState<FlightSnapshot | null>(null);
+  const stats = useRef({ start: performance.now(), count: 0 });
   const host = useRef<HTMLDivElement>(null);
   const renderer = useRef<FlightRenderer | null>(null);
   const request = useRef<AbortController | null>(null);
@@ -20,6 +30,7 @@ export function FlightStage() {
   function stopAnimation() { cancelAnimationFrame(frame.current); frame.current = 0; }
   function graphicsFailed(cause: unknown) {
     stopAnimation(); setPlaying(false); setState('Paused · graphics unavailable');
+    callbacks.current.onGraphicsReady?.(false); callbacks.current.onGraphicsFailure?.();
     const error = cause instanceof FlightGraphicsError ? cause : new FlightGraphicsError('renderer', cause);
     const label = error.kind === 'context-creation' ? 'Context creation failed' : error.kind === 'context-lost' ? 'Context lost' : 'Renderer failed';
     setGraphics(label);
@@ -28,7 +39,11 @@ export function FlightStage() {
   }
   function draw(pose: Parameters<FlightRenderer['draw']>[0], ms: number) {
     if (!renderer.current) return false;
-    try { renderer.current.draw(pose, ms); return true; }
+    try {
+      renderer.current.draw(pose, ms); displayed.current = pose; setRendered(pose);
+      stats.current.count++;
+      return true;
+    }
     catch (error) { graphicsFailed(error); return false; }
   }
   const [loading, setLoading] = useState(false);
@@ -40,8 +55,8 @@ export function FlightStage() {
     let active = true;
     try {
       renderer.current = createFlightRenderer(host.current!, error => { if (active) graphicsFailed(error); });
-      if (draw(preview ? previewPose(preview, elapsed.current) : null, elapsed.current)) {
-        setGraphics('Ready');
+      if (draw(mode === 'synthetic' ? (preview ? previewPose(preview, elapsed.current) : null) : displayed.current, elapsed.current)) {
+        setGraphics('Ready'); callbacks.current.onGraphicsReady?.(true);
         if (graphicsAttempt > 0) setState('Paused · graphics restored');
       }
     } catch (error) { graphicsFailed(error); }
@@ -52,7 +67,14 @@ export function FlightStage() {
     // Initialization is explicitly bounded by mount or Retry, independent of data/playback changes.
   }, [graphicsAttempt]);
 
-  useEffect(() => () => { request.current?.abort(); }, []);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = performance.now();
+      callbacks.current.onRenderingRate?.(stats.current.count * 1000 / Math.max(1, now - stats.current.start));
+      stats.current = { start: now, count: 0 };
+    }, 500);
+    return () => { clearInterval(timer); request.current?.abort(); };
+  }, []);
 
   useEffect(() => {
     const visibility = () => { if (document.hidden) { stopAnimation(); setPlaying(false); setState('Paused · tab hidden'); } };
@@ -61,6 +83,7 @@ export function FlightStage() {
   }, []);
 
   useEffect(() => {
+    if (mode !== 'synthetic') return;
     if (!draw(preview ? previewPose(preview, elapsed.current) : null, elapsed.current)) return;
     if (!playing || !preview || !available) return;
     const start = performance.now() - elapsed.current;
@@ -74,7 +97,32 @@ export function FlightStage() {
     };
     frame.current = requestAnimationFrame(animate);
     return stopAnimation;
-  }, [preview, playing, available]);
+  }, [preview, playing, available, mode]);
+
+  useEffect(() => {
+    if (mode === 'synthetic') return;
+    stopAnimation(); setPlaying(false);
+    if (!available) return;
+    if (!snapshot) { draw(null, 0); return; }
+    const previous = displayed.current;
+    const sameSession = previous?.session_id === snapshot.session_id && previous?.generation === snapshot.generation;
+    if (!sameSession || !motionAllowed || snapshot.neutral || document.hidden) {
+      // Loss of ownership freezes the last displayed pose immediately. A terminal
+      // authoritative pose is shown only when supplied with an explicit replay seek.
+      if ((!freezePose && snapshot.neutral) || mode === 'replay' || !sameSession) draw(snapshot, snapshot.tick * 20);
+      return;
+    }
+    const start = performance.now();
+    const animate = (now: number) => {
+      if (document.hidden) return;
+      const blend = Math.min(1, Math.max(0, (now - start) / 100));
+      if (!draw(interpolatePose(previous!, snapshot, blend), snapshot.tick * 20)) return;
+      if (blend < 1) frame.current = requestAnimationFrame(animate);
+
+    };
+    frame.current = requestAnimationFrame(animate);
+    return stopAnimation;
+  }, [mode, snapshot, motionAllowed, freezePose, available]);
 
   async function load() {
     setPlaying(false); setLoading(true); setError(null); setState('Loading synthetic snapshots');
@@ -100,23 +148,23 @@ export function FlightStage() {
     stopAnimation(); setPlaying(false); setGraphics('Initializing');
     setGraphicsAttempt(retries.current);
   }
-  const pose = preview ? previewPose(preview, timeMs) : null;
+  const pose = mode === 'synthetic' ? (preview ? previewPose(preview, timeMs) : null) : rendered;
   const completed = preview !== null && timeMs >= (preview.snapshots.length - 1) * preview.dt_ms;
   return <section className="flight-section" aria-labelledby="flight-heading">
-    <div className="flight-heading"><h2 id="flight-heading">An open space for flight</h2><span className="flight-label">SYNTHETIC CONTROL REPLAY</span></div>
+    <div className="flight-heading"><h2 id="flight-heading">An open space for flight</h2><span className="flight-label">{mode === 'synthetic' ? 'SYNTHETIC CONTROL REPLAY' : mode === 'preview' ? 'CAPTURE-ONLY PREVIEW' : mode === 'replay' ? 'RECORDED PLAYBACK' : modelMode === 'fixture' ? 'FIXTURE NEURAL SESSION' : 'NEURAL-DRIVEN LIVE FLIGHT'}</span></div>
     <div className="flight-viewport">
       <div ref={host} className="flight-canvas" data-testid="flight-canvas" />
       <div className="flight-overlay"><span>FLIGHT STUDY / 003</span><span>LOCAL PROCEDURAL SCENE</span></div>
       {!available && <div className="flight-unavailable" role="status">3D view unavailable. {graphics === 'Context creation failed' ? 'The browser could not create a WebGL2 context.' : graphics === 'Context lost' ? 'The browser lost the graphics context.' : graphics === 'Initializing' ? 'Initializing graphics.' : 'Renderer or scene initialization failed.'} Playback is disabled.</div>}
       <div className="flight-caption">Original procedural fly · following spectator camera</div>
     </div>
-    <div className="flight-controls">
+    {mode === 'synthetic' && <div className="flight-controls">
       <button onClick={() => { void load(); }} disabled={loading || playing}>Load synthetic preview</button>
       <button disabled={!preview || playing || !available || completed} onClick={() => { if (!document.hidden) { setPlaying(true); setState('Playing synthetic replay'); } }}>Play synthetic preview</button>
       <button className="secondary" disabled={!playing} onClick={() => freeze('Paused · frozen')}>Pause</button>
       <button className="secondary" disabled={!preview} onClick={() => freeze('Stopped · frozen')}>Stop</button>
       <button className="secondary" disabled={!preview} onClick={reset}>Reset preview</button>
-    </div>
+    </div>}
     <div className="flight-graphics">
       <p>Graphics: <strong data-testid="graphics-state">{graphics}</strong> · Preview data: <strong data-testid="preview-data-state">{loading ? 'Loading' : preview ? 'Loaded' : 'Not loaded'}</strong></p>
       {!available && <button className="secondary" onClick={retryGraphics} disabled={graphics === 'Initializing' || graphicsAttempt >= 3}>Retry graphics</button>}
@@ -127,11 +175,12 @@ export function FlightStage() {
       </details>}
     </div>
     {error && <p role="alert" className="error">{error}</p>}
-    <div className="flight-telemetry" aria-label="Synthetic replay telemetry">
-      <p><span>PREVIEW STATE</span><strong data-testid="preview-state">{state}</strong></p>
+    <div className="flight-telemetry" aria-label={mode === 'synthetic' ? 'Synthetic replay telemetry' : 'Flight telemetry'}>
+      <p><span>PREVIEW STATE</span><strong data-testid="preview-state">{mode === 'synthetic' ? state : motionAllowed ? 'Receiving authoritative poses' : 'Frozen'}</strong></p>
       <p><span>SERVER TICK · 20 MS</span><strong data-testid="flight-tick">{pose?.tick ?? '—'}</strong></p>
       <p><span>POSITION · WORLD UNITS</span><strong data-testid="flight-position">{pose ? pose.position.map(value => value.toFixed(2)).join(' / ') : '—'}</strong></p>
     </div>
-    <p className="flight-explanation">A fixed synthetic control sequence, computed by the server’s flight physics. This is a visual development preview; real neural output is not connected to this stage. The browser interpolates saved poses. Wing motion is decorative. Pause and Stop freeze travel; Reset returns to the first pose. Built with locally bundled <a href={threeLicenseUrl}>three.js (MIT)</a>.</p>
+    {mode === 'synthetic' ? <p className="flight-explanation">A fixed synthetic control sequence, computed by the server’s flight physics. This is a visual development preview; real neural output is not connected to this stage. The browser interpolates saved poses. Wing motion is decorative. Pause and Stop freeze travel; Reset returns to the first pose. Built with locally bundled <a href={threeLicenseUrl}>three.js (MIT)</a>.</p> : <p className="flight-explanation">Server-authoritative flight poses; display interpolation ends within 100 ms of the last accepted snapshot. Connection loss, stale state and Stop freeze travel. Wing motion is decorative. Built with locally bundled <a href={threeLicenseUrl}>three.js (MIT)</a>.</p>}
+    <output aria-hidden="true" className="pose-evidence" data-testid="rendered-pose" aria-label="Rendered pose">{JSON.stringify(rendered)}</output>
   </section>;
 }

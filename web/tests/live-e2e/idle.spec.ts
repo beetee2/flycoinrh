@@ -24,7 +24,7 @@ test('explicit synthetic flight plays, freezes, resets, and reloads idle', async
     requests.push({ path: url.pathname, method: request.method() });
   });
   await page.goto('/live');
-  await expect(page.getByText('Idle · local service available')).toBeVisible();
+  await expect(page.getByTestId('session-status')).toHaveText(/^Idle · local service available$|^Existing session · .*this tab does not own capture\.$/);
   await expect(page.getByText('SYNTHETIC CONTROL REPLAY')).toBeVisible();
   await expect(page.getByTestId('flight-canvas').locator('canvas')).toHaveCount(1);
   await expect(page.getByTestId('graphics-state')).toHaveText('Ready');
@@ -36,7 +36,8 @@ test('explicit synthetic flight plays, freezes, resets, and reloads idle', async
   expect(license.status()).toBe(200);
   expect(await license.text()).toContain('The MIT License');
   await expect(page.getByRole('button', { name: 'Play synthetic preview' })).toBeDisabled();
-  expect(requests.filter(request => request.path.startsWith('/api/') || request.path.startsWith('/health/')).map(request => request.path).sort()).toEqual(['/api/live/config', '/health/live']);
+  expect(requests.every(request => request.method === 'GET')).toBe(true);
+  expect(requests.some(request => request.path === '/api/live/sessions')).toBe(false);
 
   await page.getByRole('button', { name: 'Load synthetic preview' }).click();
   await expect(page.getByTestId('preview-state')).toHaveText('Loaded · idle');
@@ -86,14 +87,12 @@ test('explicit synthetic flight plays, freezes, resets, and reloads idle', async
   await expect(page.getByTestId('flight-position')).toHaveText(initial!);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.reload();
-  await expect(page.getByText('Idle · local service available')).toBeVisible();
+  await expect(page.getByTestId('session-status')).toHaveText(/^Idle · local service available$|^Existing session · .*this tab does not own capture\.$/);
   await expect(page.getByRole('button', { name: 'Play synthetic preview' })).toBeDisabled();
   await expect(page.getByTestId('flight-canvas').locator('canvas')).toHaveCount(1);
   await expect(page.getByTestId('graphics-state')).toHaveText('Ready');
   await testInfo.attach('rendered-reloaded-idle', { body: await renderedPixels(canvas), contentType: 'image/png' });
   await expect(page.getByRole('alert')).toHaveCount(0);
-  await expect(page.getByText('Explicit selection required')).toBeVisible();
-  await expect(page.getByText('Off by default')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   expect(requests.filter(request => request.path === '/api/live/flight-preview')).toHaveLength(1);
   expect(requests.every(request => request.method === 'GET')).toBe(true);

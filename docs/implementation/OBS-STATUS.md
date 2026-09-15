@@ -1,3 +1,48 @@
+# Active routing — OBS05 implemented; hands-on review next
+
+**OBS05 implementation and required local validation PASS / COMPLETE.** Read the
+[OBS05 report](milestones/OBS05.md) for controls, ownership, accounting, recording,
+real-model and approved OBS evidence. OBS06 is not authorized by this invocation.
+
+OBS03 repaired synthetic preview appearance/motion remains **APPROVED by the
+operator**. Real neural-driven motion/framing/responsiveness is **PENDING human
+review**. These approvals are separate.
+
+Hosted workflow [34995107755](https://github.com/beetee2/flycoinrh/actions/runs/34995107755)
+was checked and **PASS** for reviewed revision
+`2bc0c675c62b5aeaaa5393697f02406d53a7b195`, including the scoped sandbox repair and
+repository/live verification. The original failed workflow remains historical.
+OBS05 changes are local; no push or hosted validation of these changes is claimed.
+
+The CPU reference gate passed. The two-call real-model browser journey verified
+input/neural/pose identities; its download signed-zero defect was repaired and the
+same recording passed a zero-call replay/download browser check. A final complete
+real-model Start/record/replay/download browser run then passed with two further
+automated calls. Final live checks passed: 597 Python, 222 UI/contracts, 124 lab
+Python, 15 lab UI and 18 desktop/mobile browser tests. Approved OBS
+Preview/Stop and two real-model calls passed with recording off. Both saved OBS
+16×16 inputs were identical, so changed-content responsiveness and current OBS
+producer-stop behavior remain hands-on checks.
+
+Actual accounting: **OBS 61/1,024, 963 remaining; P00 144 attempts unchanged**.
+The service defaults to server-controlled automated accounting. Preview/replay
+consume no calls. CPU/reset/seed/flight mapping and learning-disabled baseline
+remain unchanged. Exactly two approved processed PNGs are private local evidence
+at `artifacts/milestones/OBS05/actual-obs/approved-inputs/`.
+
+Agent validation added 18 calls. A later independently started browser session
+added 34 calls under the default automated policy and ended at its bound. The final
+service resource check confirmed capture and inference stopped. No product approval
+was inferred from that session.
+
+Startup: **`make serve-live`**, **http://127.0.0.1:8767/live**. The handoff leaves
+capture and inference stopped, recording disabled for OBS. See the report's short
+checklist and local input viewer. **Stop after OBS05; wait for hands-on review.**
+
+Earlier routing below remains historical and is superseded by this entry.
+
+---
+
 # Active routing — OBS04 complete; stop before OBS05
 
 **OBS04 implementation and local validation PASS / COMPLETE.** Read

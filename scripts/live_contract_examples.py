@@ -48,7 +48,8 @@ def corpus():
     api_snapshot = {**stream, "schema_version": "obs-api-snapshot-1", "kind": "session",
         "lease_remaining_ms": 2000., "source_receipt_age_ms": 100., "response_age_ms": 100.,
         "last_inferred": sample, "completed_calls": 1, "rejected_results": 0,
-        "model_hz": 1., "last_step_wall_ms": 100., "recording_id": None, "recording_state": "off"}
+        "model_hz": 1., "capture_hz": 30., "model_mode": "fixture",
+        "last_step_wall_ms": 100., "recording_id": None, "recording_state": "off"}
     preview_image = dict(frame=frame, width=1, height=1, rgb_base64=base64.b64encode(bytes(3)).decode(),
                          observation_u8=sample["observation_u8"])
     good.update(StartRequest=dict(schema_version="obs-start-1", request_id="1"*32, owner_token="2"*32,
@@ -138,6 +139,11 @@ def corpus():
         ("OwnerRequest", "generation", 0, "invalid owner epoch"),
         ("PreviewRequest", "duration_seconds", 31, "preview duration bound"),
         ("ApiSnapshot", "last_inferred.frame.generation", 2, "foreign historical input"),
+        ("ApiSnapshot", "last_inferred.frame.source_id", "other", "foreign historical source"),
+        ("ApiSnapshot", "last_inferred.response_id", "other", "active historical response disagreement"),
+        ("ApiSnapshot", "kind", "preview", "neural state in capture preview"),
+        ("ApiSnapshot", "model_mode", "none", "neural session without model mode"),
+        ("ApiSnapshot", "capture_hz", -1., "negative capture rate"),
         ("ServiceStatus", "current.flight.generation", 2, "foreign current snapshot"),
         ("SourceList", "sources.0.evidence_kind", "real", "mixed source list evidence"),
         ("SourcePreview", "rgb_base64", "", "preview pixel byte mismatch"),

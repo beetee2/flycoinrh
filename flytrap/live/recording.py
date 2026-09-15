@@ -199,7 +199,9 @@ class VerifiedReplay:
                         or result.completed_monotonic_ms != sample.completed_monotonic_ms
                         or result.motor_rates_hz != sample.motor_rates_hz or result.raw_action != sample.raw_action
                         or result.output.telemetry.neural_ms != sample.neural_ms
-                        or result.output.model_mode != ("fixture" if manifest.evidence_kind == "fixture" else "windowed_reset")):
+                        or result.output.model_mode != ("fixture" if manifest.provenance.model_id.startswith("fixture-")
+                                                        else "windowed_reset")
+                        or (manifest.evidence_kind == "real" and result.output.model_mode == "fixture")):
                     raise RecordingError("raw worker response metadata mismatch")
                 if (pending is None or sample.step_index != pending.step_index
                         or sample.frame != pending.frame or sample.observation_u8 != pending.observation_u8

@@ -2,7 +2,8 @@
 import asyncio
 import base64
 from collections import OrderedDict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from functools import partial
 import secrets
 import threading
 import time
@@ -34,9 +35,19 @@ def source_metadata():
     return [row["capability"] for row in discover_devices()["devices"]][:128]
 
 
-def neural_factory(config, *, repository_root, source, expected_device, recording_store):
+def safe_source_metadata():
+    """Server-selected deterministic imagery; this does not select a fixture model."""
+    return [SourceCapability(schema_version="obs-source-1", source_id="fixture-pattern",
+        evidence_kind="fixture", name="Deterministic safe input (real neural model)", driver=None,
+        backend="synthetic", capabilities=None, formats=[SourceFormat(
+            pixel_format="RGB24", width=320, height=180, fps=30.)],
+        metadata_state="available", producer_detection="synthetic")]
+
+
+def neural_factory(config, *, repository_root, source, expected_device, recording_store,
+                   execution_purpose="automated"):
     from .session import NeuralSession
-    return NeuralSession(config, purpose="human", repository_root=repository_root,
+    return NeuralSession(config, purpose=execution_purpose, repository_root=repository_root,
                          expected_device=expected_device, recording_store=recording_store, source=source)
 
 
@@ -140,6 +151,9 @@ class Entry:
     fingerprint: str
     kind: str
     sequence: int = 0
+    rate_started: float = field(default_factory=time.monotonic)
+    rate_frames: int = 0
+    capture_hz: float = 0.
 
 
 class LiveService:
@@ -147,11 +161,16 @@ class LiveService:
     max_sessions = 32
     max_requests = 256
 
-    def __init__(self, *, repository_root=None, session_factory=neural_factory,
-                 source_provider=source_metadata, capture_factory=None, recording_store=None):
+    def __init__(self, *, repository_root=None, session_factory=None,
+                 source_provider=source_metadata, capture_factory=None, recording_store=None,
+                 execution_purpose="automated"):
         from pathlib import Path
         self.root = Path(repository_root) if repository_root is not None else Path(__file__).resolve().parents[2]
-        self.session_factory, self.source_provider = session_factory, source_provider
+        if execution_purpose not in {"automated", "human"}:
+            raise ValueError("execution purpose must be configured by the server")
+        self.execution_purpose = execution_purpose
+        self.session_factory = session_factory or partial(neural_factory, execution_purpose=execution_purpose)
+        self.source_provider = source_provider
         self.capture_factory = capture_factory
         self.recording_store = recording_store
         self.sessions = OrderedDict()
@@ -165,6 +184,19 @@ class LiveService:
 
     def sources(self):
         return SourceList(sources=self.source_provider())
+
+    def config(self):
+        from .accounting import LiveLedger, LedgerCorrupt
+        from .contracts import LiveConfig
+        ledger = LiveLedger.automated(self.root)
+        count = 0
+        if ledger.path.exists() or ledger.checkpoint.exists():
+            try:
+                count = ledger.attempted
+            except (BusyError, LedgerCorrupt, OSError):
+                count = None
+        return LiveConfig(execution_purpose=self.execution_purpose, validation_attempted=count,
+                          validation_remaining=None if count is None else ledger.cap-count)
 
     def _source(self, source_id):
         source = next((s for s in self.sources().sources if s.source_id == source_id), None)
@@ -211,6 +243,8 @@ class LiveService:
                 duration_seconds=request.duration_seconds) if preview else request.config)
             if config.evidence_kind != source.evidence_kind:
                 raise Conflict("Source and session evidence labels disagree.")
+            if config.recording and source.evidence_kind == "real":
+                raise Forbidden("Recording the selected OBS source is disabled; use the safe deterministic input.")
             if preview:
                 session = PreviewSession(config, repository_root=self.root, expected_device=device,
                                          capture_factory=self.capture_factory)
@@ -253,12 +287,21 @@ class LiveService:
         with self._lock:
             entry = self.entry(session_id)
             session = entry.session
-            frame = session.capture.slot.latest()
+            frame = session.capture.slot.latest_preview()
             now = time.monotonic()*1000
+            captured = session.capture.status()
+            elapsed = now/1000-entry.rate_started
+            if elapsed >= .25:
+                entry.capture_hz = max(0., min(1e6, (captured.accepted_frames-entry.rate_frames)/elapsed))
+                entry.rate_started, entry.rate_frames = now/1000, captured.accepted_frames
+            if session.wait(0):
+                entry.capture_hz = 0.
             entry.sequence += 1
             common = dict(event_sequence=entry.sequence, sent_monotonic_ms=now, kind=entry.kind,
                           latest_source_frame=frame.identity if frame else None,
-                          lease_remaining_ms=session.lease_remaining_ms)
+                          lease_remaining_ms=session.lease_remaining_ms, capture_hz=entry.capture_hz,
+                          model_mode="none" if entry.kind == "preview" else (
+                              "fixture" if session.purpose == "fixture" else "real"))
             if entry.kind == "preview":
                 return ApiSnapshot(**common, status=session.status(), neural_sample=None,
                     last_inferred=None, flight=None, completed_calls=0, rejected_results=0,
@@ -277,7 +320,7 @@ class LiveService:
         from .encoding import preview_pair
         entry = self.entry(session_id)
         status = self.snapshot(session_id).status
-        frame = entry.session.capture.slot.latest()
+        frame = entry.session.capture.slot.latest_preview()
         latest = None
         if frame is not None:
             pair = preview_pair(frame)

@@ -2531,8 +2531,8 @@
         "type": "string"
       },
       "phase": {
-        "const": "OBS04",
-        "default": "OBS04",
+        "const": "OBS05",
+        "default": "OBS05",
         "title": "Phase",
         "type": "string"
       },
@@ -2619,8 +2619,8 @@
         "type": "string"
       },
       "phase": {
-        "const": "OBS04",
-        "default": "OBS04",
+        "const": "OBS05",
+        "default": "OBS05",
         "title": "Phase",
         "type": "string"
       },
@@ -2653,6 +2653,49 @@
         "default": 1024,
         "title": "Validation Call Cap",
         "type": "integer"
+      },
+      "execution_purpose": {
+        "default": "automated",
+        "enum": [
+          "automated",
+          "human"
+        ],
+        "title": "Execution Purpose",
+        "type": "string"
+      },
+      "validation_attempted": {
+        "anyOf": [
+          {
+            "maximum": 1024,
+            "minimum": 0,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Validation Attempted"
+      },
+      "validation_remaining": {
+        "anyOf": [
+          {
+            "maximum": 1024,
+            "minimum": 0,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Validation Remaining"
+      },
+      "obs_recording_allowed": {
+        "const": false,
+        "default": false,
+        "title": "Obs Recording Allowed",
+        "type": "boolean"
       },
       "backend": {
         "const": "ffmpeg-v4l2",
@@ -4015,6 +4058,21 @@
         "title": "Model Hz",
         "type": "number"
       },
+      "capture_hz": {
+        "maximum": 1000000.0,
+        "minimum": 0,
+        "title": "Capture Hz",
+        "type": "number"
+      },
+      "model_mode": {
+        "enum": [
+          "real",
+          "fixture",
+          "none"
+        ],
+        "title": "Model Mode",
+        "type": "string"
+      },
       "last_step_wall_ms": {
         "anyOf": [
           {
@@ -4067,6 +4125,8 @@
       "completed_calls",
       "rejected_results",
       "model_hz",
+      "capture_hz",
+      "model_mode",
       "last_step_wall_ms",
       "recording_id",
       "recording_state"
@@ -4198,6 +4258,21 @@
             "title": "Model Hz",
             "type": "number"
           },
+          "capture_hz": {
+            "maximum": 1000000.0,
+            "minimum": 0,
+            "title": "Capture Hz",
+            "type": "number"
+          },
+          "model_mode": {
+            "enum": [
+              "real",
+              "fixture",
+              "none"
+            ],
+            "title": "Model Mode",
+            "type": "string"
+          },
           "last_step_wall_ms": {
             "anyOf": [
               {
@@ -4250,6 +4325,8 @@
           "completed_calls",
           "rejected_results",
           "model_hz",
+          "capture_hz",
+          "model_mode",
           "last_step_wall_ms",
           "recording_id",
           "recording_state"

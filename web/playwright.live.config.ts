@@ -4,13 +4,13 @@ import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
-const evidence = path.resolve(root, process.env.FLYJAM_LIVE_EVIDENCE ?? 'artifacts/milestones/OBS00/browser');
+const evidence = path.resolve(root, process.env.FLYJAM_LIVE_EVIDENCE ?? 'artifacts/milestones/OBS05/browser');
 const compatibilityBrowser = process.env.FLYJAM_COMPAT_BROWSER;
 if (compatibilityBrowser && (!path.isAbsolute(compatibilityBrowser) || !existsSync(compatibilityBrowser))) {
   throw new Error('FLYJAM_COMPAT_BROWSER must name an existing absolute browser executable.');
 }
 
-// Build first with npm run build. The real local idle service serves those assets.
+// Build first with npm run build. Actual service/processes use only safe synthetic inputs.
 export default defineConfig({
   testDir: './tests/live-e2e',
   fullyParallel: false,
@@ -38,7 +38,7 @@ export default defineConfig({
     } }] : []),
   ],
   webServer: {
-    command: '.venv/bin/python -m flytrap.live serve --port 8876',
+    command: '.venv/bin/python -m tests.live.browser_server --port 8876 --state artifacts/live/browser-fixture',
     cwd: root,
     url: 'http://127.0.0.1:8876/health/live',
     reuseExistingServer: false,
