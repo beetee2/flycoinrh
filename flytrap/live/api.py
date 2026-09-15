@@ -27,6 +27,11 @@ def create_live_app(*, dist: Path = DIST):
             "default-src 'self'; script-src 'self' 'unsafe-eval'; "
             "frame-ancestors 'none'; object-src 'none'; base-uri 'none'"
         )
+        if request.url.path == "/live/obs-test":
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; "
+                "frame-ancestors 'none'; object-src 'none'; base-uri 'none'"
+            )
         return response
 
     @app.get("/health/live", response_model=LiveHealth)
@@ -46,6 +51,11 @@ def create_live_app(*, dist: Path = DIST):
         if not (dist / "index.html").is_file():
             raise HTTPException(503, "Build the local UI: npm --prefix web run build")
         return FileResponse(dist / "index.html")
+
+    @app.get("/live/obs-test")
+    async def obs_test():
+        # Original harmless content for an operator-selected OBS Browser Source.
+        return FileResponse(Path(__file__).parent / "assets/obs-test.html")
 
     if (dist / "assets").is_dir():
         app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")

@@ -1,11 +1,16 @@
 # Active routing — Flyjam local OBS-to-flight
 
 The 2026-09-15 assignment authorizes the new OBS00–OBS06 workstream, one numbered
-prompt per instruction. Current execution: **OBS00 only**. Follow
-[OBS-STATUS](OBS-STATUS.md) and [OBS00](milestones/OBS00.md). This supersedes the
+prompt per instruction. Current execution: **OBS01 implementation and fixture checks
+PASS / COMPLETE**. Selected real OBS preview, producer stop/restart and
+patterned-source checks are **PASS**. Follow
+[OBS-STATUS](OBS-STATUS.md) and [OBS01](milestones/OBS01.md). This supersedes the
 P00-only resume stop for this workstream. Historical navigation remains STOPPED,
 original 06 remains BLOCKED, and P00 human product review remains PENDING.
 Public release, token work and unrelated milestones are not authorized.
+OBS01 opened only the subsequently authorized `/dev/video0`; zero neural calls.
+On the next resume,
+OBS02 may proceed with the declared synthetic source. Stop after OBS01 this turn.
 
 The P00 and navigation records below remain historical evidence.
 

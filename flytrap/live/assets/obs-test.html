@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OBS01 original test source</title>
+<style>
+  html, body { margin: 0; background: #121826; color: white; font: 24px sans-serif; }
+  canvas { display: block; width: 100vw; height: auto; max-height: calc(100vh - 64px); object-fit: contain; }
+  p { margin: 12px; }
+</style>
+<canvas id="pattern" width="960" height="540" aria-label="Original animated test pattern with visible frame counter"></canvas>
+<p>FIXTURE TEST CONTENT · original shapes · no private desktop content</p>
+<script>
+  "use strict";
+  const canvas = document.getElementById("pattern");
+  const ctx = canvas.getContext("2d");
+  let sequence = 0;
+  function draw() {
+    ctx.fillStyle = "#121826"; ctx.fillRect(0, 0, 960, 540);
+    for (const [color, x, y] of [["#f00", 0, 0], ["#0f0", 910, 0], ["#00f", 0, 490]]) {
+      ctx.fillStyle = color; ctx.fillRect(x, y, 50, 50);
+    }
+    ctx.fillStyle = "#ffc020";
+    ctx.fillRect(sequence * 7 % 860, 180, 100, 100);
+    ctx.fillStyle = "#18dcf0";
+    ctx.beginPath(); ctx.arc(480, 130 + sequence * 3 % 220, 45, 0, 2 * Math.PI); ctx.fill();
+    ctx.fillStyle = "white"; ctx.font = "bold 36px monospace";
+    ctx.fillText("FIXTURE TEST CONTENT", 72, 62);
+    ctx.fillText("FRAME " + String(sequence).padStart(9, "0"), 72, 455);
+    ctx.font = "24px monospace";
+    ctx.fillText("RED top-left / GREEN top-right / BLUE bottom-left", 72, 510);
+    sequence++;
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+</script>
+</html>

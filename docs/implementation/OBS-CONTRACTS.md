@@ -2,12 +2,16 @@
 
 ## Scope and executable boundary
 
-OBS00 provides strict Pydantic contracts, generated JSON Schema and TypeScript,
+OBS01 adds explicit CLI source inspection/preview, continuous capture, a pure
+encoder and driver/authenticated producer monitoring. See [OBS01](milestones/OBS01.md)
+for actual hardware checks. OBS00 provides strict Pydantic contracts, generated JSON Schema and TypeScript,
 AJV runtime parsing with shared synthetic positive/negative cases, metadata-only
-device discovery, a prerequisite doctor and an idle local application. Capture,
-preview, model calls, decoder execution, physics, session writes, streaming and
-replay execution are later numbered deliverables. The idle API explicitly reports
+device discovery, a prerequisite doctor and an idle local application. Model
+calls, decoder execution, physics, session writes, streaming and
+replay execution are later numbered deliverables. The idle browser API explicitly reports
 `capture_implemented: false` and `inference_implemented: false`.
+Those flags describe its still-idle browser controls; source preview is currently
+the separate explicit CLI operation below. Browser control API integration is OBS04.
 
 Contracts live in `flytrap/live/contracts.py`; generated browser contracts are in
 `web/src/live/generated/`. Run `make generate-live` after an intentional interface
@@ -117,9 +121,10 @@ on corruption/exhaustion, count failures/restarts and never reset it when choosi
 a new evidence directory. Fixture calls cannot satisfy a real gate. Explicit human
 Start has separate 120-second/512-call session accounting, not unattended runs.
 
-Operator source configuration will live under ignored
+Future browser operator source configuration will live under ignored
 `artifacts/live/operator/source.json`, with a server-approved ID resolving to a
-revalidated local character device/driver/format. OBS00 stores no source selection.
+revalidated local character device/driver/format. OBS01's CLI requires an explicit
+source ID for each inspection or preview; it stores no selection or desktop pixels.
 Session IDs are server generated; private manifests/events will be under
 `artifacts/live/sessions/<id>/`. Recording is opt-in/off by default. Save no raw
 full-resolution frames; even recorded 16×16 observations can contain private data.
@@ -163,3 +168,48 @@ tests the actual idle service on desktop/mobile, including reload and page error
 Source/session browser E2E, real-model, real-OBS and aggregate real gate targets
 belong to subsequent implementation; the OBS00 fast pass does not imply their
 existence or success.
+
+## OBS01 capture operations
+
+- `.venv/bin/python -m flytrap.live inspect-source --source v4l2-videoN` performs
+  bounded read-only ioctls on exactly the operator-selected device. It does not
+  start capture. `doctor --source v4l2-videoN` adds that selected inspection.
+- `.venv/bin/python -m flytrap.live preview --source fixture-pattern --seconds 15`
+  explicitly starts a synthetic preview and prints its private loopback URL.
+  `--port` changes the default 8768 if occupied. It expires within 30 seconds,
+  closes capture and discards the slot. No model calls or recording occur.
+- With real-source selection, replace the source ID with the selected
+  `v4l2-videoN`. Without reliable producer status it says **UNVERIFIED OBS PREVIEW**.
+  `--verified` requires reliable driver status or an authenticated monitor.
+  The verified v4l2loopback configuration uses exclusive capture/output
+  capabilities and `keep_format=0`; loss of that condition terminates capture.
+  Add `--obs-monitor --verified` to use authenticated local OBS status;
+  the password is entered through a private terminal prompt, never an argument.
+  `--obs-port` changes the local default 4455. Enable authenticated OBS WebSocket
+  v5 through OBS settings. The monitor only identifies and calls GetVirtualCamStatus.
+- Original harmless scene: [obs-test.html](../../flytrap/live/assets/obs-test.html).
+  Add that file as an OBS local Browser Source, 960 × 540, or use the local app's
+  `/live/obs-test` URL. OBS setup and Virtual Camera Start are operator actions.
+
+The single backend is FFmpeg V4L2 → full-range RGB24 PPM frames on a continuously
+drained pipe. PPM headers expose dimension changes. Read/partial-frame deadlines
+and a separate device metadata watcher catch loss or format/identity changes;
+one-slot replacement counts unconsumed frames. Source timestamps/sequences are
+unknown/null for this backend. Local receipt times never stand in for OBS time.
+The CLI preview only shows current source/encoded pairs with a common frame ID;
+the later neural response must retain its own encoded input independently.
+
+Accepted real input is progressive, tightly packed RGB3/BGR3/YUYV/NV12, 1–60 fps,
+dimensions ≤8192 per side and at most 32 MiB decoded RGB. RGB requires sRGB/JPEG
+full-range metadata. YUV requires SMPTE170M, JPEG or sRGB BT.601 metadata and known range.
+Extended metadata is used only with the V4L2 capability and private magic marker;
+legacy drivers use documented colorspace defaults and ignore undefined extension
+bytes. Ambiguous color, compressed input, padded stride and interlacing fail closed.
+The adapter never silently reformats OBS or substitutes another source.
+
+FFmpeg queue size one, passthrough frame timing, prompt packet flushing and
+continuous pipe draining are exercised with actual FFmpeg indexed fixtures.
+That fixture evidence alone cannot establish installed V4L2/kernel/OBS buffer latency
+or stop behavior. The selected-device stop/restart and real preview passed; see the
+milestone report for the separate patterned-source result. The authenticated monitor
+indicates OBS virtual-camera state, not whether its underlying application updates.

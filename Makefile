@@ -136,8 +136,8 @@ test-lab-ui:
 test-lab-e2e:
 	cd web && npx --no-install playwright test --config=playwright.lab.config.ts
 
-# OBS00 foundation: no capture or model calls in the fast suite.
-LIVE_EVIDENCE ?= artifacts/milestones/OBS00
+# Live fast checks use explicitly synthetic sources; no device or model calls.
+LIVE_EVIDENCE ?= artifacts/milestones/OBS01
 LIVE_PORT ?= 8767
 .PHONY: live-devices live-doctor serve-live generate-live check-live-generated test-live test-live-ui test-live-e2e verify-live
 live-devices:

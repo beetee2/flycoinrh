@@ -11,6 +11,7 @@ import selectors
 import shutil
 import stat
 import subprocess
+import threading
 import time
 
 from .contracts import SourceCapability
@@ -135,7 +136,13 @@ def metadata_command(arguments: list[str], *, timeout: float = 5.0) -> dict:
         if child is not None:
             if child.poll() is None:
                 child.kill()
-            result["exit_code"] = child.wait()
+            try:
+                result["exit_code"] = child.wait(timeout=.5)
+            except subprocess.TimeoutExpired:
+                result["status"] = "cleanup_timeout"
+                # Uninterruptible kernel IO cannot be repaired by this process.
+                # Keep the caller bounded and reap if/when the kernel releases it.
+                threading.Thread(target=child.wait, daemon=True).start()
             if child.stdout is not None:
                 child.stdout.close()
     # Strip terminal controls from locally installed program output.
@@ -248,7 +255,7 @@ def inspect_environment(repo: Path = REPO) -> dict:
                    "disk_total_bytes": disk.total, "disk_free_bytes": disk.free,
                    "v4l2loopback_loaded": Path("/sys/module/v4l2loopback").is_dir()},
         "tools": tools, "backend": {"id": BACKEND, "installed_support": supported,
-                                     "capture_implemented": False},
+                                     "capture_implemented": True},
         "devices": devices, "model_identity": model, "blockers": blockers,
         "operator_setup": [
             "Select an OBS virtual camera explicitly before any device ioctl, preview or capture.",
