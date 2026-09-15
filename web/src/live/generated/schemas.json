@@ -2531,26 +2531,26 @@
         "type": "string"
       },
       "phase": {
-        "const": "OBS00",
-        "default": "OBS00",
+        "const": "OBS04",
+        "default": "OBS04",
         "title": "Phase",
         "type": "string"
       },
       "state": {
-        "const": "idle",
-        "default": "idle",
+        "const": "available",
+        "default": "available",
         "title": "State",
         "type": "string"
       },
       "capture_implemented": {
-        "const": false,
-        "default": false,
+        "const": true,
+        "default": true,
         "title": "Capture Implemented",
         "type": "boolean"
       },
       "inference_implemented": {
-        "const": false,
-        "default": false,
+        "const": true,
+        "default": true,
         "title": "Inference Implemented",
         "type": "boolean"
       }
@@ -2619,20 +2619,20 @@
         "type": "string"
       },
       "phase": {
-        "const": "OBS00",
-        "default": "OBS00",
+        "const": "OBS04",
+        "default": "OBS04",
         "title": "Phase",
         "type": "string"
       },
       "capture_implemented": {
-        "const": false,
-        "default": false,
+        "const": true,
+        "default": true,
         "title": "Capture Implemented",
         "type": "boolean"
       },
       "inference_implemented": {
-        "const": false,
-        "default": false,
+        "const": true,
+        "default": true,
         "title": "Inference Implemented",
         "type": "boolean"
       },
@@ -2674,6 +2674,4843 @@
       }
     },
     "title": "LiveConfig",
+    "type": "object"
+  },
+  "StartRequest": {
+    "$defs": {
+      "EncoderConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-encoder-1",
+            "default": "obs-encoder-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "encoder_id": {
+            "const": "obs-rgb-letterbox16-v1",
+            "default": "obs-rgb-letterbox16-v1",
+            "title": "Encoder Id",
+            "type": "string"
+          },
+          "size": {
+            "const": 16,
+            "default": 16,
+            "title": "Size",
+            "type": "integer"
+          },
+          "grayscale": {
+            "const": "(77R+150G+29B+128)//256",
+            "default": "(77R+150G+29B+128)//256",
+            "title": "Grayscale",
+            "type": "string"
+          },
+          "resampler": {
+            "const": "nearest-pixel-center",
+            "default": "nearest-pixel-center",
+            "title": "Resampler",
+            "type": "string"
+          },
+          "padding_u8": {
+            "const": 0,
+            "default": 0,
+            "title": "Padding U8",
+            "type": "integer"
+          },
+          "color": {
+            "const": "full-range-rgb-bt601-conversion",
+            "default": "full-range-rgb-bt601-conversion",
+            "title": "Color",
+            "type": "string"
+          }
+        },
+        "title": "EncoderConfig",
+        "type": "object"
+      },
+      "SessionConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-session-config-1",
+            "default": "obs-session-config-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "seed": {
+            "maximum": 4294967295,
+            "minimum": 0,
+            "title": "Seed",
+            "type": "integer"
+          },
+          "recording": {
+            "default": false,
+            "title": "Recording",
+            "type": "boolean"
+          },
+          "duration_seconds": {
+            "default": 120,
+            "maximum": 120,
+            "minimum": 1,
+            "title": "Duration Seconds",
+            "type": "integer"
+          },
+          "max_model_calls": {
+            "default": 512,
+            "maximum": 512,
+            "minimum": 1,
+            "title": "Max Model Calls",
+            "type": "integer"
+          },
+          "source_deadline_ms": {
+            "default": 2000,
+            "maximum": 2000,
+            "minimum": 1,
+            "title": "Source Deadline Ms",
+            "type": "integer"
+          },
+          "step_deadline_ms": {
+            "default": 5000,
+            "maximum": 5000,
+            "minimum": 1,
+            "title": "Step Deadline Ms",
+            "type": "integer"
+          },
+          "startup_deadline_ms": {
+            "default": 30000,
+            "maximum": 30000,
+            "minimum": 1,
+            "title": "Startup Deadline Ms",
+            "type": "integer"
+          },
+          "response_max_age_ms": {
+            "default": 2000,
+            "maximum": 2000,
+            "minimum": 1,
+            "title": "Response Max Age Ms",
+            "type": "integer"
+          },
+          "lease_ms": {
+            "default": 3000,
+            "maximum": 3000,
+            "minimum": 1,
+            "title": "Lease Ms",
+            "type": "integer"
+          },
+          "stop_grace_ms": {
+            "default": 3000,
+            "maximum": 3000,
+            "minimum": 1,
+            "title": "Stop Grace Ms",
+            "type": "integer"
+          },
+          "recording_max_bytes": {
+            "default": 33554432,
+            "maximum": 33554432,
+            "minimum": 1,
+            "title": "Recording Max Bytes",
+            "type": "integer"
+          },
+          "fixed_step_ms": {
+            "const": 20,
+            "default": 20,
+            "title": "Fixed Step Ms",
+            "type": "integer"
+          },
+          "encoder": {
+            "$ref": "#/$defs/EncoderConfig",
+            "default": {
+              "schema_version": "obs-encoder-1",
+              "encoder_id": "obs-rgb-letterbox16-v1",
+              "size": 16,
+              "grayscale": "(77R+150G+29B+128)//256",
+              "resampler": "nearest-pixel-center",
+              "padding_u8": 0,
+              "color": "full-range-rgb-bt601-conversion"
+            }
+          },
+          "decoder_id": {
+            "const": "motor-flight-v1",
+            "default": "motor-flight-v1",
+            "title": "Decoder Id",
+            "type": "string"
+          },
+          "neural_state_mode": {
+            "const": "windowed_reset",
+            "default": "windowed_reset",
+            "title": "Neural State Mode",
+            "type": "string"
+          },
+          "learning_enabled": {
+            "const": false,
+            "default": false,
+            "title": "Learning Enabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "source_id",
+          "evidence_kind",
+          "seed"
+        ],
+        "title": "SessionConfig",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "schema_version": {
+        "const": "obs-start-1",
+        "default": "obs-start-1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "request_id": {
+        "maxLength": 32,
+        "pattern": "^[0-9a-f]{32}$",
+        "title": "Request Id",
+        "type": "string"
+      },
+      "owner_token": {
+        "maxLength": 32,
+        "pattern": "^[0-9a-f]{32}$",
+        "title": "Owner Token",
+        "type": "string"
+      },
+      "config": {
+        "$ref": "#/$defs/SessionConfig"
+      },
+      "recording_consent": {
+        "default": false,
+        "title": "Recording Consent",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "request_id",
+      "owner_token",
+      "config"
+    ],
+    "title": "StartRequest",
+    "type": "object"
+  },
+  "OwnerRequest": {
+    "additionalProperties": false,
+    "properties": {
+      "generation": {
+        "maximum": 9007199254740991,
+        "minimum": 1,
+        "title": "Generation",
+        "type": "integer"
+      },
+      "owner_token": {
+        "maxLength": 32,
+        "pattern": "^[0-9a-f]{32}$",
+        "title": "Owner Token",
+        "type": "string"
+      }
+    },
+    "required": [
+      "generation",
+      "owner_token"
+    ],
+    "title": "OwnerRequest",
+    "type": "object"
+  },
+  "PreviewRequest": {
+    "additionalProperties": false,
+    "properties": {
+      "schema_version": {
+        "const": "obs-preview-request-1",
+        "default": "obs-preview-request-1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "request_id": {
+        "maxLength": 32,
+        "pattern": "^[0-9a-f]{32}$",
+        "title": "Request Id",
+        "type": "string"
+      },
+      "owner_token": {
+        "maxLength": 32,
+        "pattern": "^[0-9a-f]{32}$",
+        "title": "Owner Token",
+        "type": "string"
+      },
+      "source_id": {
+        "maxLength": 64,
+        "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+        "title": "Source Id",
+        "type": "string"
+      },
+      "duration_seconds": {
+        "default": 15,
+        "maximum": 30,
+        "minimum": 1,
+        "title": "Duration Seconds",
+        "type": "integer"
+      }
+    },
+    "required": [
+      "request_id",
+      "owner_token",
+      "source_id"
+    ],
+    "title": "PreviewRequest",
+    "type": "object"
+  },
+  "SourceList": {
+    "$defs": {
+      "SourceCapability": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-source-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Name",
+            "type": "string"
+          },
+          "driver": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver"
+          },
+          "backend": {
+            "enum": [
+              "ffmpeg-v4l2",
+              "synthetic"
+            ],
+            "title": "Backend",
+            "type": "string"
+          },
+          "capabilities": {
+            "anyOf": [
+              {
+                "items": {
+                  "enum": [
+                    "video_capture",
+                    "streaming",
+                    "readwrite"
+                  ],
+                  "type": "string"
+                },
+                "maxItems": 3,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capabilities"
+          },
+          "formats": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/SourceFormat"
+                },
+                "maxItems": 128,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formats"
+          },
+          "metadata_state": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable"
+            ],
+            "title": "Metadata State",
+            "type": "string"
+          },
+          "producer_detection": {
+            "enum": [
+              "unknown",
+              "driver",
+              "obs_readonly_monitor",
+              "synthetic"
+            ],
+            "title": "Producer Detection",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "source_id",
+          "evidence_kind",
+          "name",
+          "driver",
+          "backend",
+          "capabilities",
+          "formats",
+          "metadata_state",
+          "producer_detection"
+        ],
+        "title": "SourceCapability",
+        "type": "object"
+      },
+      "SourceFormat": {
+        "additionalProperties": false,
+        "properties": {
+          "pixel_format": {
+            "enum": [
+              "RGB24",
+              "BGR24",
+              "YUYV",
+              "NV12",
+              "MJPEG"
+            ],
+            "title": "Pixel Format",
+            "type": "string"
+          },
+          "width": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Width",
+            "type": "integer"
+          },
+          "height": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Height",
+            "type": "integer"
+          },
+          "fps": {
+            "exclusiveMinimum": 0,
+            "maximum": 240,
+            "title": "Fps",
+            "type": "number"
+          }
+        },
+        "required": [
+          "pixel_format",
+          "width",
+          "height",
+          "fps"
+        ],
+        "title": "SourceFormat",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "schema_version": {
+        "const": "obs-sources-1",
+        "default": "obs-sources-1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "sources": {
+        "items": {
+          "$ref": "#/$defs/SourceCapability"
+        },
+        "maxItems": 128,
+        "title": "Sources",
+        "type": "array"
+      }
+    },
+    "required": [
+      "sources"
+    ],
+    "title": "SourceList",
+    "type": "object"
+  },
+  "InspectRequest": {
+    "additionalProperties": false,
+    "properties": {
+      "source_id": {
+        "maxLength": 64,
+        "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+        "title": "Source Id",
+        "type": "string"
+      }
+    },
+    "required": [
+      "source_id"
+    ],
+    "title": "InspectRequest",
+    "type": "object"
+  },
+  "ControlBootstrap": {
+    "additionalProperties": false,
+    "properties": {
+      "schema_version": {
+        "const": "obs-control-1",
+        "default": "obs-control-1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "csrf_token": {
+        "maxLength": 97,
+        "pattern": "^[0-9a-f]{32}\\.[0-9a-f]{64}$",
+        "title": "Csrf Token",
+        "type": "string"
+      },
+      "recording_notice": {
+        "const": "Recording is optional and off by default. Consent saves private processed 16x16 inputs, raw neural responses and flight replay locally. These inputs can contain sensitive content. Full-resolution source video is never saved.",
+        "default": "Recording is optional and off by default. Consent saves private processed 16x16 inputs, raw neural responses and flight replay locally. These inputs can contain sensitive content. Full-resolution source video is never saved.",
+        "title": "Recording Notice",
+        "type": "string"
+      }
+    },
+    "required": [
+      "csrf_token"
+    ],
+    "title": "ControlBootstrap",
+    "type": "object"
+  },
+  "SourcePreview": {
+    "$defs": {
+      "FrameIdentity": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-frame-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "sequence": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "width": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Width",
+            "type": "integer"
+          },
+          "height": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Height",
+            "type": "integer"
+          },
+          "pixel_format": {
+            "const": "RGB24",
+            "title": "Pixel Format",
+            "type": "string"
+          },
+          "receipt_monotonic_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Receipt Monotonic Ms",
+            "type": "number"
+          },
+          "source_timestamp_ms": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Timestamp Ms"
+          },
+          "source_sequence": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Sequence"
+          },
+          "source_clock": {
+            "enum": [
+              "unknown",
+              "producer",
+              "local_monotonic"
+            ],
+            "title": "Source Clock",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "source_id",
+          "session_id",
+          "generation",
+          "sequence",
+          "evidence_kind",
+          "width",
+          "height",
+          "pixel_format",
+          "receipt_monotonic_ms",
+          "source_timestamp_ms",
+          "source_sequence",
+          "source_clock"
+        ],
+        "title": "FrameIdentity",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "frame": {
+        "$ref": "#/$defs/FrameIdentity"
+      },
+      "width": {
+        "maximum": 320,
+        "minimum": 1,
+        "title": "Width",
+        "type": "integer"
+      },
+      "height": {
+        "maximum": 180,
+        "minimum": 1,
+        "title": "Height",
+        "type": "integer"
+      },
+      "rgb_base64": {
+        "maxLength": 230400,
+        "pattern": "^[A-Za-z0-9+/]*={0,2}$",
+        "title": "Rgb Base64",
+        "type": "string"
+      },
+      "observation_u8": {
+        "items": {
+          "maximum": 255,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "maxItems": 256,
+        "minItems": 256,
+        "title": "Observation U8",
+        "type": "array"
+      }
+    },
+    "required": [
+      "frame",
+      "width",
+      "height",
+      "rgb_base64",
+      "observation_u8"
+    ],
+    "title": "SourcePreview",
+    "type": "object"
+  },
+  "ApiSnapshot": {
+    "$defs": {
+      "FlightSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-flight-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "tick": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Tick",
+            "type": "integer"
+          },
+          "position": {
+            "items": {
+              "maximum": 1000000000.0,
+              "minimum": -1000000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Position",
+            "type": "array"
+          },
+          "yaw_rad": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "title": "Yaw Rad",
+            "type": "number"
+          },
+          "pitch_rad": {
+            "maximum": 0.7853981633974483,
+            "minimum": -0.7853981633974483,
+            "title": "Pitch Rad",
+            "type": "number"
+          },
+          "speed_units_s": {
+            "maximum": 10,
+            "minimum": 0,
+            "title": "Speed Units S",
+            "type": "number"
+          },
+          "applied_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Response Id"
+          },
+          "neutral": {
+            "title": "Neutral",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "tick",
+          "position",
+          "yaw_rad",
+          "pitch_rad",
+          "speed_units_s",
+          "applied_response_id",
+          "neutral"
+        ],
+        "title": "FlightSnapshot",
+        "type": "object"
+      },
+      "FrameIdentity": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-frame-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "sequence": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "width": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Width",
+            "type": "integer"
+          },
+          "height": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Height",
+            "type": "integer"
+          },
+          "pixel_format": {
+            "const": "RGB24",
+            "title": "Pixel Format",
+            "type": "string"
+          },
+          "receipt_monotonic_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Receipt Monotonic Ms",
+            "type": "number"
+          },
+          "source_timestamp_ms": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Timestamp Ms"
+          },
+          "source_sequence": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Sequence"
+          },
+          "source_clock": {
+            "enum": [
+              "unknown",
+              "producer",
+              "local_monotonic"
+            ],
+            "title": "Source Clock",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "source_id",
+          "session_id",
+          "generation",
+          "sequence",
+          "evidence_kind",
+          "width",
+          "height",
+          "pixel_format",
+          "receipt_monotonic_ms",
+          "source_timestamp_ms",
+          "source_sequence",
+          "source_clock"
+        ],
+        "title": "FrameIdentity",
+        "type": "object"
+      },
+      "MotorRates": {
+        "additionalProperties": false,
+        "properties": {
+          "steer_L": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Steer L",
+            "type": "number"
+          },
+          "steer_R": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Steer R",
+            "type": "number"
+          },
+          "fwd_L": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Fwd L",
+            "type": "number"
+          },
+          "fwd_R": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Fwd R",
+            "type": "number"
+          },
+          "back": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Back",
+            "type": "number"
+          },
+          "stop": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Stop",
+            "type": "number"
+          },
+          "click": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Click",
+            "type": "number"
+          }
+        },
+        "required": [
+          "steer_L",
+          "steer_R",
+          "fwd_L",
+          "fwd_R",
+          "back",
+          "stop",
+          "click"
+        ],
+        "title": "MotorRates",
+        "type": "object"
+      },
+      "NeuralSample": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-neural-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "response_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Response Id",
+            "type": "string"
+          },
+          "frame": {
+            "$ref": "#/$defs/FrameIdentity"
+          },
+          "observation_u8": {
+            "items": {
+              "maximum": 255,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "maxItems": 256,
+            "minItems": 256,
+            "title": "Observation U8",
+            "type": "array"
+          },
+          "encoder_id": {
+            "const": "obs-rgb-letterbox16-v1",
+            "title": "Encoder Id",
+            "type": "string"
+          },
+          "model_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Model Id",
+            "type": "string"
+          },
+          "step_index": {
+            "maximum": 511,
+            "minimum": 0,
+            "title": "Step Index",
+            "type": "integer"
+          },
+          "completed_monotonic_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Completed Monotonic Ms",
+            "type": "number"
+          },
+          "neural_ms": {
+            "const": 20.0,
+            "title": "Neural Ms",
+            "type": "number"
+          },
+          "neural_state_mode": {
+            "const": "windowed_reset",
+            "title": "Neural State Mode",
+            "type": "string"
+          },
+          "motor_rates_hz": {
+            "$ref": "#/$defs/MotorRates"
+          },
+          "raw_action": {
+            "$ref": "#/$defs/RawAction"
+          }
+        },
+        "required": [
+          "schema_version",
+          "response_id",
+          "frame",
+          "observation_u8",
+          "encoder_id",
+          "model_id",
+          "step_index",
+          "completed_monotonic_ms",
+          "neural_ms",
+          "neural_state_mode",
+          "motor_rates_hz",
+          "raw_action"
+        ],
+        "title": "NeuralSample",
+        "type": "object"
+      },
+      "RawAction": {
+        "additionalProperties": false,
+        "properties": {
+          "dx": {
+            "maximum": 1000000000000.0,
+            "minimum": -1000000000000.0,
+            "title": "Dx",
+            "type": "number"
+          },
+          "dy": {
+            "maximum": 1000000000000.0,
+            "minimum": -1000000000000.0,
+            "title": "Dy",
+            "type": "number"
+          },
+          "click": {
+            "title": "Click",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "dx",
+          "dy",
+          "click"
+        ],
+        "title": "RawAction",
+        "type": "object"
+      },
+      "SessionStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-session-status-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "idle",
+              "previewing",
+              "starting",
+              "running",
+              "stopping",
+              "stopped",
+              "source_lost",
+              "failed",
+              "limit_reached"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "attempted_calls": {
+            "maximum": 512,
+            "minimum": 0,
+            "title": "Attempted Calls",
+            "type": "integer"
+          },
+          "accepted_frames": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Accepted Frames",
+            "type": "integer"
+          },
+          "overwritten_frames": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Overwritten Frames",
+            "type": "integer"
+          },
+          "content_unchanged_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Content Unchanged Ms",
+            "type": "number"
+          },
+          "producer_health": {
+            "enum": [
+              "unknown",
+              "active",
+              "inactive"
+            ],
+            "title": "Producer Health",
+            "type": "string"
+          },
+          "last_frame_sequence": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Frame Sequence"
+          },
+          "last_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Response Id"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "state",
+          "reason",
+          "attempted_calls",
+          "accepted_frames",
+          "overwritten_frames",
+          "content_unchanged_ms",
+          "producer_health",
+          "last_frame_sequence",
+          "last_response_id"
+        ],
+        "title": "SessionStatus",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "schema_version": {
+        "const": "obs-api-snapshot-1",
+        "default": "obs-api-snapshot-1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "event_sequence": {
+        "maximum": 9007199254740991,
+        "minimum": 0,
+        "title": "Event Sequence",
+        "type": "integer"
+      },
+      "sent_monotonic_ms": {
+        "maximum": 9007199254740991,
+        "minimum": 0,
+        "title": "Sent Monotonic Ms",
+        "type": "number"
+      },
+      "status": {
+        "$ref": "#/$defs/SessionStatus"
+      },
+      "latest_source_frame": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/FrameIdentity"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "neural_sample": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/NeuralSample"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "flight": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/FlightSnapshot"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "kind": {
+        "enum": [
+          "session",
+          "preview"
+        ],
+        "title": "Kind",
+        "type": "string"
+      },
+      "lease_remaining_ms": {
+        "maximum": 3000,
+        "minimum": 0,
+        "title": "Lease Remaining Ms",
+        "type": "number"
+      },
+      "source_receipt_age_ms": {
+        "anyOf": [
+          {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Source Receipt Age Ms"
+      },
+      "response_age_ms": {
+        "anyOf": [
+          {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Response Age Ms"
+      },
+      "last_inferred": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/NeuralSample"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "completed_calls": {
+        "maximum": 512,
+        "minimum": 0,
+        "title": "Completed Calls",
+        "type": "integer"
+      },
+      "rejected_results": {
+        "maximum": 9007199254740991,
+        "minimum": 0,
+        "title": "Rejected Results",
+        "type": "integer"
+      },
+      "model_hz": {
+        "maximum": 1000000.0,
+        "minimum": 0,
+        "title": "Model Hz",
+        "type": "number"
+      },
+      "last_step_wall_ms": {
+        "anyOf": [
+          {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Last Step Wall Ms"
+      },
+      "recording_id": {
+        "anyOf": [
+          {
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Recording Id"
+      },
+      "recording_state": {
+        "enum": [
+          "off",
+          "partial",
+          "aborted",
+          "complete"
+        ],
+        "title": "Recording State",
+        "type": "string"
+      }
+    },
+    "required": [
+      "event_sequence",
+      "sent_monotonic_ms",
+      "status",
+      "latest_source_frame",
+      "neural_sample",
+      "flight",
+      "kind",
+      "lease_remaining_ms",
+      "source_receipt_age_ms",
+      "response_age_ms",
+      "last_inferred",
+      "completed_calls",
+      "rejected_results",
+      "model_hz",
+      "last_step_wall_ms",
+      "recording_id",
+      "recording_state"
+    ],
+    "title": "ApiSnapshot",
+    "type": "object"
+  },
+  "ServiceStatus": {
+    "$defs": {
+      "ApiSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-api-snapshot-1",
+            "default": "obs-api-snapshot-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "event_sequence": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Event Sequence",
+            "type": "integer"
+          },
+          "sent_monotonic_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Sent Monotonic Ms",
+            "type": "number"
+          },
+          "status": {
+            "$ref": "#/$defs/SessionStatus"
+          },
+          "latest_source_frame": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/FrameIdentity"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "neural_sample": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/NeuralSample"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "flight": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/FlightSnapshot"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "kind": {
+            "enum": [
+              "session",
+              "preview"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "lease_remaining_ms": {
+            "maximum": 3000,
+            "minimum": 0,
+            "title": "Lease Remaining Ms",
+            "type": "number"
+          },
+          "source_receipt_age_ms": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Receipt Age Ms"
+          },
+          "response_age_ms": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Age Ms"
+          },
+          "last_inferred": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/NeuralSample"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "completed_calls": {
+            "maximum": 512,
+            "minimum": 0,
+            "title": "Completed Calls",
+            "type": "integer"
+          },
+          "rejected_results": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Rejected Results",
+            "type": "integer"
+          },
+          "model_hz": {
+            "maximum": 1000000.0,
+            "minimum": 0,
+            "title": "Model Hz",
+            "type": "number"
+          },
+          "last_step_wall_ms": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Step Wall Ms"
+          },
+          "recording_id": {
+            "anyOf": [
+              {
+                "maxLength": 32,
+                "pattern": "^[0-9a-f]{32}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recording Id"
+          },
+          "recording_state": {
+            "enum": [
+              "off",
+              "partial",
+              "aborted",
+              "complete"
+            ],
+            "title": "Recording State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_sequence",
+          "sent_monotonic_ms",
+          "status",
+          "latest_source_frame",
+          "neural_sample",
+          "flight",
+          "kind",
+          "lease_remaining_ms",
+          "source_receipt_age_ms",
+          "response_age_ms",
+          "last_inferred",
+          "completed_calls",
+          "rejected_results",
+          "model_hz",
+          "last_step_wall_ms",
+          "recording_id",
+          "recording_state"
+        ],
+        "title": "ApiSnapshot",
+        "type": "object"
+      },
+      "FlightSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-flight-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "tick": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Tick",
+            "type": "integer"
+          },
+          "position": {
+            "items": {
+              "maximum": 1000000000.0,
+              "minimum": -1000000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Position",
+            "type": "array"
+          },
+          "yaw_rad": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "title": "Yaw Rad",
+            "type": "number"
+          },
+          "pitch_rad": {
+            "maximum": 0.7853981633974483,
+            "minimum": -0.7853981633974483,
+            "title": "Pitch Rad",
+            "type": "number"
+          },
+          "speed_units_s": {
+            "maximum": 10,
+            "minimum": 0,
+            "title": "Speed Units S",
+            "type": "number"
+          },
+          "applied_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Response Id"
+          },
+          "neutral": {
+            "title": "Neutral",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "tick",
+          "position",
+          "yaw_rad",
+          "pitch_rad",
+          "speed_units_s",
+          "applied_response_id",
+          "neutral"
+        ],
+        "title": "FlightSnapshot",
+        "type": "object"
+      },
+      "FrameIdentity": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-frame-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "sequence": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "width": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Width",
+            "type": "integer"
+          },
+          "height": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Height",
+            "type": "integer"
+          },
+          "pixel_format": {
+            "const": "RGB24",
+            "title": "Pixel Format",
+            "type": "string"
+          },
+          "receipt_monotonic_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Receipt Monotonic Ms",
+            "type": "number"
+          },
+          "source_timestamp_ms": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Timestamp Ms"
+          },
+          "source_sequence": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Sequence"
+          },
+          "source_clock": {
+            "enum": [
+              "unknown",
+              "producer",
+              "local_monotonic"
+            ],
+            "title": "Source Clock",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "source_id",
+          "session_id",
+          "generation",
+          "sequence",
+          "evidence_kind",
+          "width",
+          "height",
+          "pixel_format",
+          "receipt_monotonic_ms",
+          "source_timestamp_ms",
+          "source_sequence",
+          "source_clock"
+        ],
+        "title": "FrameIdentity",
+        "type": "object"
+      },
+      "MotorRates": {
+        "additionalProperties": false,
+        "properties": {
+          "steer_L": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Steer L",
+            "type": "number"
+          },
+          "steer_R": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Steer R",
+            "type": "number"
+          },
+          "fwd_L": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Fwd L",
+            "type": "number"
+          },
+          "fwd_R": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Fwd R",
+            "type": "number"
+          },
+          "back": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Back",
+            "type": "number"
+          },
+          "stop": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Stop",
+            "type": "number"
+          },
+          "click": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Click",
+            "type": "number"
+          }
+        },
+        "required": [
+          "steer_L",
+          "steer_R",
+          "fwd_L",
+          "fwd_R",
+          "back",
+          "stop",
+          "click"
+        ],
+        "title": "MotorRates",
+        "type": "object"
+      },
+      "NeuralSample": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-neural-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "response_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Response Id",
+            "type": "string"
+          },
+          "frame": {
+            "$ref": "#/$defs/FrameIdentity"
+          },
+          "observation_u8": {
+            "items": {
+              "maximum": 255,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "maxItems": 256,
+            "minItems": 256,
+            "title": "Observation U8",
+            "type": "array"
+          },
+          "encoder_id": {
+            "const": "obs-rgb-letterbox16-v1",
+            "title": "Encoder Id",
+            "type": "string"
+          },
+          "model_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Model Id",
+            "type": "string"
+          },
+          "step_index": {
+            "maximum": 511,
+            "minimum": 0,
+            "title": "Step Index",
+            "type": "integer"
+          },
+          "completed_monotonic_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Completed Monotonic Ms",
+            "type": "number"
+          },
+          "neural_ms": {
+            "const": 20.0,
+            "title": "Neural Ms",
+            "type": "number"
+          },
+          "neural_state_mode": {
+            "const": "windowed_reset",
+            "title": "Neural State Mode",
+            "type": "string"
+          },
+          "motor_rates_hz": {
+            "$ref": "#/$defs/MotorRates"
+          },
+          "raw_action": {
+            "$ref": "#/$defs/RawAction"
+          }
+        },
+        "required": [
+          "schema_version",
+          "response_id",
+          "frame",
+          "observation_u8",
+          "encoder_id",
+          "model_id",
+          "step_index",
+          "completed_monotonic_ms",
+          "neural_ms",
+          "neural_state_mode",
+          "motor_rates_hz",
+          "raw_action"
+        ],
+        "title": "NeuralSample",
+        "type": "object"
+      },
+      "RawAction": {
+        "additionalProperties": false,
+        "properties": {
+          "dx": {
+            "maximum": 1000000000000.0,
+            "minimum": -1000000000000.0,
+            "title": "Dx",
+            "type": "number"
+          },
+          "dy": {
+            "maximum": 1000000000000.0,
+            "minimum": -1000000000000.0,
+            "title": "Dy",
+            "type": "number"
+          },
+          "click": {
+            "title": "Click",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "dx",
+          "dy",
+          "click"
+        ],
+        "title": "RawAction",
+        "type": "object"
+      },
+      "SessionStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-session-status-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "idle",
+              "previewing",
+              "starting",
+              "running",
+              "stopping",
+              "stopped",
+              "source_lost",
+              "failed",
+              "limit_reached"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "attempted_calls": {
+            "maximum": 512,
+            "minimum": 0,
+            "title": "Attempted Calls",
+            "type": "integer"
+          },
+          "accepted_frames": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Accepted Frames",
+            "type": "integer"
+          },
+          "overwritten_frames": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Overwritten Frames",
+            "type": "integer"
+          },
+          "content_unchanged_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Content Unchanged Ms",
+            "type": "number"
+          },
+          "producer_health": {
+            "enum": [
+              "unknown",
+              "active",
+              "inactive"
+            ],
+            "title": "Producer Health",
+            "type": "string"
+          },
+          "last_frame_sequence": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Frame Sequence"
+          },
+          "last_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Response Id"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "state",
+          "reason",
+          "attempted_calls",
+          "accepted_frames",
+          "overwritten_frames",
+          "content_unchanged_ms",
+          "producer_health",
+          "last_frame_sequence",
+          "last_response_id"
+        ],
+        "title": "SessionStatus",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "schema_version": {
+        "const": "obs-service-status-1",
+        "default": "obs-service-status-1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "current": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/ApiSnapshot"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "current"
+    ],
+    "title": "ServiceStatus",
+    "type": "object"
+  },
+  "PreviewReply": {
+    "$defs": {
+      "FrameIdentity": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-frame-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "sequence": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "width": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Width",
+            "type": "integer"
+          },
+          "height": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Height",
+            "type": "integer"
+          },
+          "pixel_format": {
+            "const": "RGB24",
+            "title": "Pixel Format",
+            "type": "string"
+          },
+          "receipt_monotonic_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Receipt Monotonic Ms",
+            "type": "number"
+          },
+          "source_timestamp_ms": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Timestamp Ms"
+          },
+          "source_sequence": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Sequence"
+          },
+          "source_clock": {
+            "enum": [
+              "unknown",
+              "producer",
+              "local_monotonic"
+            ],
+            "title": "Source Clock",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "source_id",
+          "session_id",
+          "generation",
+          "sequence",
+          "evidence_kind",
+          "width",
+          "height",
+          "pixel_format",
+          "receipt_monotonic_ms",
+          "source_timestamp_ms",
+          "source_sequence",
+          "source_clock"
+        ],
+        "title": "FrameIdentity",
+        "type": "object"
+      },
+      "SessionStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-session-status-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "idle",
+              "previewing",
+              "starting",
+              "running",
+              "stopping",
+              "stopped",
+              "source_lost",
+              "failed",
+              "limit_reached"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "attempted_calls": {
+            "maximum": 512,
+            "minimum": 0,
+            "title": "Attempted Calls",
+            "type": "integer"
+          },
+          "accepted_frames": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Accepted Frames",
+            "type": "integer"
+          },
+          "overwritten_frames": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Overwritten Frames",
+            "type": "integer"
+          },
+          "content_unchanged_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Content Unchanged Ms",
+            "type": "number"
+          },
+          "producer_health": {
+            "enum": [
+              "unknown",
+              "active",
+              "inactive"
+            ],
+            "title": "Producer Health",
+            "type": "string"
+          },
+          "last_frame_sequence": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Frame Sequence"
+          },
+          "last_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Response Id"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "state",
+          "reason",
+          "attempted_calls",
+          "accepted_frames",
+          "overwritten_frames",
+          "content_unchanged_ms",
+          "producer_health",
+          "last_frame_sequence",
+          "last_response_id"
+        ],
+        "title": "SessionStatus",
+        "type": "object"
+      },
+      "SourcePreview": {
+        "additionalProperties": false,
+        "properties": {
+          "frame": {
+            "$ref": "#/$defs/FrameIdentity"
+          },
+          "width": {
+            "maximum": 320,
+            "minimum": 1,
+            "title": "Width",
+            "type": "integer"
+          },
+          "height": {
+            "maximum": 180,
+            "minimum": 1,
+            "title": "Height",
+            "type": "integer"
+          },
+          "rgb_base64": {
+            "maxLength": 230400,
+            "pattern": "^[A-Za-z0-9+/]*={0,2}$",
+            "title": "Rgb Base64",
+            "type": "string"
+          },
+          "observation_u8": {
+            "items": {
+              "maximum": 255,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "maxItems": 256,
+            "minItems": 256,
+            "title": "Observation U8",
+            "type": "array"
+          }
+        },
+        "required": [
+          "frame",
+          "width",
+          "height",
+          "rgb_base64",
+          "observation_u8"
+        ],
+        "title": "SourcePreview",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "schema_version": {
+        "const": "obs-source-preview-1",
+        "default": "obs-source-preview-1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "status": {
+        "$ref": "#/$defs/SessionStatus"
+      },
+      "latest": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/SourcePreview"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "status",
+      "latest"
+    ],
+    "title": "PreviewReply",
+    "type": "object"
+  },
+  "ReplayPayload": {
+    "$defs": {
+      "ControlTick": {
+        "additionalProperties": false,
+        "description": "Control selected for the interval ending at tick; never a pixel record.",
+        "properties": {
+          "tick": {
+            "maximum": 6000,
+            "minimum": 1,
+            "title": "Tick",
+            "type": "integer"
+          },
+          "controls": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/FlightControls"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "default": "running",
+            "enum": [
+              "idle",
+              "previewing",
+              "starting",
+              "running",
+              "stopping",
+              "stopped",
+              "source_lost",
+              "failed",
+              "limit_reached"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tick",
+          "controls"
+        ],
+        "title": "ControlTick",
+        "type": "object"
+      },
+      "ControllerOutput": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "dx": {
+            "maximum": 1,
+            "minimum": -1,
+            "title": "Dx",
+            "type": "number"
+          },
+          "dy": {
+            "maximum": 1,
+            "minimum": -1,
+            "title": "Dy",
+            "type": "number"
+          },
+          "click": {
+            "title": "Click",
+            "type": "boolean"
+          },
+          "model_mode": {
+            "enum": [
+              "fixture",
+              "windowed_reset"
+            ],
+            "title": "Model Mode",
+            "type": "string"
+          },
+          "telemetry": {
+            "$ref": "#/$defs/NeuralTelemetry"
+          }
+        },
+        "required": [
+          "schema_version",
+          "dx",
+          "dy",
+          "click",
+          "model_mode",
+          "telemetry"
+        ],
+        "title": "ControllerOutput",
+        "type": "object"
+      },
+      "EncoderConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-encoder-1",
+            "default": "obs-encoder-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "encoder_id": {
+            "const": "obs-rgb-letterbox16-v1",
+            "default": "obs-rgb-letterbox16-v1",
+            "title": "Encoder Id",
+            "type": "string"
+          },
+          "size": {
+            "const": 16,
+            "default": 16,
+            "title": "Size",
+            "type": "integer"
+          },
+          "grayscale": {
+            "const": "(77R+150G+29B+128)//256",
+            "default": "(77R+150G+29B+128)//256",
+            "title": "Grayscale",
+            "type": "string"
+          },
+          "resampler": {
+            "const": "nearest-pixel-center",
+            "default": "nearest-pixel-center",
+            "title": "Resampler",
+            "type": "string"
+          },
+          "padding_u8": {
+            "const": 0,
+            "default": 0,
+            "title": "Padding U8",
+            "type": "integer"
+          },
+          "color": {
+            "const": "full-range-rgb-bt601-conversion",
+            "default": "full-range-rgb-bt601-conversion",
+            "title": "Color",
+            "type": "string"
+          }
+        },
+        "title": "EncoderConfig",
+        "type": "object"
+      },
+      "FlightControls": {
+        "additionalProperties": false,
+        "description": "Decoder output only; source pixels and world targets are excluded.",
+        "properties": {
+          "schema_version": {
+            "const": "obs-controls-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "decoder_id": {
+            "const": "motor-flight-v1",
+            "title": "Decoder Id",
+            "type": "string"
+          },
+          "response_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Response Id",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "issued_monotonic_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Issued Monotonic Ms",
+            "type": "number"
+          },
+          "expires_monotonic_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Expires Monotonic Ms",
+            "type": "number"
+          },
+          "yaw_rate_rad_s": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "title": "Yaw Rate Rad S",
+            "type": "number"
+          },
+          "pitch_target_rad": {
+            "maximum": 0.7853981633974483,
+            "minimum": -0.7853981633974483,
+            "title": "Pitch Target Rad",
+            "type": "number"
+          },
+          "speed_target_units_s": {
+            "maximum": 10,
+            "minimum": 0,
+            "title": "Speed Target Units S",
+            "type": "number"
+          }
+        },
+        "required": [
+          "schema_version",
+          "decoder_id",
+          "response_id",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "issued_monotonic_ms",
+          "expires_monotonic_ms",
+          "yaw_rate_rad_s",
+          "pitch_target_rad",
+          "speed_target_units_s"
+        ],
+        "title": "FlightControls",
+        "type": "object"
+      },
+      "FlightSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-flight-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "tick": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Tick",
+            "type": "integer"
+          },
+          "position": {
+            "items": {
+              "maximum": 1000000000.0,
+              "minimum": -1000000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Position",
+            "type": "array"
+          },
+          "yaw_rad": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "title": "Yaw Rad",
+            "type": "number"
+          },
+          "pitch_rad": {
+            "maximum": 0.7853981633974483,
+            "minimum": -0.7853981633974483,
+            "title": "Pitch Rad",
+            "type": "number"
+          },
+          "speed_units_s": {
+            "maximum": 10,
+            "minimum": 0,
+            "title": "Speed Units S",
+            "type": "number"
+          },
+          "applied_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Response Id"
+          },
+          "neutral": {
+            "title": "Neutral",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "tick",
+          "position",
+          "yaw_rad",
+          "pitch_rad",
+          "speed_units_s",
+          "applied_response_id",
+          "neutral"
+        ],
+        "title": "FlightSnapshot",
+        "type": "object"
+      },
+      "FlightState": {
+        "additionalProperties": false,
+        "properties": {
+          "physics_id": {
+            "const": "flight-fixed20-v1",
+            "default": "flight-fixed20-v1",
+            "title": "Physics Id",
+            "type": "string"
+          },
+          "snapshot": {
+            "$ref": "#/$defs/FlightSnapshot"
+          },
+          "velocity": {
+            "default": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "maxItems": 3,
+            "minItems": 3,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "title": "Velocity",
+            "type": "array"
+          },
+          "yaw_rate": {
+            "default": 0.0,
+            "maximum": 1.2,
+            "minimum": -1.2,
+            "title": "Yaw Rate",
+            "type": "number"
+          }
+        },
+        "required": [
+          "snapshot"
+        ],
+        "title": "FlightState",
+        "type": "object"
+      },
+      "FlightTrace": {
+        "additionalProperties": false,
+        "description": "Bounded in-memory state/control record, with an immediate terminal overlay.",
+        "properties": {
+          "schema_version": {
+            "const": "obs-flight-trace-1",
+            "default": "obs-flight-trace-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "decoder_id": {
+            "const": "motor-flight-v1",
+            "default": "motor-flight-v1",
+            "title": "Decoder Id",
+            "type": "string"
+          },
+          "initial": {
+            "$ref": "#/$defs/FlightState"
+          },
+          "origin_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Origin Ms",
+            "type": "number"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/ControlTick"
+            },
+            "maxItems": 512,
+            "title": "Events",
+            "type": "array"
+          },
+          "ticks": {
+            "maximum": 6000,
+            "minimum": 0,
+            "title": "Ticks",
+            "type": "integer"
+          },
+          "terminal_tick": {
+            "anyOf": [
+              {
+                "maximum": 6000,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Terminal Tick"
+          }
+        },
+        "required": [
+          "initial",
+          "origin_ms",
+          "events",
+          "ticks",
+          "terminal_tick"
+        ],
+        "title": "FlightTrace",
+        "type": "object"
+      },
+      "FrameIdentity": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-frame-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "sequence": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "width": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Width",
+            "type": "integer"
+          },
+          "height": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Height",
+            "type": "integer"
+          },
+          "pixel_format": {
+            "const": "RGB24",
+            "title": "Pixel Format",
+            "type": "string"
+          },
+          "receipt_monotonic_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Receipt Monotonic Ms",
+            "type": "number"
+          },
+          "source_timestamp_ms": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Timestamp Ms"
+          },
+          "source_sequence": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Sequence"
+          },
+          "source_clock": {
+            "enum": [
+              "unknown",
+              "producer",
+              "local_monotonic"
+            ],
+            "title": "Source Clock",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "source_id",
+          "session_id",
+          "generation",
+          "sequence",
+          "evidence_kind",
+          "width",
+          "height",
+          "pixel_format",
+          "receipt_monotonic_ms",
+          "source_timestamp_ms",
+          "source_sequence",
+          "source_clock"
+        ],
+        "title": "FrameIdentity",
+        "type": "object"
+      },
+      "InputEvent": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "input",
+            "default": "input",
+            "title": "Kind",
+            "type": "string"
+          },
+          "frame": {
+            "$ref": "#/$defs/FrameIdentity"
+          },
+          "observation_u8": {
+            "items": {
+              "maximum": 255,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "maxItems": 256,
+            "minItems": 256,
+            "title": "Observation U8",
+            "type": "array"
+          },
+          "step_index": {
+            "maximum": 511,
+            "minimum": 0,
+            "title": "Step Index",
+            "type": "integer"
+          },
+          "encoder_id": {
+            "const": "obs-rgb-letterbox16-v1",
+            "default": "obs-rgb-letterbox16-v1",
+            "title": "Encoder Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "frame",
+          "observation_u8",
+          "step_index"
+        ],
+        "title": "InputEvent",
+        "type": "object"
+      },
+      "MotorRates": {
+        "additionalProperties": false,
+        "properties": {
+          "steer_L": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Steer L",
+            "type": "number"
+          },
+          "steer_R": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Steer R",
+            "type": "number"
+          },
+          "fwd_L": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Fwd L",
+            "type": "number"
+          },
+          "fwd_R": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Fwd R",
+            "type": "number"
+          },
+          "back": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Back",
+            "type": "number"
+          },
+          "stop": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Stop",
+            "type": "number"
+          },
+          "click": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Click",
+            "type": "number"
+          }
+        },
+        "required": [
+          "steer_L",
+          "steer_R",
+          "fwd_L",
+          "fwd_R",
+          "back",
+          "stop",
+          "click"
+        ],
+        "title": "MotorRates",
+        "type": "object"
+      },
+      "NeuralSample": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-neural-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "response_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Response Id",
+            "type": "string"
+          },
+          "frame": {
+            "$ref": "#/$defs/FrameIdentity"
+          },
+          "observation_u8": {
+            "items": {
+              "maximum": 255,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "maxItems": 256,
+            "minItems": 256,
+            "title": "Observation U8",
+            "type": "array"
+          },
+          "encoder_id": {
+            "const": "obs-rgb-letterbox16-v1",
+            "title": "Encoder Id",
+            "type": "string"
+          },
+          "model_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Model Id",
+            "type": "string"
+          },
+          "step_index": {
+            "maximum": 511,
+            "minimum": 0,
+            "title": "Step Index",
+            "type": "integer"
+          },
+          "completed_monotonic_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Completed Monotonic Ms",
+            "type": "number"
+          },
+          "neural_ms": {
+            "const": 20.0,
+            "title": "Neural Ms",
+            "type": "number"
+          },
+          "neural_state_mode": {
+            "const": "windowed_reset",
+            "title": "Neural State Mode",
+            "type": "string"
+          },
+          "motor_rates_hz": {
+            "$ref": "#/$defs/MotorRates"
+          },
+          "raw_action": {
+            "$ref": "#/$defs/RawAction"
+          }
+        },
+        "required": [
+          "schema_version",
+          "response_id",
+          "frame",
+          "observation_u8",
+          "encoder_id",
+          "model_id",
+          "step_index",
+          "completed_monotonic_ms",
+          "neural_ms",
+          "neural_state_mode",
+          "motor_rates_hz",
+          "raw_action"
+        ],
+        "title": "NeuralSample",
+        "type": "object"
+      },
+      "NeuralTelemetry": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "sampled_neurons": {
+            "maximum": 1000000,
+            "minimum": 0,
+            "title": "Sampled Neurons",
+            "type": "integer"
+          },
+          "spike_count": {
+            "maximum": 100000000,
+            "minimum": 0,
+            "title": "Spike Count",
+            "type": "integer"
+          },
+          "neural_ms": {
+            "maximum": 1000000,
+            "minimum": 0,
+            "title": "Neural Ms",
+            "type": "number"
+          }
+        },
+        "required": [
+          "schema_version",
+          "sampled_neurons",
+          "spike_count",
+          "neural_ms"
+        ],
+        "title": "NeuralTelemetry",
+        "type": "object"
+      },
+      "Provenance": {
+        "additionalProperties": false,
+        "properties": {
+          "source_head": {
+            "maxLength": 40,
+            "pattern": "^[0-9a-f]{40}$",
+            "title": "Source Head",
+            "type": "string"
+          },
+          "source_tree_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Source Tree Sha256",
+            "type": "string"
+          },
+          "graph_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Graph Sha256",
+            "type": "string"
+          },
+          "annotations_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Annotations Sha256",
+            "type": "string"
+          },
+          "checkpoint_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Checkpoint Sha256",
+            "type": "string"
+          },
+          "model_source_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Model Source Sha256",
+            "type": "string"
+          },
+          "model_config_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Model Config Sha256",
+            "type": "string"
+          },
+          "backend_version": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Backend Version",
+            "type": "string"
+          },
+          "python_version": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Python Version",
+            "type": "string"
+          },
+          "numpy_version": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Numpy Version",
+            "type": "string"
+          },
+          "scipy_version": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Scipy Version",
+            "type": "string"
+          },
+          "model_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Model Id",
+            "type": "string"
+          },
+          "neural_state_mode": {
+            "const": "windowed_reset",
+            "title": "Neural State Mode",
+            "type": "string"
+          },
+          "gains": {
+            "const": "all-one-float32",
+            "title": "Gains",
+            "type": "string"
+          },
+          "learning_enabled": {
+            "const": false,
+            "title": "Learning Enabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "source_head",
+          "source_tree_sha256",
+          "graph_sha256",
+          "annotations_sha256",
+          "checkpoint_sha256",
+          "model_source_sha256",
+          "model_config_sha256",
+          "backend_version",
+          "python_version",
+          "numpy_version",
+          "scipy_version",
+          "model_id",
+          "neural_state_mode",
+          "gains",
+          "learning_enabled"
+        ],
+        "title": "Provenance",
+        "type": "object"
+      },
+      "RawAction": {
+        "additionalProperties": false,
+        "properties": {
+          "dx": {
+            "maximum": 1000000000000.0,
+            "minimum": -1000000000000.0,
+            "title": "Dx",
+            "type": "number"
+          },
+          "dy": {
+            "maximum": 1000000000000.0,
+            "minimum": -1000000000000.0,
+            "title": "Dy",
+            "type": "number"
+          },
+          "click": {
+            "title": "Click",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "dx",
+          "dy",
+          "click"
+        ],
+        "title": "RawAction",
+        "type": "object"
+      },
+      "ReplayManifest": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-replay-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "partial",
+              "aborted",
+              "complete"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "config": {
+            "$ref": "#/$defs/SessionConfig"
+          },
+          "source": {
+            "$ref": "#/$defs/SourceCapability"
+          },
+          "initial_flight": {
+            "$ref": "#/$defs/FlightSnapshot"
+          },
+          "provenance": {
+            "$ref": "#/$defs/Provenance"
+          },
+          "events_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Events Sha256",
+            "type": "string"
+          },
+          "event_count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Event Count",
+            "type": "integer"
+          },
+          "events_bytes": {
+            "maximum": 33554432,
+            "minimum": 0,
+            "title": "Events Bytes",
+            "type": "integer"
+          },
+          "events_file": {
+            "const": "events.jsonl",
+            "title": "Events File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "state",
+          "config",
+          "source",
+          "initial_flight",
+          "provenance",
+          "events_sha256",
+          "event_count",
+          "events_bytes",
+          "events_file"
+        ],
+        "title": "ReplayManifest",
+        "type": "object"
+      },
+      "SessionConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-session-config-1",
+            "default": "obs-session-config-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "seed": {
+            "maximum": 4294967295,
+            "minimum": 0,
+            "title": "Seed",
+            "type": "integer"
+          },
+          "recording": {
+            "default": false,
+            "title": "Recording",
+            "type": "boolean"
+          },
+          "duration_seconds": {
+            "default": 120,
+            "maximum": 120,
+            "minimum": 1,
+            "title": "Duration Seconds",
+            "type": "integer"
+          },
+          "max_model_calls": {
+            "default": 512,
+            "maximum": 512,
+            "minimum": 1,
+            "title": "Max Model Calls",
+            "type": "integer"
+          },
+          "source_deadline_ms": {
+            "default": 2000,
+            "maximum": 2000,
+            "minimum": 1,
+            "title": "Source Deadline Ms",
+            "type": "integer"
+          },
+          "step_deadline_ms": {
+            "default": 5000,
+            "maximum": 5000,
+            "minimum": 1,
+            "title": "Step Deadline Ms",
+            "type": "integer"
+          },
+          "startup_deadline_ms": {
+            "default": 30000,
+            "maximum": 30000,
+            "minimum": 1,
+            "title": "Startup Deadline Ms",
+            "type": "integer"
+          },
+          "response_max_age_ms": {
+            "default": 2000,
+            "maximum": 2000,
+            "minimum": 1,
+            "title": "Response Max Age Ms",
+            "type": "integer"
+          },
+          "lease_ms": {
+            "default": 3000,
+            "maximum": 3000,
+            "minimum": 1,
+            "title": "Lease Ms",
+            "type": "integer"
+          },
+          "stop_grace_ms": {
+            "default": 3000,
+            "maximum": 3000,
+            "minimum": 1,
+            "title": "Stop Grace Ms",
+            "type": "integer"
+          },
+          "recording_max_bytes": {
+            "default": 33554432,
+            "maximum": 33554432,
+            "minimum": 1,
+            "title": "Recording Max Bytes",
+            "type": "integer"
+          },
+          "fixed_step_ms": {
+            "const": 20,
+            "default": 20,
+            "title": "Fixed Step Ms",
+            "type": "integer"
+          },
+          "encoder": {
+            "$ref": "#/$defs/EncoderConfig",
+            "default": {
+              "schema_version": "obs-encoder-1",
+              "encoder_id": "obs-rgb-letterbox16-v1",
+              "size": 16,
+              "grayscale": "(77R+150G+29B+128)//256",
+              "resampler": "nearest-pixel-center",
+              "padding_u8": 0,
+              "color": "full-range-rgb-bt601-conversion"
+            }
+          },
+          "decoder_id": {
+            "const": "motor-flight-v1",
+            "default": "motor-flight-v1",
+            "title": "Decoder Id",
+            "type": "string"
+          },
+          "neural_state_mode": {
+            "const": "windowed_reset",
+            "default": "windowed_reset",
+            "title": "Neural State Mode",
+            "type": "string"
+          },
+          "learning_enabled": {
+            "const": false,
+            "default": false,
+            "title": "Learning Enabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "source_id",
+          "evidence_kind",
+          "seed"
+        ],
+        "title": "SessionConfig",
+        "type": "object"
+      },
+      "SourceCapability": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-source-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Name",
+            "type": "string"
+          },
+          "driver": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver"
+          },
+          "backend": {
+            "enum": [
+              "ffmpeg-v4l2",
+              "synthetic"
+            ],
+            "title": "Backend",
+            "type": "string"
+          },
+          "capabilities": {
+            "anyOf": [
+              {
+                "items": {
+                  "enum": [
+                    "video_capture",
+                    "streaming",
+                    "readwrite"
+                  ],
+                  "type": "string"
+                },
+                "maxItems": 3,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capabilities"
+          },
+          "formats": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/SourceFormat"
+                },
+                "maxItems": 128,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formats"
+          },
+          "metadata_state": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable"
+            ],
+            "title": "Metadata State",
+            "type": "string"
+          },
+          "producer_detection": {
+            "enum": [
+              "unknown",
+              "driver",
+              "obs_readonly_monitor",
+              "synthetic"
+            ],
+            "title": "Producer Detection",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "source_id",
+          "evidence_kind",
+          "name",
+          "driver",
+          "backend",
+          "capabilities",
+          "formats",
+          "metadata_state",
+          "producer_detection"
+        ],
+        "title": "SourceCapability",
+        "type": "object"
+      },
+      "SourceFormat": {
+        "additionalProperties": false,
+        "properties": {
+          "pixel_format": {
+            "enum": [
+              "RGB24",
+              "BGR24",
+              "YUYV",
+              "NV12",
+              "MJPEG"
+            ],
+            "title": "Pixel Format",
+            "type": "string"
+          },
+          "width": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Width",
+            "type": "integer"
+          },
+          "height": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Height",
+            "type": "integer"
+          },
+          "fps": {
+            "exclusiveMinimum": 0,
+            "maximum": 240,
+            "title": "Fps",
+            "type": "number"
+          }
+        },
+        "required": [
+          "pixel_format",
+          "width",
+          "height",
+          "fps"
+        ],
+        "title": "SourceFormat",
+        "type": "object"
+      },
+      "Statistics": {
+        "additionalProperties": false,
+        "properties": {
+          "sampled_neurons": {
+            "maximum": 1000000000000,
+            "minimum": 0,
+            "title": "Sampled Neurons",
+            "type": "integer"
+          },
+          "spike_count": {
+            "maximum": 1000000000000,
+            "minimum": 0,
+            "title": "Spike Count",
+            "type": "integer"
+          },
+          "firing": {
+            "maximum": 1000000000000,
+            "minimum": 0,
+            "title": "Firing",
+            "type": "integer"
+          },
+          "spikes_per_sec": {
+            "maximum": 1000000000000.0,
+            "minimum": 0,
+            "title": "Spikes Per Sec",
+            "type": "number"
+          },
+          "mean_mv": {
+            "maximum": 1000,
+            "minimum": -1000,
+            "title": "Mean Mv",
+            "type": "number"
+          },
+          "visual": {
+            "maximum": 1000000000000,
+            "minimum": 0,
+            "title": "Visual",
+            "type": "integer"
+          },
+          "motor": {
+            "maximum": 1000000000000,
+            "minimum": 0,
+            "title": "Motor",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sampled_neurons",
+          "spike_count",
+          "firing",
+          "spikes_per_sec",
+          "mean_mv",
+          "visual",
+          "motor"
+        ],
+        "title": "Statistics",
+        "type": "object"
+      },
+      "StepResult": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "result",
+            "default": "result",
+            "title": "Kind",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "step_index": {
+            "maximum": 511,
+            "minimum": 0,
+            "title": "Step Index",
+            "type": "integer"
+          },
+          "completed_monotonic_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Completed Monotonic Ms",
+            "type": "number"
+          },
+          "output": {
+            "$ref": "#/$defs/ControllerOutput"
+          },
+          "motor_rates_hz": {
+            "$ref": "#/$defs/MotorRates"
+          },
+          "raw_action": {
+            "$ref": "#/$defs/RawAction"
+          },
+          "statistics": {
+            "$ref": "#/$defs/Statistics"
+          },
+          "model_file_reads": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Model File Reads",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "session_id",
+          "generation",
+          "step_index",
+          "completed_monotonic_ms",
+          "output",
+          "motor_rates_hz",
+          "raw_action",
+          "statistics",
+          "model_file_reads"
+        ],
+        "title": "StepResult",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "schema_version": {
+        "const": "obs-recorded-replay-1",
+        "default": "obs-recorded-replay-1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "manifest": {
+        "$ref": "#/$defs/ReplayManifest"
+      },
+      "inputs": {
+        "items": {
+          "$ref": "#/$defs/InputEvent"
+        },
+        "maxItems": 512,
+        "title": "Inputs",
+        "type": "array"
+      },
+      "samples": {
+        "items": {
+          "$ref": "#/$defs/NeuralSample"
+        },
+        "maxItems": 512,
+        "title": "Samples",
+        "type": "array"
+      },
+      "results": {
+        "items": {
+          "$ref": "#/$defs/StepResult"
+        },
+        "maxItems": 512,
+        "title": "Results",
+        "type": "array"
+      },
+      "trace": {
+        "$ref": "#/$defs/FlightTrace"
+      },
+      "final": {
+        "$ref": "#/$defs/FlightState"
+      }
+    },
+    "required": [
+      "manifest",
+      "inputs",
+      "samples",
+      "results",
+      "trace",
+      "final"
+    ],
+    "title": "ReplayPayload",
+    "type": "object"
+  },
+  "ReplayList": {
+    "$defs": {
+      "EncoderConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-encoder-1",
+            "default": "obs-encoder-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "encoder_id": {
+            "const": "obs-rgb-letterbox16-v1",
+            "default": "obs-rgb-letterbox16-v1",
+            "title": "Encoder Id",
+            "type": "string"
+          },
+          "size": {
+            "const": 16,
+            "default": 16,
+            "title": "Size",
+            "type": "integer"
+          },
+          "grayscale": {
+            "const": "(77R+150G+29B+128)//256",
+            "default": "(77R+150G+29B+128)//256",
+            "title": "Grayscale",
+            "type": "string"
+          },
+          "resampler": {
+            "const": "nearest-pixel-center",
+            "default": "nearest-pixel-center",
+            "title": "Resampler",
+            "type": "string"
+          },
+          "padding_u8": {
+            "const": 0,
+            "default": 0,
+            "title": "Padding U8",
+            "type": "integer"
+          },
+          "color": {
+            "const": "full-range-rgb-bt601-conversion",
+            "default": "full-range-rgb-bt601-conversion",
+            "title": "Color",
+            "type": "string"
+          }
+        },
+        "title": "EncoderConfig",
+        "type": "object"
+      },
+      "FlightSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-flight-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "tick": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Tick",
+            "type": "integer"
+          },
+          "position": {
+            "items": {
+              "maximum": 1000000000.0,
+              "minimum": -1000000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Position",
+            "type": "array"
+          },
+          "yaw_rad": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "title": "Yaw Rad",
+            "type": "number"
+          },
+          "pitch_rad": {
+            "maximum": 0.7853981633974483,
+            "minimum": -0.7853981633974483,
+            "title": "Pitch Rad",
+            "type": "number"
+          },
+          "speed_units_s": {
+            "maximum": 10,
+            "minimum": 0,
+            "title": "Speed Units S",
+            "type": "number"
+          },
+          "applied_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Response Id"
+          },
+          "neutral": {
+            "title": "Neutral",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "tick",
+          "position",
+          "yaw_rad",
+          "pitch_rad",
+          "speed_units_s",
+          "applied_response_id",
+          "neutral"
+        ],
+        "title": "FlightSnapshot",
+        "type": "object"
+      },
+      "Provenance": {
+        "additionalProperties": false,
+        "properties": {
+          "source_head": {
+            "maxLength": 40,
+            "pattern": "^[0-9a-f]{40}$",
+            "title": "Source Head",
+            "type": "string"
+          },
+          "source_tree_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Source Tree Sha256",
+            "type": "string"
+          },
+          "graph_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Graph Sha256",
+            "type": "string"
+          },
+          "annotations_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Annotations Sha256",
+            "type": "string"
+          },
+          "checkpoint_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Checkpoint Sha256",
+            "type": "string"
+          },
+          "model_source_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Model Source Sha256",
+            "type": "string"
+          },
+          "model_config_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Model Config Sha256",
+            "type": "string"
+          },
+          "backend_version": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Backend Version",
+            "type": "string"
+          },
+          "python_version": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Python Version",
+            "type": "string"
+          },
+          "numpy_version": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Numpy Version",
+            "type": "string"
+          },
+          "scipy_version": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Scipy Version",
+            "type": "string"
+          },
+          "model_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Model Id",
+            "type": "string"
+          },
+          "neural_state_mode": {
+            "const": "windowed_reset",
+            "title": "Neural State Mode",
+            "type": "string"
+          },
+          "gains": {
+            "const": "all-one-float32",
+            "title": "Gains",
+            "type": "string"
+          },
+          "learning_enabled": {
+            "const": false,
+            "title": "Learning Enabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "source_head",
+          "source_tree_sha256",
+          "graph_sha256",
+          "annotations_sha256",
+          "checkpoint_sha256",
+          "model_source_sha256",
+          "model_config_sha256",
+          "backend_version",
+          "python_version",
+          "numpy_version",
+          "scipy_version",
+          "model_id",
+          "neural_state_mode",
+          "gains",
+          "learning_enabled"
+        ],
+        "title": "Provenance",
+        "type": "object"
+      },
+      "ReplayListEntry": {
+        "additionalProperties": false,
+        "properties": {
+          "recording_id": {
+            "maxLength": 32,
+            "pattern": "^[0-9a-f]{32}$",
+            "title": "Recording Id",
+            "type": "string"
+          },
+          "manifest": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/ReplayManifest"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "state": {
+            "anyOf": [
+              {
+                "enum": [
+                  "partial",
+                  "aborted"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "State"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "const": "Recording unavailable or corrupted.",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Error"
+          }
+        },
+        "required": [
+          "recording_id"
+        ],
+        "title": "ReplayListEntry",
+        "type": "object"
+      },
+      "ReplayManifest": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-replay-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "partial",
+              "aborted",
+              "complete"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "config": {
+            "$ref": "#/$defs/SessionConfig"
+          },
+          "source": {
+            "$ref": "#/$defs/SourceCapability"
+          },
+          "initial_flight": {
+            "$ref": "#/$defs/FlightSnapshot"
+          },
+          "provenance": {
+            "$ref": "#/$defs/Provenance"
+          },
+          "events_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Events Sha256",
+            "type": "string"
+          },
+          "event_count": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Event Count",
+            "type": "integer"
+          },
+          "events_bytes": {
+            "maximum": 33554432,
+            "minimum": 0,
+            "title": "Events Bytes",
+            "type": "integer"
+          },
+          "events_file": {
+            "const": "events.jsonl",
+            "title": "Events File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "state",
+          "config",
+          "source",
+          "initial_flight",
+          "provenance",
+          "events_sha256",
+          "event_count",
+          "events_bytes",
+          "events_file"
+        ],
+        "title": "ReplayManifest",
+        "type": "object"
+      },
+      "SessionConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-session-config-1",
+            "default": "obs-session-config-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "seed": {
+            "maximum": 4294967295,
+            "minimum": 0,
+            "title": "Seed",
+            "type": "integer"
+          },
+          "recording": {
+            "default": false,
+            "title": "Recording",
+            "type": "boolean"
+          },
+          "duration_seconds": {
+            "default": 120,
+            "maximum": 120,
+            "minimum": 1,
+            "title": "Duration Seconds",
+            "type": "integer"
+          },
+          "max_model_calls": {
+            "default": 512,
+            "maximum": 512,
+            "minimum": 1,
+            "title": "Max Model Calls",
+            "type": "integer"
+          },
+          "source_deadline_ms": {
+            "default": 2000,
+            "maximum": 2000,
+            "minimum": 1,
+            "title": "Source Deadline Ms",
+            "type": "integer"
+          },
+          "step_deadline_ms": {
+            "default": 5000,
+            "maximum": 5000,
+            "minimum": 1,
+            "title": "Step Deadline Ms",
+            "type": "integer"
+          },
+          "startup_deadline_ms": {
+            "default": 30000,
+            "maximum": 30000,
+            "minimum": 1,
+            "title": "Startup Deadline Ms",
+            "type": "integer"
+          },
+          "response_max_age_ms": {
+            "default": 2000,
+            "maximum": 2000,
+            "minimum": 1,
+            "title": "Response Max Age Ms",
+            "type": "integer"
+          },
+          "lease_ms": {
+            "default": 3000,
+            "maximum": 3000,
+            "minimum": 1,
+            "title": "Lease Ms",
+            "type": "integer"
+          },
+          "stop_grace_ms": {
+            "default": 3000,
+            "maximum": 3000,
+            "minimum": 1,
+            "title": "Stop Grace Ms",
+            "type": "integer"
+          },
+          "recording_max_bytes": {
+            "default": 33554432,
+            "maximum": 33554432,
+            "minimum": 1,
+            "title": "Recording Max Bytes",
+            "type": "integer"
+          },
+          "fixed_step_ms": {
+            "const": 20,
+            "default": 20,
+            "title": "Fixed Step Ms",
+            "type": "integer"
+          },
+          "encoder": {
+            "$ref": "#/$defs/EncoderConfig",
+            "default": {
+              "schema_version": "obs-encoder-1",
+              "encoder_id": "obs-rgb-letterbox16-v1",
+              "size": 16,
+              "grayscale": "(77R+150G+29B+128)//256",
+              "resampler": "nearest-pixel-center",
+              "padding_u8": 0,
+              "color": "full-range-rgb-bt601-conversion"
+            }
+          },
+          "decoder_id": {
+            "const": "motor-flight-v1",
+            "default": "motor-flight-v1",
+            "title": "Decoder Id",
+            "type": "string"
+          },
+          "neural_state_mode": {
+            "const": "windowed_reset",
+            "default": "windowed_reset",
+            "title": "Neural State Mode",
+            "type": "string"
+          },
+          "learning_enabled": {
+            "const": false,
+            "default": false,
+            "title": "Learning Enabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "source_id",
+          "evidence_kind",
+          "seed"
+        ],
+        "title": "SessionConfig",
+        "type": "object"
+      },
+      "SourceCapability": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-source-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Name",
+            "type": "string"
+          },
+          "driver": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Driver"
+          },
+          "backend": {
+            "enum": [
+              "ffmpeg-v4l2",
+              "synthetic"
+            ],
+            "title": "Backend",
+            "type": "string"
+          },
+          "capabilities": {
+            "anyOf": [
+              {
+                "items": {
+                  "enum": [
+                    "video_capture",
+                    "streaming",
+                    "readwrite"
+                  ],
+                  "type": "string"
+                },
+                "maxItems": 3,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capabilities"
+          },
+          "formats": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/SourceFormat"
+                },
+                "maxItems": 128,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Formats"
+          },
+          "metadata_state": {
+            "enum": [
+              "available",
+              "partial",
+              "unavailable"
+            ],
+            "title": "Metadata State",
+            "type": "string"
+          },
+          "producer_detection": {
+            "enum": [
+              "unknown",
+              "driver",
+              "obs_readonly_monitor",
+              "synthetic"
+            ],
+            "title": "Producer Detection",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "source_id",
+          "evidence_kind",
+          "name",
+          "driver",
+          "backend",
+          "capabilities",
+          "formats",
+          "metadata_state",
+          "producer_detection"
+        ],
+        "title": "SourceCapability",
+        "type": "object"
+      },
+      "SourceFormat": {
+        "additionalProperties": false,
+        "properties": {
+          "pixel_format": {
+            "enum": [
+              "RGB24",
+              "BGR24",
+              "YUYV",
+              "NV12",
+              "MJPEG"
+            ],
+            "title": "Pixel Format",
+            "type": "string"
+          },
+          "width": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Width",
+            "type": "integer"
+          },
+          "height": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Height",
+            "type": "integer"
+          },
+          "fps": {
+            "exclusiveMinimum": 0,
+            "maximum": 240,
+            "title": "Fps",
+            "type": "number"
+          }
+        },
+        "required": [
+          "pixel_format",
+          "width",
+          "height",
+          "fps"
+        ],
+        "title": "SourceFormat",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "schema_version": {
+        "const": "obs-replay-list-1",
+        "default": "obs-replay-list-1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "recordings": {
+        "items": {
+          "$ref": "#/$defs/ReplayListEntry"
+        },
+        "maxItems": 128,
+        "title": "Recordings",
+        "type": "array"
+      }
+    },
+    "required": [
+      "recordings"
+    ],
+    "title": "ReplayList",
+    "type": "object"
+  },
+  "FlightState": {
+    "$defs": {
+      "FlightSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-flight-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "tick": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Tick",
+            "type": "integer"
+          },
+          "position": {
+            "items": {
+              "maximum": 1000000000.0,
+              "minimum": -1000000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Position",
+            "type": "array"
+          },
+          "yaw_rad": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "title": "Yaw Rad",
+            "type": "number"
+          },
+          "pitch_rad": {
+            "maximum": 0.7853981633974483,
+            "minimum": -0.7853981633974483,
+            "title": "Pitch Rad",
+            "type": "number"
+          },
+          "speed_units_s": {
+            "maximum": 10,
+            "minimum": 0,
+            "title": "Speed Units S",
+            "type": "number"
+          },
+          "applied_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Response Id"
+          },
+          "neutral": {
+            "title": "Neutral",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "tick",
+          "position",
+          "yaw_rad",
+          "pitch_rad",
+          "speed_units_s",
+          "applied_response_id",
+          "neutral"
+        ],
+        "title": "FlightSnapshot",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "physics_id": {
+        "const": "flight-fixed20-v1",
+        "default": "flight-fixed20-v1",
+        "title": "Physics Id",
+        "type": "string"
+      },
+      "snapshot": {
+        "$ref": "#/$defs/FlightSnapshot"
+      },
+      "velocity": {
+        "default": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "maxItems": 3,
+        "minItems": 3,
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "title": "Velocity",
+        "type": "array"
+      },
+      "yaw_rate": {
+        "default": 0.0,
+        "maximum": 1.2,
+        "minimum": -1.2,
+        "title": "Yaw Rate",
+        "type": "number"
+      }
+    },
+    "required": [
+      "snapshot"
+    ],
+    "title": "FlightState",
     "type": "object"
   }
 }

@@ -41,6 +41,7 @@ export function Live() {
           <div><dt>Neural calls this page</dt><dd>0</dd></div>
         </dl>}
         <p className="context">This stage uses synthetic control snapshots. Live source selection and neural flight controls will be connected in a later milestone.</p>
+        <p className="context">Optional recording requires consent on each Start. It saves private processed 16×16 inputs, raw neural responses and flight replay locally. Those inputs can contain sensitive content. Full-resolution source video is never saved.</p>
       </section>
     </main>
     <footer><span>Private local workspace</span><span>OBS03 · early flight preview</span></footer>

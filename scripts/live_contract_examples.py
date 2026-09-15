@@ -1,7 +1,9 @@
 """Declared synthetic wire corpus, shared by Python and browser validators."""
 import json
+import base64
 
 from flytrap.live.contracts import EncoderConfig, LiveConfig, LiveHealth, SessionConfig
+from flytrap.live.api_contracts import ControlBootstrap
 
 
 def corpus():
@@ -43,6 +45,24 @@ def corpus():
                 LiveHealth=LiveHealth().model_dump(), LiveConfig=LiveConfig().model_dump(),
                 SyntheticFlightPreview=dict(schema_version="obs-flight-preview-1", evidence_kind="synthetic",
                     dt_ms=20, snapshots=[flight, {**flight, "tick": 1}]))
+    api_snapshot = {**stream, "schema_version": "obs-api-snapshot-1", "kind": "session",
+        "lease_remaining_ms": 2000., "source_receipt_age_ms": 100., "response_age_ms": 100.,
+        "last_inferred": sample, "completed_calls": 1, "rejected_results": 0,
+        "model_hz": 1., "last_step_wall_ms": 100., "recording_id": None, "recording_state": "off"}
+    preview_image = dict(frame=frame, width=1, height=1, rgb_base64=base64.b64encode(bytes(3)).decode(),
+                         observation_u8=sample["observation_u8"])
+    good.update(StartRequest=dict(schema_version="obs-start-1", request_id="1"*32, owner_token="2"*32,
+                                 config=config, recording_consent=False),
+        OwnerRequest=dict(generation=1, owner_token="2"*32),
+        PreviewRequest=dict(schema_version="obs-preview-request-1", request_id="1"*32, owner_token="2"*32,
+                            source_id=source["source_id"], duration_seconds=15),
+        SourceList=dict(schema_version="obs-sources-1", sources=[source]),
+        ControlBootstrap=ControlBootstrap(csrf_token="1"*32+"."+"2"*64).model_dump(),
+        SourcePreview=preview_image, ApiSnapshot=api_snapshot,
+        ServiceStatus=dict(schema_version="obs-service-status-1", current=api_snapshot),
+        PreviewReply=dict(schema_version="obs-source-preview-1", status=status, latest=preview_image),
+        ReplayList=dict(schema_version="obs-replay-list-1", recordings=[]),
+        FlightState=dict(physics_id="flight-fixed20-v1", snapshot=flight, velocity=[0., 0., 0.], yaw_rate=0.))
     cases = [dict(name=f"{name} valid synthetic", contract=name, valid=True, value=value)
              for name, value in good.items()]
     cases.append(dict(name="real source metadata shape only, no hardware evidence", contract="SourceCapability",
@@ -59,7 +79,7 @@ def corpus():
         parent = obj
         parts = path.split(".")
         for part in parts[:-1]:
-            parent = parent[part]
+            parent = parent[int(part)] if isinstance(parent, list) else parent[part]
         parent[parts[-1]] = value
         cases.append(dict(name=label, contract=name, valid=False, value=obj))
 
@@ -113,6 +133,16 @@ def corpus():
         ("ReplayManifest", "config.evidence_kind", "real", "mixed replay evidence"),
         ("ReplayManifest", "source.backend", "ffmpeg-v4l2", "nested source backend mismatch"),
         ("ReplayManifest", "events_bytes", 33554433, "oversized replay"),
+        ("StartRequest", "recording_consent", True, "recording consent/config mismatch"),
+        ("StartRequest", "owner_token", "short", "unprotected owner token"),
+        ("OwnerRequest", "generation", 0, "invalid owner epoch"),
+        ("PreviewRequest", "duration_seconds", 31, "preview duration bound"),
+        ("ApiSnapshot", "last_inferred.frame.generation", 2, "foreign historical input"),
+        ("ServiceStatus", "current.flight.generation", 2, "foreign current snapshot"),
+        ("SourceList", "sources.0.evidence_kind", "real", "mixed source list evidence"),
+        ("SourcePreview", "rgb_base64", "", "preview pixel byte mismatch"),
+        ("PreviewReply", "latest.frame.generation", 2, "foreign preview input"),
+        ("FlightState", "snapshot.speed_units_s", 1., "flight velocity speed mismatch"),
     ]:
         bad(name, path, value, label)
     return cases

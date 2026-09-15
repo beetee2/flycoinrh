@@ -28,10 +28,13 @@ TERMINAL = {"stopped", "source_lost", "failed", "limit_reached"}
 class NeuralSession:
     def __init__(self, config: SessionConfig, *, purpose: str, repository_root=REPOSITORY,
                  files=None, expected_device=None, monitor=None, capture_factory=Capture,
-                 worker_command=None):
+                 worker_command=None, recording_store=None, source=None):
         self.config = SessionConfig.model_validate(config.model_dump())
-        if self.config.recording:
-            raise ValueError("OBS02 does not implement recording")
+        if self.config.recording and (recording_store is None or source is None):
+            raise ValueError("recording requires a private store and explicit source metadata")
+        self._recording_store, self._recording_source = recording_store, source
+        self._recorder = None
+        self._recording_state = "off"
         if purpose not in ("automated", "human", "fixture"):
             raise ValueError("explicit execution purpose required")
         self.root = Path(repository_root).resolve()
@@ -54,6 +57,8 @@ class NeuralSession:
                                        verified=config.source_id != "fixture-pattern")
         self._worker_command = worker_command
         self._lock = threading.RLock()
+        self._cleanup_lock = threading.Lock()
+        self._io_active = threading.Event()
         self._stop = threading.Event()
         self._done = threading.Event()
         self._thread = self._child = self._channel = self._ownership = None
@@ -80,10 +85,28 @@ class NeuralSession:
             self._state = "starting"
             self._thread = threading.Thread(target=self._run, name="live-session", daemon=True)
             try:
+                if self.config.recording:
+                    self._recorder = self._recording_store.reserve(self.config, self._recording_source,
+                                                                  self.session_id, self.generation)
+                    self._recording_state = "partial"
+                    if time.monotonic()-self._lease >= self.config.lease_ms/1000:
+                        self._recorder.abort()
+                        self._recording_state = "aborted"
+                        self._state, self._reason = "stopped", "Control lease expired during recording setup."
+                        ownership.close()
+                        self._done.set()
+                        return self
                 self._thread.start()
+                if self.config.recording:
+                    threading.Thread(target=self._recording_watchdog, daemon=True,
+                                     name="live-recording-watchdog").start()
             except Exception:
+                if self._recorder:
+                    self._recorder.abort()
+                    self._recording_state = "aborted"
                 ownership.close()
                 self._state = "failed"
+                self._done.set()
                 raise
         return self
 
@@ -98,6 +121,20 @@ class NeuralSession:
                 return True
             return False
 
+    @property
+    def lease_remaining_ms(self):
+        with self._lock:
+            return (max(0., self.config.lease_ms-(time.monotonic()-self._lease)*1000)
+                    if self._state in {"starting", "running"} else 0.)
+
+    @property
+    def recording_id(self):
+        return self._recorder.recording_id if self._recorder else None
+
+    @property
+    def recording_state(self):
+        return self._recording_state
+
     def _finish(self, state, reason):
         with self._lock:
             self._flight.stop()
@@ -107,6 +144,7 @@ class NeuralSession:
             self._stop.set()
 
     def stop(self):
+        self._stop.set()
         with self._lock:
             self._flight.stop()
             if self._state == "idle":
@@ -119,6 +157,40 @@ class NeuralSession:
         if self._thread is not threading.current_thread():
             self._done.wait(self.config.stop_grace_ms / 1000)
         return self.snapshot()
+
+    def _record_io(self, operation):
+        """Persist outside the session lock; watchdog owns stalled-I/O shutdown.
+
+        Called only by the coordinator while holding its lock. A stalled private
+        filesystem may retain a writer thread, but cannot retain capture/model
+        resources or publish a falsely completed interrupted session.
+        """
+        self._io_active.set()
+        self._lock.release()
+        try:
+            return operation()
+        finally:
+            self._lock.acquire()
+            self._io_active.clear()
+
+    def _recording_watchdog(self):
+        while not self._done.wait(.02):
+            if not self._io_active.is_set():
+                continue
+            with self._lock:
+                if self._done.is_set() or not self._io_active.is_set():
+                    continue
+                try:
+                    expired = self._deadlines(time.monotonic())
+                except (OSError, RuntimeError):
+                    expired = ("failed", "Ownership lost during recording.")
+                if not expired and not self._stop.is_set():
+                    continue
+                if expired:
+                    self._finish(*expired)
+                self._recording_state = "aborted"
+            self._cleanup()
+            return
 
     def wait(self, timeout=None):
         return self._done.wait(timeout)
@@ -182,6 +254,17 @@ class NeuralSession:
                 return
             if kind == "ready" and self._ready_time is None:
                 self._provenance = payload["provenance"]
+                if self._recorder:
+                    from .recording import provenance_from_worker
+                    backend = "synthetic-fixture-v1"
+                    if self.config.evidence_kind == "real":
+                        backend = subprocess.check_output(["ffmpeg", "-version"], text=True,
+                                                          timeout=2).splitlines()[0][:128]
+                    initial = self._flight.trace().initial
+                    provenance = provenance_from_worker(self._provenance, backend_version=backend)
+                    self._recorder = self._record_io(lambda: self._recorder.initialize(provenance, initial))
+                    if self._stop.is_set():
+                        return
                 self._ready_time = time.monotonic()
                 self._state = "running"
                 return
@@ -211,7 +294,19 @@ class NeuralSession:
                 completed_monotonic_ms=result.completed_monotonic_ms, neural_ms=20.,
                 neural_state_mode="windowed_reset", motor_rates_hz=result.motor_rates_hz,
                 raw_action=result.raw_action)
+            if self._recorder:
+                self._record_io(lambda: self._recorder.append_sample(self._inferred, result))
+                if self._stop.is_set():
+                    return
             self._completed += 1
+            # Recording fsync is allowed to delay work, never to extend freshness
+            # or ownership. Recheck after persistence before installing controls.
+            now = time.monotonic()
+            expired = self._deadlines(now) if self._recorder else None
+            if expired:
+                self._pending = None
+                self._finish(*expired)
+                return
             if now * 1000 - self._pending.frame.receipt_monotonic_ms >= self.config.response_max_age_ms:
                 self._rejected += 1
             else:
@@ -248,6 +343,20 @@ class NeuralSession:
             self._step_started = now
             request = StepRequest(session_id=self.session_id, generation=self.generation,
                                   step_index=self._completed, observation_u8=list(self._pending.u8))
+            if self._recorder:
+                pending = self._pending
+                self._record_io(lambda: self._recorder.append_input(pending.frame, list(pending.u8), self._completed))
+                if self._stop.is_set():
+                    return
+                now = time.monotonic()
+                expired = self._deadlines(now)
+                if expired:
+                    self._finish(*expired)
+                    return
+                if now * 1000 - identity.receipt_monotonic_ms >= self.config.response_max_age_ms:
+                    self._finish("failed", "Recording delayed the input beyond its freshness deadline.")
+                    return
+                self._step_started = now
             send_packet(self._channel, request.model_dump(mode="json"))
 
     def _run(self):
@@ -278,8 +387,15 @@ class NeuralSession:
             self._finish("failed", "Session worker, source or accounting failed; explicit Start required.")
         finally:
             self._cleanup()
+            self._finalize_recording()
 
     def _cleanup(self):
+        with self._cleanup_lock:
+            if self._done.is_set():
+                return
+            self._cleanup_owned()
+
+    def _cleanup_owned(self):
         deadline = time.monotonic() + self.config.stop_grace_ms / 1000
         capture_stop = threading.Thread(target=self.capture.stop, daemon=True)
         capture_stop.start()
@@ -323,8 +439,27 @@ class NeuralSession:
             self._flight.stop()
             if self._state not in TERMINAL:
                 self._state = "stopped"
+            self._recording_can_complete = (self._state in {"stopped", "limit_reached"}
+                and self._ready_time is not None and self._pending is None
+                and self._recording_state != "aborted")
             self._pending = None
             self._done.set()
+
+    def _finalize_recording(self):
+        # Capture/model resources have been reaped. Final fsync cannot delay Stop
+        # or snapshots; only successful publication changes partial to complete.
+        if self._recorder:
+            try:
+                if self._recording_can_complete:
+                    self._recorder.finish(self._flight.trace(), self._flight.current)
+                    self._recording_state = "complete"
+                else:
+                    self._recorder.abort()
+                    self._recording_state = "aborted"
+            except (OSError, ValueError, AttributeError):
+                self._recorder.abort()
+                self._recording_state = "aborted"
+                self._state, self._reason = "failed", "Recording failed; partial artifacts remain private."
 
     def snapshot(self):
         with self._lock:

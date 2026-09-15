@@ -23,7 +23,7 @@ def test_idle_reads_never_discover_capture_or_infer(tmp_path, monkeypatch):
         assert list(tmp_path.iterdir()) == []
 
 
-@pytest.mark.parametrize("path", ["/api/live/start", "/api/live/preview", "/api/live/config"])
+@pytest.mark.parametrize("path", ["/api/live/start", "/api/live/config"])
 def test_no_capture_mutations_exposed(path, tmp_path):
     with TestClient(create_live_app(dist=tmp_path), base_url="http://127.0.0.1") as client:
         response = client.post(path, json={"source_id": "/dev/video0"}, headers={"Origin": "https://evil.test"})
@@ -76,3 +76,38 @@ def test_synthetic_flight_preview_is_bounded_repeatable_and_has_no_side_effects(
         assert client.get("/api/live/flight-preview").json() == response.json()
         assert list(tmp_path.iterdir()) == []
         assert client.post("/api/live/flight-preview").status_code == 405
+
+
+def test_explicit_metadata_inspection_is_protected_and_does_not_capture(tmp_path, monkeypatch):
+    from flytrap.live import device
+    from flytrap.live.contracts import SourceCapability
+    from flytrap.live.service import LiveService
+    from tests.live.test_device import configuration
+
+    inspected = []
+    def inspect(source_id):
+        inspected.append(source_id)
+        return configuration(keep_format=0)
+    monkeypatch.setattr(device, "inspect_selected", inspect)
+    source = SourceCapability(schema_version="obs-source-1", source_id="v4l2-video7", evidence_kind="real",
+        name="Declared device metadata fixture", driver=None, backend="ffmpeg-v4l2",
+        capabilities=None, formats=None, metadata_state="partial", producer_detection="unknown")
+    service = LiveService(repository_root=tmp_path, source_provider=lambda: [source])
+    with TestClient(create_live_app(dist=tmp_path, service=service), base_url="http://127.0.0.1") as client:
+        endpoint = "/api/live/sources/inspect"
+        assert client.post(endpoint, json={"source_id": source.source_id}).status_code == 403
+        assert inspected == []
+        token = client.get("/api/live/control").json()["csrf_token"]
+        # A spectator tab bootstrapping the shared browser cookie cannot revoke
+        # the owner's CSRF protection; ownership still uses a per-tab secret.
+        assert client.get("/api/live/control").json()["csrf_token"] == token
+        headers = {"Origin": "http://127.0.0.1", "X-Live-CSRF": token}
+        response = client.post(endpoint, headers=headers, json={"source_id": source.source_id})
+        assert response.status_code == 200
+        metadata = SourceCapability.model_validate(response.json())
+        assert metadata.formats[0].pixel_format == "YUYV" and metadata.formats[0].fps == 30
+        assert metadata.producer_detection == "driver" and metadata.driver == "v4l2 loopback"
+        assert client.post(endpoint, headers=headers, json={"source_id": "/dev/video7"}).status_code == 422
+        assert client.post(endpoint, headers=headers, json={"source_id": "v4l2-video8"}).status_code == 503
+        assert inspected == [source.source_id] and not service.sessions
+        assert list(tmp_path.iterdir()) == []

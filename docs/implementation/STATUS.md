@@ -1,3 +1,26 @@
+# Active routing — OBS04 complete
+
+**OBS04 implementation and local validation PASS / COMPLETE. Stop before OBS05.**
+Read [OBS-STATUS](OBS-STATUS.md) and the [OBS04 report](milestones/OBS04.md).
+
+OBS03 repaired-build playback and current appearance/motion are **APPROVED by
+explicit operator confirmation** at `d07841cfe426c36e01c5c805a790d6448f420c64`.
+The original browser failure and repair evidence are preserved in [OBS03](milestones/OBS03.md).
+
+The local API, owner lease, bounded streaming and opt-in private replay are
+implemented and verified. Hosted run 34991210953 finished **FAILURE** at browser
+sandbox startup; its scoped workflow repair passes local validation, with no
+hosted rerun claimed. No push or dispatch was authorized.
+
+Actual ledgers: **OBS 9/1,024; P00 144 attempts**. Zero new full-model calls or
+desktop capture/recording. Real neural-driven browser flight, public release and
+later milestones remain unapproved. The idle local handoff is `make serve-live`,
+http://127.0.0.1:8767/live. No OBS05 work was started.
+
+The earlier routing and navigation records below remain historical evidence.
+
+---
+
 # Active routing — OBS03 browser repair
 
 **Stop after the focused OBS03 repair. Do not start OBS04.**

@@ -5,7 +5,8 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from flytrap.live.contracts import CONTRACTS, FlightControls, FrameIdentity, SessionConfig
+from flytrap.live.contracts import FlightControls, FrameIdentity, SessionConfig
+from flytrap.live.wire_contracts import CONTRACTS
 from scripts.live_contract_examples import corpus
 
 

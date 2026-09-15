@@ -1,6 +1,6 @@
 """OBS v1 wire contracts. Times are local monotonic milliseconds, never UTC.
 
-These describe future pipeline boundaries; OBS00 implements only idle reads.
+These describe the implemented local pipeline and its versioned wire boundaries.
 JSON Schema handles structural constraints; semantic checks are mirrored by the
 browser parser and exercised with the same generated positive/negative corpus.
 """
@@ -306,17 +306,17 @@ class ReplayManifest(Contract):
 class LiveHealth(Contract):
     schema_version: Literal["obs-health-1"] = "obs-health-1"
     status: Literal["ok"] = "ok"
-    phase: Literal["OBS00"] = "OBS00"
-    state: Literal["idle"] = "idle"
-    capture_implemented: Literal[False] = False
-    inference_implemented: Literal[False] = False
+    phase: Literal["OBS04"] = "OBS04"
+    state: Literal["available"] = "available"
+    capture_implemented: Literal[True] = True
+    inference_implemented: Literal[True] = True
 
 
 class LiveConfig(Contract):
     schema_version: Literal["obs-config-1"] = "obs-config-1"
-    phase: Literal["OBS00"] = "OBS00"
-    capture_implemented: Literal[False] = False
-    inference_implemented: Literal[False] = False
+    phase: Literal["OBS04"] = "OBS04"
+    capture_implemented: Literal[True] = True
+    inference_implemented: Literal[True] = True
     recording_default: Literal[False] = False
     source_selection_required: Literal[True] = True
     validation_call_cap: Literal[1024] = 1024

@@ -87,8 +87,6 @@ def execute(channel, init):
     if not fixture and root.resolve() != REPOSITORY:
         raise ValueError("real accounting must use the fixed repository ledger")
     config = SessionConfig.model_validate(init["config"]).model_dump(mode="json")
-    if config["recording"]:
-        raise ValueError("OBS02 recording is unavailable")
     session_id, generation = init["session_id"], init["generation"]
     controller.reset(run_seed=config["seed"], checkpoint=controller.checkpoint)
     retina = CompiledRetina(controller, annotations_path=files["annotations_path"])

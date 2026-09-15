@@ -17,6 +17,19 @@ export type LiveContracts = {
   ReplayManifest: C.ReplayManifest;
   LiveHealth: C.LiveHealth;
   LiveConfig: C.LiveConfig;
+  StartRequest: C.StartRequest;
+  OwnerRequest: C.OwnerRequest;
+  PreviewRequest: C.PreviewRequest;
+  SourceList: C.SourceList;
+  InspectRequest: C.InspectRequest;
+  ControlBootstrap: C.ControlBootstrap;
+  SourcePreview: C.SourcePreview;
+  ApiSnapshot: C.ApiSnapshot;
+  ServiceStatus: C.ServiceStatus;
+  PreviewReply: C.PreviewReply;
+  ReplayPayload: C.ReplayPayload;
+  ReplayList: C.ReplayList;
+  FlightState: C.FlightState;
 };
 export type ContractName = keyof LiveContracts;
 
@@ -75,8 +88,9 @@ function checkSemantics(name: ContractName, value: LiveContracts[ContractName]):
       requireCondition(lifetime >= 0 && lifetime <= 2000, 'control lifetime must be within 2000 ms');
       break;
     }
+    case 'ApiSnapshot':
     case 'StreamEnvelope': {
-      const stream = value as C.StreamEnvelope;
+      const stream = value as C.StreamEnvelope | C.ApiSnapshot;
       if (stream.latest_source_frame) checkFrame(stream.latest_source_frame);
       if (stream.neural_sample) checkNeural(stream.neural_sample);
       if (stream.latest_source_frame && stream.neural_sample) {
@@ -88,6 +102,67 @@ function checkSemantics(name: ContractName, value: LiveContracts[ContractName]):
           item[key as keyof typeof item] === stream.status[key as keyof C.SessionStatus]),
         'stream contains a foreign session, generation or evidence kind');
       }
+      if (stream.schema_version === 'obs-api-snapshot-1' && stream.last_inferred) {
+        checkNeural(stream.last_inferred);
+        requireCondition(['session_id', 'generation', 'evidence_kind'].every(key =>
+          stream.last_inferred!.frame[key as keyof C.FrameIdentity] === stream.status[key as keyof C.SessionStatus]),
+        'foreign historical observation');
+      }
+      break;
+    }
+    case 'StartRequest': {
+      const start = value as C.StartRequest;
+      requireCondition(start.config.recording === start.recording_consent, 'recording requires explicit consent');
+      break;
+    }
+    case 'SourceList':
+      (value as C.SourceList).sources.forEach(checkSource);
+      break;
+    case 'ServiceStatus': {
+      const current = (value as C.ServiceStatus).current;
+      if (current) checkSemantics('ApiSnapshot', current);
+      break;
+    }
+    case 'PreviewReply': {
+      const preview = value as C.PreviewReply;
+      if (preview.latest) {
+        checkSemantics('SourcePreview', preview.latest);
+        requireCondition(['session_id', 'generation', 'evidence_kind'].every(key =>
+          preview.latest!.frame[key as keyof C.FrameIdentity] === preview.status[key as keyof C.SessionStatus]),
+        'foreign preview frame');
+      }
+      break;
+    }
+    case 'SourcePreview': {
+      const preview = value as C.SourcePreview;
+      checkFrame(preview.frame);
+      requireCondition(atob(preview.rgb_base64).length === preview.width*preview.height*3,
+        'preview RGB byte count disagrees with dimensions');
+      break;
+    }
+    case 'ReplayList':
+      (value as C.ReplayList).recordings.forEach(item => {
+        requireCondition([item.manifest, item.state, item.error].filter(v => v != null).length === 1,
+          'recording entry requires exactly one manifest, reservation state or error');
+        if (item.manifest) checkSemantics('ReplayManifest', item.manifest);
+      });
+      break;
+    case 'ReplayPayload': {
+      const replay = value as C.ReplayPayload;
+      checkSemantics('ReplayManifest', replay.manifest);
+      replay.samples.forEach(checkNeural);
+      replay.inputs.forEach(input => checkFrame(input.frame));
+      checkSemantics('FlightState', replay.final);
+      break;
+    }
+    case 'FlightState': {
+      const state = value as C.FlightState;
+      const velocity = state.velocity ?? [0, 0, 0];
+      requireCondition(velocity.every(v => typeof v === 'number' && Number.isFinite(v)), 'invalid velocity');
+      const speed = Math.hypot(...velocity as [number, number, number]);
+      requireCondition(speed <= 6 + 1e-12 && Math.abs(speed-state.snapshot.speed_units_s) <= 1e-9 &&
+        Math.abs(state.snapshot.pitch_rad) <= .45 + 1e-12 &&
+        (!state.snapshot.neutral || (speed === 0 && (state.yaw_rate ?? 0) === 0)), 'inconsistent bounded flight state');
       break;
     }
     case 'ReplayManifest': {

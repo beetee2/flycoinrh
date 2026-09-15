@@ -1,3 +1,8 @@
+Current routing: the appended operator approval supersedes the historical review stop.
+See [OBS04](OBS04.md) for completed API/replay work and the next handoff.
+
+---
+
 # OBS03 browser compatibility and diagnostics repair
 
 2026-09-15. **Repair implementation and automated checks PASS; human review BLOCKED.**
@@ -316,3 +321,29 @@ and there is no remote push or public deployment.
 `flyjam-obs-kit/prompts/04-api-and-replay.md`
 for ownership/control API, bounded stream and consented replay storage. Preserve
 the backend-independent decoder, terminal replay semantics and upstream deferrals.
+
+---
+
+## Explicit operator approval — 2026-09-15
+
+**OBS03 human review: APPROVED** for pushed repair revision
+`d07841cfe426c36e01c5c805a790d6448f420c64`. The operator tested the repaired
+build in their normal browser after enabling hardware acceleration and confirms
+Load, Play, Pause, Stop and Reset work, the synthetic flight plays, and its
+current appearance and motion are approved. This is **explicit operator
+confirmation**, not an independently executed agent test. It resolves the
+repaired-build operator-browser check and human appearance/motion review.
+
+The original failure, repair, diagnostics and prior pending-review entries below
+remain historical evidence. This approval supersedes the focused repair stop and
+authorizes **OBS04 only**. It does not approve real neural-driven flight, public
+release, desktop recording or later milestones.
+
+Hosted run [34991210953](https://github.com/beetee2/flycoinrh/actions/runs/34991210953)
+for this revision completed **FAILURE**: foundation checks passed; the live browser
+launch failed on the hosted runner's Chromium sandbox prerequisite. OBS04 records
+the scoped repair and its separate validation; no hosted success is inferred.
+
+
+OBS04 implementation and local validation are now PASS / COMPLETE; see
+[OBS04](OBS04.md). Stop before OBS05. Hosted repair validation remains local only.

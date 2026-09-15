@@ -27,7 +27,33 @@ jobs:
           ffmpeg -version
       - run: npm install --global npm@12.0.2
       - run: make bootstrap
-      - run: cd web && npx --no-install playwright install --with-deps chromium
+      - name: Install the test browser
+        run: |
+          export PLAYWRIGHT_BROWSERS_PATH="$RUNNER_TEMP/playwright-browsers"
+          echo "PLAYWRIGHT_BROWSERS_PATH=$PLAYWRIGHT_BROWSERS_PATH" >> "$GITHUB_ENV"
+          cd web
+          npx --no-install playwright install --with-deps chromium
+      - name: Allow the installed test browser to create its sandbox
+        # Ubuntu 24.04 restricts user namespaces for downloaded executables.
+        # Keep Chromium's sandbox enabled; allow only the installed headless
+        # executable on this disposable runner, with no global sysctl change.
+        # https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md
+        shell: bash
+        run: |
+          shopt -s nullglob
+          browsers=("$PLAYWRIGHT_BROWSERS_PATH"/chromium_headless_shell-*/chrome-headless-shell-linux64/chrome-headless-shell)
+          test "${#browsers[@]}" -eq 1
+          test -x "${browsers[0]}"
+          profile="$RUNNER_TEMP/flyjam-playwright.apparmor"
+          cat > "$profile" <<EOF
+          abi <abi/4.0>,
+          include <tunables/global>
+          profile flyjam-playwright "${browsers[0]}" flags=(unconfined) {
+            userns,
+          }
+          EOF
+          cat "$profile"
+          sudo apparmor_parser --replace "$profile"
       - run: make verify test-upstream
       - run: make verify-live LIVE_EVIDENCE=artifacts/milestones/01/obs-fixture
       - uses: actions/upload-artifact@v4

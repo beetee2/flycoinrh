@@ -3,7 +3,7 @@ import argparse
 import json
 from pathlib import Path
 
-from flytrap.live.contracts import CONTRACTS
+from flytrap.live.wire_contracts import CONTRACTS
 from scripts.live_contract_examples import corpus
 
 
