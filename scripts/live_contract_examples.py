@@ -1,0 +1,111 @@
+"""Declared synthetic wire corpus, shared by Python and browser validators."""
+import json
+
+from flytrap.live.contracts import EncoderConfig, LiveConfig, LiveHealth, SessionConfig
+
+
+def corpus():
+    identity = dict(session_id="fixture-session", generation=1, evidence_kind="fixture")
+    frame = dict(schema_version="obs-frame-1", **identity, source_id="fixture-source", sequence=7,
+                 width=640, height=480, pixel_format="RGB24", receipt_monotonic_ms=100.0,
+                 source_timestamp_ms=None, source_sequence=None, source_clock="unknown")
+    source = dict(schema_version="obs-source-1", source_id="fixture-source", evidence_kind="fixture",
+                  name="SYNTHETIC test source", driver=None, backend="synthetic", capabilities=None,
+                  formats=None, metadata_state="partial", producer_detection="synthetic")
+    sample = dict(schema_version="obs-neural-1", response_id="response-1", frame=frame,
+                  observation_u8=[i % 256 for i in range(256)], encoder_id="obs-rgb-letterbox16-v1",
+                  model_id="fixture-model", step_index=0, completed_monotonic_ms=200.0, neural_ms=20.0,
+                  neural_state_mode="windowed_reset", motor_rates_hz=dict.fromkeys(
+                      ["steer_L", "steer_R", "fwd_L", "fwd_R", "back", "stop", "click"], 0.0),
+                  raw_action=dict(dx=0.0, dy=0.0, click=False))
+    controls = dict(schema_version="obs-controls-1", decoder_id="motor-flight-v1", **identity,
+                    response_id="response-1", issued_monotonic_ms=200.0, expires_monotonic_ms=2100.0,
+                    yaw_rate_rad_s=0.0, pitch_target_rad=0.0, speed_target_units_s=0.0)
+    flight = dict(schema_version="obs-flight-1", **identity, tick=0, position=[0.0]*3,
+                  yaw_rad=0.0, pitch_rad=0.0, speed_units_s=0.0, applied_response_id=None, neutral=True)
+    config = SessionConfig(source_id="fixture-source", evidence_kind="fixture", seed=17).model_dump()
+    status = dict(schema_version="obs-session-status-1", **identity, state="idle", reason=None,
+                  attempted_calls=0, accepted_frames=0, overwritten_frames=0, content_unchanged_ms=0.0,
+                  producer_health="unknown", last_frame_sequence=None, last_response_id=None)
+    stream = dict(schema_version="obs-stream-1", event_sequence=0, sent_monotonic_ms=200.0,
+                  status=status, latest_source_frame=frame, neural_sample=sample, flight=flight)
+    provenance = dict.fromkeys(["source_tree_sha256", "graph_sha256", "annotations_sha256",
+                               "checkpoint_sha256", "model_source_sha256", "model_config_sha256"], "0"*64)
+    provenance.update(source_head="0"*40, backend_version="synthetic", python_version="test",
+                      numpy_version="test", scipy_version="test", model_id="fixture-model",
+                      neural_state_mode="windowed_reset", gains="all-one-float32", learning_enabled=False)
+    replay = dict(schema_version="obs-replay-1", **identity, state="partial", config={**config, "recording": True},
+                  source=source, initial_flight=flight, provenance=provenance, events_sha256="0"*64,
+                  event_count=0, events_bytes=0, events_file="events.jsonl")
+    good = dict(SourceCapability=source, FrameIdentity=frame, EncoderConfig=EncoderConfig().model_dump(),
+                NeuralSample=sample, FlightControls=controls, FlightSnapshot=flight, SessionConfig=config,
+                SessionStatus=status, StreamEnvelope=stream, ReplayManifest=replay,
+                LiveHealth=LiveHealth().model_dump(), LiveConfig=LiveConfig().model_dump())
+    cases = [dict(name=f"{name} valid synthetic", contract=name, valid=True, value=value)
+             for name, value in good.items()]
+    cases.append(dict(name="real source metadata shape only, no hardware evidence", contract="SourceCapability",
+                      valid=True, value={**source, "evidence_kind": "real", "backend": "ffmpeg-v4l2",
+                                         "producer_detection": "unknown"}))
+    cases.append(dict(name="explicit producer clock on synthetic frame", contract="FrameIdentity", valid=True,
+                      value={**frame, "source_clock": "producer", "source_timestamp_ms": 12.0,
+                             "source_sequence": 3}))
+
+    def bad(name, path, value, label):
+        # A JSON round trip breaks template object aliases: changing the latest
+        # source frame must not also change the recorded neural frame.
+        obj = json.loads(json.dumps(good[name]))
+        parent = obj
+        parts = path.split(".")
+        for part in parts[:-1]:
+            parent = parent[part]
+        parent[parts[-1]] = value
+        cases.append(dict(name=label, contract=name, valid=False, value=obj))
+
+    for name in good:
+        bad(name, "unrecognized", "forbidden", f"{name} unknown field")
+        bad(name, "schema_version", "future-999", f"{name} unknown version")
+    for name, path, value, label in [
+        ("SourceCapability", "evidence_kind", "real", "synthetic source relabeled real"),
+        ("SourceCapability", "backend", "ffmpeg-v4l2", "fixture source with real backend"),
+        ("SourceCapability", "producer_detection", "driver", "fixture source with real detection"),
+        ("FrameIdentity", "generation", 0, "zero epoch"),
+        ("FrameIdentity", "sequence", True, "bool sequence"),
+        ("FrameIdentity", "sequence", "7", "string sequence"),
+        ("FrameIdentity", "sequence", 2**53, "unsafe JS integer"),
+        ("FrameIdentity", "width", 8193, "oversized frame"),
+        ("FrameIdentity", "source_timestamp_ms", 1.0, "invented producer clock"),
+        ("FrameIdentity", "source_clock", "producer", "missing producer time"),
+        ("FrameIdentity", "source_id", "/dev/video0", "arbitrary device path"),
+        ("NeuralSample", "observation_u8", [0]*255, "short observation"),
+        ("NeuralSample", "observation_u8", [256]*256, "pixel range"),
+        ("NeuralSample", "observation_u8", [True]*256, "bool pixels"),
+        ("NeuralSample", "completed_monotonic_ms", 99.0, "reversed response time"),
+        ("NeuralSample", "motor_rates_hz.steer_L", -1.0, "negative motor rate"),
+        ("FlightControls", "pixels", [0]*256, "decoder rejects pixels"),
+        ("FlightControls", "goal", [0, 0], "decoder rejects target"),
+        ("FlightControls", "expires_monotonic_ms", 199.0, "reversed expiry"),
+        ("FlightControls", "expires_monotonic_ms", 2201.0, "overlong expiry"),
+        ("FlightControls", "yaw_rate_rad_s", 4.0, "unbounded turn"),
+        ("FlightSnapshot", "position", [0, 0], "wrong vector shape"),
+        ("SessionConfig", "recording", "false", "coerced consent"),
+        ("SessionConfig", "learning_enabled", 0, "numeric false literal"),
+        ("EncoderConfig", "padding_u8", False, "boolean padding literal"),
+        ("SessionConfig", "duration_seconds", 121, "session duration cap"),
+        ("SessionConfig", "max_model_calls", 513, "session call cap"),
+        ("SessionConfig", "source_id", "https://example.com", "URL source"),
+        ("SessionConfig", "seed", -1, "negative seed"),
+        ("StreamEnvelope", "flight.generation", 2, "foreign stream epoch"),
+        ("StreamEnvelope", "neural_sample.frame.session_id", "other", "foreign stream session"),
+        ("StreamEnvelope", "latest_source_frame.evidence_kind", "real", "mixed stream evidence"),
+        ("StreamEnvelope", "latest_source_frame.source_id", "other", "source switch within generation"),
+        ("ReplayManifest", "config.recording", False, "replay without consent"),
+        ("ReplayManifest", "source.source_id", "other", "foreign replay source"),
+        ("ReplayManifest", "events_file", "../secrets", "replay traversal"),
+        ("ReplayManifest", "events_sha256", "invalid", "invalid event digest"),
+        ("ReplayManifest", "initial_flight.tick", 1, "noninitial replay state"),
+        ("ReplayManifest", "config.evidence_kind", "real", "mixed replay evidence"),
+        ("ReplayManifest", "source.backend", "ffmpeg-v4l2", "nested source backend mismatch"),
+        ("ReplayManifest", "events_bytes", 33554433, "oversized replay"),
+    ]:
+        bad(name, path, value, label)
+    return cases

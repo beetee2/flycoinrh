@@ -23,6 +23,7 @@ jobs:
       - run: make bootstrap
       - run: cd web && npx --no-install playwright install --with-deps chromium
       - run: make verify test-upstream
+      - run: make verify-live LIVE_EVIDENCE=artifacts/milestones/01/obs-fixture
       - uses: actions/upload-artifact@v4
         if: always()
         with:

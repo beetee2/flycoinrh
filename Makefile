@@ -135,3 +135,39 @@ test-lab-ui:
 
 test-lab-e2e:
 	cd web && npx --no-install playwright test --config=playwright.lab.config.ts
+
+# OBS00 foundation: no capture or model calls in the fast suite.
+LIVE_EVIDENCE ?= artifacts/milestones/OBS00
+LIVE_PORT ?= 8767
+.PHONY: live-devices live-doctor serve-live generate-live check-live-generated test-live test-live-ui test-live-e2e verify-live
+live-devices:
+	$(PYTHON) -m flytrap.live devices
+
+live-doctor:
+	$(PYTHON) -m flytrap.live doctor
+
+serve-live:
+	$(PYTHON) -m flytrap.live serve --port $(LIVE_PORT)
+
+generate-live:
+	$(PYTHON) -m scripts.generate_live_contracts
+	cd web && node scripts/generate-live-types.mjs
+
+check-live-generated:
+	$(PYTHON) -m scripts.generate_live_contracts --check
+	cd web && node scripts/generate-live-types.mjs --check
+
+test-live:
+	$(PYTEST) tests/live -q --junitxml=$(LIVE_EVIDENCE)/python.xml
+
+test-live-ui:
+	VITEST_JUNIT_PATH=../$(LIVE_EVIDENCE)/ui.xml npm --prefix web test -- tests/live-contracts.test.ts tests/Live.test.tsx
+
+test-live-e2e:
+	cd web && FLYJAM_LIVE_EVIDENCE=$(LIVE_EVIDENCE)/browser npx --no-install playwright test --config=playwright.live.config.ts
+
+verify-live: check-live-generated check-lab-generated lint test-live test-live-ui
+	$(PYTEST) tests/lab -q --junitxml=$(LIVE_EVIDENCE)/lab.xml
+	VITEST_JUNIT_PATH=../$(LIVE_EVIDENCE)/lab-ui.xml npm --prefix web test -- tests/Lab.test.tsx
+	npm --prefix web run build
+	$(MAKE) test-live-e2e

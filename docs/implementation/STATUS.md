@@ -1,3 +1,16 @@
+# Active routing — Flyjam local OBS-to-flight
+
+The 2026-09-15 assignment authorizes the new OBS00–OBS06 workstream, one numbered
+prompt per instruction. Current execution: **OBS00 only**. Follow
+[OBS-STATUS](OBS-STATUS.md) and [OBS00](milestones/OBS00.md). This supersedes the
+P00-only resume stop for this workstream. Historical navigation remains STOPPED,
+original 06 remains BLOCKED, and P00 human product review remains PENDING.
+Public release, token work and unrelated milestones are not authorized.
+
+The P00 and navigation records below remain historical evidence.
+
+---
+
 # Active routing — P00 FLYTRAP LAB
 
 Milestone 05 diagnostic work and its negative result are ACCEPTED. Navigation
