@@ -1,46 +1,34 @@
-# Active routing — Flyjam local OBS-to-flight
+# Active routing — OBS03 browser repair
 
-**OBS03 PASS / COMPLETE. Stop after OBS03.** Next invocation may authorize
-[OBS04 — API and replay](../../flyjam-obs-kit/prompts/04-api-and-replay.md).
-Read the [OBS03 report](milestones/OBS03.md),
-[fixed decoder/physics mapping](OBS-FLIGHT.md) and
-[upstream review and deferred backports](OBS-UPSTREAM-REVIEW.md).
+**OBS03 repair and automated checks PASS. Human review BLOCKED pending
+review of the repaired build. Stop here; OBS04 is not authorized.** Read the [repair report](milestones/OBS03.md)
+and [fixed mapping](OBS-FLIGHT.md). Reviewed pushed revision:
+`58fbfd275821eb31c8a37df0cd55bde6e0a1676e`; repair remains local/uncommitted.
 
-| Milestone | Implementation | Boundary |
-|---|---|---|
-| OBS00 | **PASS / COMPLETE** | Contracts, idle app, host inspection |
-| OBS01 | **PASS / COMPLETE** | Selected real preview, producer stop/restart and patterned-source checks |
-| OBS02 | **PASS / COMPLETE** | Persistent worker, independent accounting, safe-source real model |
-| OBS03 | **PASS / COMPLETE** | Typed motor decoder, session-owned 20 ms flight, exact replay, synthetic 3D preview |
-| OBS04 | NOT_RUN | Local control API, ownership, stream and consented replay storage |
-| OBS05 | NOT_RUN | Interactive source/neural/browser integration |
-| OBS06 | NOT_RUN | Real validation, causal-control evidence, human review |
+| Gate | Current status |
+|---|---|
+| Automated rendering tests | PASS: 8 desktop/mobile browser tests; live/lab UI 150, live Python 473, lab Python 124 PASS |
+| Actual installed-browser compatibility | PASS: 4 headed scene tests in Chrome 153.0.8010.36; minimal/exact-attribute probes also PASS |
+| Operator normal-browser playback | Prior preview PASS by operator confirmation after enabling acceleration; repaired build BLOCKED pending reload/retest |
+| Human appearance/motion/framing approval | BLOCKED pending operator review; visible movement is not approval |
+| OBS04–OBS06 | NOT_RUN; OBS04 remains unauthorized |
 
-## Current evidence
+Normal Chrome now reports hardware WebGL on RTX 3080 / NVIDIA 610.57.04 via
+ANGLE/OpenGL. Bundled Playwright 153.0.8010.12 headless uses SwiftShader.
+Their evidence is separate. The original failure was not independently reproduced;
+the successful operator setting change supports a browser-configuration cause.
+No host change or driver/scene workaround is proposed.
 
-Hosted run [34982619140](https://github.com/beetee2/flycoinrh/actions/runs/34982619140)
-was freshly verified **completed/success** for reviewed fork
-`7c35af0299d918f6294e2ba64452ec89108372d8`. This resolves the previous pending
-OBS01/OBS02 hosted prerequisite; new OBS03 changes are local and uncommitted.
+The repaired preview separates **Graphics** and **Preview data**, preserves local
+sanitized diagnostics, and offers **Retry graphics** (one attempt per click,
+maximum three retries per page). Context loss freezes playback. Successful retry
+recreates the last successful pose and stays paused until Play.
 
-Final checks: **2,855 Python**, **150 upstream**, **473 live Python**,
-**125 live UI/contracts**, **124 lab Python**, **15 lab UI**, **4 live browser**
-passes, plus foundation UI/browser/contracts, schemas, lint, build and dependency
-checks. Counts overlap; final suites have zero failures/errors/skips. Actual
-commands, counts, source identity, opened desktop/mobile screenshots and synthetic
-payload are under ignored `artifacts/milestones/OBS03/`.
-
-Preview service is idle at **http://127.0.0.1:8767/live**. Use **Load synthetic
-preview**, then **Play synthetic preview**. Pause/Stop freeze travel; Reset returns
-to the initial pose. The preview is explicitly **SYNTHETIC CONTROL REPLAY**.
-[Desktop screenshot](../../artifacts/milestones/OBS03/preview-desktop.png) ·
-[Mobile screenshot](../../artifacts/milestones/OBS03/preview-mobile.png).
-
-The server flight decoder is integrated with the persistent neural session and
-verified using synthetic subprocess responses. The browser currently consumes
-only the fixed synthetic snapshot sequence. Real source-to-browser wiring,
-consented durable replay storage and causal-control validation remain later work.
-Human appearance/motion/framing/responsiveness review remains **PENDING**.
+Review at **http://127.0.0.1:8767/live** after reloading. Confirm Graphics Ready,
+then Load, Play, Pause, Stop and Reset, and review appearance/motion/framing.
+The preview remains **SYNTHETIC CONTROL REPLAY**; real neural wiring is later work.
+Evidence: `artifacts/milestones/OBS03/browser-repair/`. Prior OBS03 passes and
+screenshots remain historical evidence, without implying normal-browser success.
 
 ## Preserved baseline and consent
 

@@ -93,4 +93,9 @@ by `±(0.13 + 0.16*sin(0.035*t_ms))` radians using playback time only; pausing,
 stopping or hiding the tab freezes decoration as well as travel. There is no
 extra banking controller. Resizing redraws the same pose; there is one animation
 loop, canceled on pause/unmount. GPU geometry/materials, context and observers
-are released on disposal. Context loss disables playback until an explicit reload.
+are released on disposal. Context loss disables playback until explicit graphics recreation or reload.
+The OBS03 repair adds separate graphics/data readiness, local sanitized errors,
+and one attempt per Retry graphics click (three retries per page). Successful
+retry redraws the last successful pose and remains paused; only Play resumes.
+The decoder, physics and procedural scene remain unchanged. See the
+[repair report](milestones/OBS03.md).

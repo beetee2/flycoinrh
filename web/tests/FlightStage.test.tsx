@@ -2,9 +2,10 @@ import { StrictMode } from 'react';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { FlightStage } from '../src/live/FlightStage';
+import { FlightGraphicsError } from '../src/live/flightRenderer';
 
 const mocks = vi.hoisted(() => ({ create: vi.fn(), draw: vi.fn(), dispose: vi.fn() }));
-vi.mock('../src/live/flightRenderer', () => ({ createFlightRenderer: mocks.create }));
+vi.mock('../src/live/flightRenderer', async importOriginal => ({ ...await importOriginal<typeof import('../src/live/flightRenderer')>(), createFlightRenderer: mocks.create }));
 function fixture() {
   return { schema_version: 'obs-flight-preview-1', evidence_kind: 'synthetic', dt_ms: 20,
     snapshots: Array.from({ length: 101 }, (_, tick) => ({ schema_version: 'obs-flight-1', session_id: 'synthetic-preview',
@@ -23,7 +24,7 @@ async function load() {
 }
 beforeEach(() => {
   mocks.create.mockReset().mockImplementation(() => ({ draw: mocks.draw, resize: vi.fn(), dispose: mocks.dispose }));
-  mocks.draw.mockClear(); mocks.dispose.mockClear();
+  mocks.draw.mockReset(); mocks.dispose.mockClear();
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => fixture() }));
   frames = new Map(); now = 0; let id = 0;
   vi.spyOn(performance, 'now').mockImplementation(() => now);
@@ -81,8 +82,67 @@ describe('flight stage lifecycle', () => {
   });
   it('freezes immediately if the WebGL context is lost', async () => {
     render(<FlightStage />); await load(); fireEvent.click(screen.getByRole('button', { name: 'Play synthetic preview' })); advance(100);
-    fireEvent(screen.getByTestId('flight-canvas'), new Event('webglcontextlost'));
+    act(() => mocks.create.mock.calls.at(-1)![1](new FlightGraphicsError('context-lost', 'GPU context lost')));
     expect(frames.size).toBe(0); expect(screen.getByRole('button', { name: 'Play synthetic preview' })).toBeDisabled();
+  });
+  it('keeps sanitized context diagnostics and data readiness after a successful explicit retry', async () => {
+    mocks.create.mockImplementationOnce(() => { throw new FlightGraphicsError('context-creation', 'BindToCurrentSequence failed\n/home/private/profile https://private.test/token'); });
+    render(<FlightStage />); await load();
+    expect(screen.getByTestId('graphics-state')).toHaveTextContent('Context creation failed');
+    expect(screen.getByTestId('preview-data-state')).toHaveTextContent('Loaded');
+    expect(screen.getByTestId('graphics-details')).toHaveTextContent('BindToCurrentSequence failed [path] [URL]');
+    fireEvent.click(screen.getByRole('button', { name: 'Retry graphics' }));
+    expect(mocks.create).toHaveBeenCalledTimes(2);
+    expect(screen.getByTestId('graphics-state')).toHaveTextContent('Ready');
+    expect(screen.getByTestId('graphics-details')).toHaveTextContent('BindToCurrentSequence failed');
+    expect(screen.getByRole('button', { name: 'Play synthetic preview' })).toBeEnabled();
+    expect(frames.size).toBe(0);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole('button', { name: 'Play synthetic preview' })); advance(40);
+    expect(mocks.draw.mock.calls.at(-1)![0].tick).toBe(2);
+  });
+  it('bounds failed retries and never retries on data load, reset, or time advancement', async () => {
+    mocks.create.mockImplementation(() => { throw new FlightGraphicsError('renderer', 'Scene allocation failed'); });
+    render(<FlightStage />); await load();
+    expect(screen.getByTestId('graphics-state')).toHaveTextContent('Renderer failed');
+    for (let count = 0; count < 5; count++) fireEvent.click(screen.getByRole('button', { name: 'Retry graphics' }));
+    expect(mocks.create).toHaveBeenCalledTimes(4);
+    expect(screen.getByRole('button', { name: 'Retry graphics' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Reset preview' })); advance(2000); await load();
+    expect(mocks.create).toHaveBeenCalledTimes(4);
+    expect(frames.size).toBe(0);
+    expect(screen.getByRole('button', { name: 'Play synthetic preview' })).toBeDisabled();
+  });
+  it('disposes a lost renderer, preserves the frozen pose through retry, and ignores late callbacks after unmount', async () => {
+    const view = render(<FlightStage />); await load();
+    fireEvent.click(screen.getByRole('button', { name: 'Play synthetic preview' })); advance(100);
+    const lost = mocks.create.mock.calls.at(-1)![1];
+    act(() => lost(new FlightGraphicsError('context-lost', 'Context lost')));
+    expect(mocks.dispose).toHaveBeenCalledTimes(1); expect(frames.size).toBe(0);
+    expect(screen.getByTestId('preview-state')).toHaveTextContent('Paused · graphics unavailable');
+    fireEvent.click(screen.getByRole('button', { name: 'Retry graphics' }));
+    expect(mocks.draw.mock.calls.at(-1)![0].tick).toBe(5);
+    advance(1000); expect(frames.size).toBe(0);
+    expect(screen.getByTestId('flight-tick')).toHaveTextContent('5');
+    expect(screen.getByTestId('preview-state')).toHaveTextContent('Paused · graphics restored');
+    view.unmount(); expect(mocks.dispose).toHaveBeenCalledTimes(2);
+    act(() => lost(new FlightGraphicsError('context-lost', 'Late event')));
+    render(<FlightStage />);
+    expect(screen.getByTestId('graphics-state')).toHaveTextContent('Ready');
+    expect(screen.queryByTestId('graphics-details')).not.toBeInTheDocument();
+  });
+  it('stops the loop and releases graphics when drawing throws', async () => {
+    render(<FlightStage />); await load();
+    fireEvent.click(screen.getByRole('button', { name: 'Play synthetic preview' }));
+    mocks.draw.mockImplementationOnce(() => { throw new Error('Render failed'); }); advance(40);
+    expect(screen.getByTestId('graphics-state')).toHaveTextContent('Renderer failed');
+    expect(frames.size).toBe(0); expect(mocks.dispose).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('button', { name: 'Play synthetic preview' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Retry graphics' }));
+    expect(mocks.draw.mock.calls.at(-1)![0].tick).toBe(0);
+    expect(screen.getByTestId('flight-tick')).toHaveTextContent('0');
+    expect(screen.getByTestId('preview-state')).toHaveTextContent('Paused · graphics restored');
+    expect(frames.size).toBe(0);
   });
   it.each(['invalid', 'transport', 'http'])('rejects %s preview and never begins playback', async kind => {
     if (kind === 'invalid') vi.mocked(fetch).mockResolvedValue({ ok: true, json: async () => ({ ...fixture(), evidence_kind: 'real' }) } as Response);

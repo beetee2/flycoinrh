@@ -1,20 +1,22 @@
-# Active routing — Flyjam local OBS-to-flight
+# Active routing — OBS03 browser repair
 
-**OBS03 PASS / COMPLETE. Stop after OBS03.** The decoder consumes typed motor
-rates independently of the CPU backend; the session owns deterministic 20 ms
-flight physics. The local browser offers an explicitly labeled synthetic preview.
-Read [OBS-STATUS](OBS-STATUS.md), [OBS03](milestones/OBS03.md),
-[fixed flight mapping](OBS-FLIGHT.md) and [upstream review](OBS-UPSTREAM-REVIEW.md).
+**Stop after the focused OBS03 repair. Do not start OBS04.**
+Read [OBS-STATUS](OBS-STATUS.md), the [repair report](milestones/OBS03.md),
+and [fixed flight mapping](OBS-FLIGHT.md).
 
-The hosted prerequisite is **PASS** for reviewed commit `7c35af0`, verified via
-run 34982619140. Final local repository/live checks and desktop/mobile browser
-checks pass. OBS accounting remains **9 / 1,024**, **1,015 remaining**; P00
-accounting remains **144 attempts**. Model/checkpoint semantics are preserved.
+The operator confirms normal Chrome playback after enabling graphics acceleration.
+The new diagnostics distinguish loaded synthetic data from a working renderer;
+bounded Retry graphics leaves playback paused. Independent browser evidence is
+recorded separately from the operator's session and human appearance approval.
+Automated rendering is PASS (8 desktop/mobile tests); installed Chrome
+compatibility is PASS (4 headed tests). Repaired-build normal-browser confirmation
+and human appearance approval remain BLOCKED pending operator review.
+See OBS-STATUS for the separate gates.
 
-Idle preview: http://127.0.0.1:8767/live — Load synthetic preview, then Play.
-No capture or recording occurred. Real source-to-browser integration and human
-appearance/motion review remain pending. Next invocation may authorize **OBS04**;
-no later milestone started. No remote push or public deployment occurred.
+Zero new neural calls, capture, recording or host changes. OBS accounting stays
+9/1,024 (1,015 remaining), P00 stays 144 attempts, protected identities remain
+preserved. Repair is local/uncommitted, with no push or deployment. Human review
+of the repaired build remains pending; later milestones are unauthorized.
 Historical navigation remains STOPPED and original 06 remains BLOCKED.
 
 The P00 and navigation records below remain historical evidence.

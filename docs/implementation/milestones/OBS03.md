@@ -1,3 +1,176 @@
+# OBS03 browser compatibility and diagnostics repair
+
+2026-09-15. **Repair implementation and automated checks PASS; human review BLOCKED.**
+Focused repair of reviewed/pushed revision
+`58fbfd275821eb31c8a37df0cd55bde6e0a1676e`. The initial tracked worktree was clean.
+Repair changes remain local and uncommitted. **Stop after this repair; OBS04 is
+not authorized.** The original implementation report and passing evidence below
+are historical and do not certify the operator's normal browser.
+
+## Actual environment difference and operator confirmation
+
+The operator originally reported “Loaded · idle” with disabled Play, failed
+WebGL context creation, GL_VENDOR/GL_RENDERER `Disabled`, and
+`BindToCurrentSequence failed`. That browser session was not automated or copied.
+During this repair the operator enabled graphics acceleration and confirmed:
+“i can click load and play and see the fly move.” This confirms normal-browser
+playback of the previously served preview, before the repaired build was ready.
+It does not constitute appearance/motion approval of this repair.
+
+The supplied GPU export is dated `2026-09-15T15:29:15.383Z`: Chrome
+153.0.8010.36, Linux 7.2.4-arch1-2, Hyprland/Wayland, hardware WebGL,
+NVIDIA RTX 3080 / driver 610.57.04, ANGLE OpenGL, GPU sandbox true.
+GL_VENDOR is `Google Inc. (NVIDIA Corporation)`; GL_RENDERER is
+`ANGLE (NVIDIA Corporation, NVIDIA GeForce RTX 3080/PCIe/SSE2, OpenGL ES 3.2 NVIDIA 610.57.04)`.
+GL_VERSION is `OpenGL ES 3.0 (ANGLE 2.1.28650 git hash: fca5efdfeff5)`.
+Its command line includes `--ozone-platform=wayland` and
+`--render-node-override=/dev/dri/renderD128`. The export reports a Wayland/Vulkan
+compatibility message and disabled accelerated video encoding while WebGL works.
+Those messages do not establish the cause of the original WebGL failure.
+
+| Environment | Executable, version, mode | Context diagnostics |
+|---|---|---|
+| Independent installed Chrome | `/opt/google/chrome/chrome`, 153.0.8010.36, headed, disposable profile | Minimal WebGL2 and exact scene attributes PASS; RTX 3080 through ANGLE/OpenGL; GPU sandbox true |
+| Independent CI browser | Playwright revision 1243 `chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell`, 153.0.8010.12, headless; desktop/mobile emulation | Both context probes PASS; SwiftShader software Vulkan; GPU diagnostics report sandbox false despite requested Chromium sandbox true and no `--no-sandbox` flag |
+| Operator normal browser | Chrome 153.0.8010.36, personal session, user-supplied diagnostics only | Playback works after operator enabled acceleration; original failing configuration was not independently reproduced |
+
+Prior Playwright configuration had no custom launch options and inherited
+headless mode, `--no-sandbox`, and `--enable-unsafe-swiftshader`. The repair's
+ordinary and opt-in checks request `chromiumSandbox: true` and remove the unsafe
+SwiftShader opt-in. Actual final launch arguments and GPU information are saved.
+The installed direct binary avoids the system wrapper that sources user flags;
+no private flags file or browsing profile was accessed. Default Playwright launch
+options still differ from the operator's normal session.
+
+Four independent context probes cleared/read back pixels successfully with GL
+error 0. The exact context attributes match pinned three.js r186, including its
+internal `alpha:true` even when renderer output uses `alpha:false`: depth,
+antialias and premultipliedAlpha true; stencil, preserveDrawingBuffer and
+failIfMajorPerformanceCaveat false; powerPreference default. Both minimal and
+requested contexts work, so no attribute fallback or scene rewrite is justified.
+
+The operator's successful configuration change supports a browser-configuration
+explanation for the original availability failure. No particular driver or
+extension fault is established. No further host/browser change is proposed.
+
+## Application repair
+
+- Request WebGL2 explicitly and capture `webglcontextcreationerror` before scene
+  construction; distinguish context creation, renderer/scene failure and context
+  loss. Retain up to four sanitized messages of at most 600 characters in page
+  memory, including after successful retry. Omit URLs, paths, controls and stacks.
+- Display graphics readiness and preview-data readiness separately. Loaded data
+  cannot enable Play without a successfully initialized/drawn renderer.
+- **Retry graphics** makes one attempt per click, up to three retries per page.
+  It releases the previous canvas/context, resources, observer and animation loop,
+  recreates the last successful pose, and leaves playback paused. Reload resets
+  the attempt budget. Loading data, Reset and context restoration do not retry.
+- Context loss and render/resize exceptions stop playback and show a frozen state.
+  Failed draws do not advance stored playback time. Old callbacks cannot alter a
+  remounted stage. Disposal is idempotent and covers partial initialization,
+  geometry/materials including the grid helper, listeners, context and canvas.
+
+Installed Chrome also exposed an implicit `/favicon.ico` 404. A small original
+SVG favicon is now linked and bundled locally; no console error is suppressed.
+Physics, original geometry, model boundary and dependencies are unchanged.
+This work fixes diagnostics and lifecycle behavior; it does not claim to repair
+a driver or make WebGL available when the browser cannot supply it.
+
+## Validation and review gates
+
+Repair evidence is under ignored `artifacts/milestones/OBS03/browser-repair/`.
+Previous OBS03 passing evidence remains in its original locations. Exact command
+arguments, exits, counts, browser launch diagnostics and source identities are
+recorded with the new evidence. Counts below overlap and must not be summed.
+
+| Check | Result |
+|---|---|
+| Live contracts, components, renderer lifecycle and lab UI | PASS: 150 tests, 6 files, zero failures/skips |
+| Live Python boundaries and synthetic integration | PASS: 473 tests, zero failures/skips |
+| Lab Python regression | PASS: 124 tests, zero failures/skips |
+| Live/lab generated schemas, Ruff, TypeScript and production build | PASS, exit 0; existing bundle-size advisory retained |
+| Independent minimal WebGL2/scene-attribute probes | PASS: four probes, pixel readback, zero GL/console/page errors |
+| Automated scene rendering, desktop/mobile | PASS: 8 tests, exit 0, zero failures/skips; `automated-complete/report.json` |
+| Actual installed-browser headed scene compatibility | PASS: 4 tests in Chrome 153.0.8010.36, exit 0, zero failures/skips; `installed-headed-complete/report.json` |
+| Operator normal-browser playback | Prior served build PASS by operator confirmation after enabling acceleration; repaired-build check BLOCKED pending reload/retest |
+| Human appearance/motion/framing approval | BLOCKED pending operator review; no approval inferred from visible movement |
+
+Regression coverage includes initialization details, successful/failed bounded
+retry, real browser context loss, idle recreation, partial-init cleanup and
+StrictMode/remount. Browser playback captures actual rendered scene pixels across
+Play, Pause, Stop, Reset and reload. Console errors and uncaught page errors are
+retained per test; forced failure evidence is separate from normal playback.
+No error messages are blanket-suppressed. Final normal and forced-failure
+attachments each contain zero console errors and zero uncaught page errors.
+Final invocations (cwd `web/`; `command.json` records absolute evidence paths):
+
+- `FLYJAM_LIVE_EVIDENCE=artifacts/milestones/OBS03/browser-repair/automated-complete npx playwright test --config playwright.live.config.ts`: 8/8, exit 0.
+- `FLYJAM_COMPAT_BROWSER=/opt/google/chrome/chrome FLYJAM_LIVE_EVIDENCE=artifacts/milestones/OBS03/browser-repair/installed-headed-complete npx playwright test --config playwright.live.config.ts --project installed-headed`: 4/4, exit 0.
+
+Each directory contains `command.json`, `command.log`, `report.json`, graphics
+JSON, error attachments and screenshots. Installed-browser tests retain its
+native Linux user agent; desktop/mobile CI intentionally uses emulated devices.
+The parent opened final installed `rendered-initial-pose0.png`,
+`rendered-paused-pose0.png`, `rendered-reset-pose0.png` and the mobile full-page
+capture. The body rotates, landmark positions shift, and Reset restores the
+initial composition. Head/body/copper eyes, two veined wings and legs are visible;
+mobile controls/readiness fit. NVIDIA draws the ground grid much more visibly
+than SwiftShader, so no pixel-identical appearance across browsers is claimed.
+These observations do not replace operator appearance approval.
+
+Development evidence is retained. The first focused run had 19 passes/1 failure:
+the new resource registry initially omitted GridHelper's internally created
+resources, found and corrected by the existing disposal test. The first browser
+run had 6 passes/2 failures: auto-scrolling shifted screenshot capture by one row
+on Reset. Later captures also isolated overlay text and mobile sampling differences.
+A test-only attempt to hide text with injected screenshot CSS hit the existing
+CSP and was discarded; errors are retained in its failed run. The final checks require pixel changes on Play and Reset, byte-stable captures
+on Pause/Stop, initial telemetry on repeated Reset, and an idle visible
+scene on reload. They do not require byte equality across differently scrolled
+initial/Reset captures. Reload before loading data uses the existing default
+pose (altitude 0), whereas loaded synthetic tick 0 has altitude 2; those images
+are not expected to match. No CSS injection or error suppression remains.
+Full UI captures and manually inspected initial/reset scene pairs are retained.
+The first installed run failed four checks: three on the confirmed favicon 404,
+one on repeated Reset screenshot byte equality. The final assertion uses the
+initial authoritative pose plus inspected Reset images, while retaining actual
+pixel-change and Pause/Stop pixel-freeze checks. All failed command reports remain. Independent
+review also caught stale “Playing” text and premature elapsed-time commitment on
+draw failure; both now have regression assertions. Earlier diagnostic launches
+and their discovered default-flag differences remain recorded honestly.
+
+## Handoff and scope
+
+The prior local service was no longer listening during handoff. `make serve-live`
+was started without capture/model activity; `/live` and `/health/live` return 200,
+and the served HTML matches the repaired production build. The process remains
+running (no exit yet); evidence is `local-service-final.json`.
+
+Open `http://127.0.0.1:8767/live` and reload to receive the repaired build. Confirm
+**Graphics: Ready**, then Load synthetic preview, Play, Pause, Stop and Reset.
+Review the fly's appearance, motion and framing. If graphics fails, expand
+**Graphics diagnostics (local to this page)** and use **Retry graphics** once;
+report its message and the new GPU-page sections. Do not infer graphics readiness
+from **Preview data: Loaded**.
+
+The opt-in headed check uses an exact installed Chromium-family executable:
+from `web/`, run `FLYJAM_COMPAT_BROWSER=/opt/google/chrome/chrome FLYJAM_LIVE_EVIDENCE=artifacts/milestones/OBS03/browser-repair/installed-headed npx --no-install playwright test --config=playwright.live.config.ts --project=installed-headed`
+after `npm --prefix web run build` from the repository root. It opens a disposable
+profile, preserves browser security checks, and fails when graphics is unavailable;
+a passing bundled headless run cannot substitute for this check.
+
+Zero new neural calls, capture/recording, OBS/device changes, GPU-model
+integration, host changes, remote pushes or deployment. OBS ledger stays 9/1,024
+(1,015 remaining); P00 stays 144 attempts. Baseline/checkpoint, protected files,
+ledgers, notices and both implementation kits match saved hashes: 60/60 protected and kit identities, exit 0.
+`source-identity.json` records the final tracked and new source hashes;
+`repair.diff` preserves the local tracked patch.
+**Return for human review. Do not start OBS04.**
+
+---
+
+## Historical OBS03 implementation report (before browser repair)
+
 # OBS03 — authoritative flight and early third-person preview
 
 2026-09-15. **Implementation PASS / COMPLETE** after the checks recorded below.

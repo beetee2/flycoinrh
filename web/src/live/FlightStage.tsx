@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { createFlightRenderer, type FlightRenderer } from './flightRenderer';
+import { createFlightRenderer, FlightGraphicsError, type FlightRenderer } from './flightRenderer';
 import { parseFlightPreview, previewPose, type FlightPreview } from './flightPreview';
 import './flight.css';
 import threeLicenseUrl from './three-LICENSE.txt?url&no-inline';
@@ -11,42 +11,69 @@ export function FlightStage() {
   const elapsed = useRef(0);
   const [preview, setPreview] = useState<FlightPreview | null>(null);
   const [playing, setPlaying] = useState(false);
-  const [available, setAvailable] = useState(true);
+  const [graphics, setGraphics] = useState('Initializing');
+  const [graphicsErrors, setGraphicsErrors] = useState<string[]>([]);
+  const [graphicsAttempt, setGraphicsAttempt] = useState(0);
+  const retries = useRef(0);
+  const frame = useRef(0);
+  const available = graphics === 'Ready';
+  function stopAnimation() { cancelAnimationFrame(frame.current); frame.current = 0; }
+  function graphicsFailed(cause: unknown) {
+    stopAnimation(); setPlaying(false); setState('Paused · graphics unavailable');
+    const error = cause instanceof FlightGraphicsError ? cause : new FlightGraphicsError('renderer', cause);
+    const label = error.kind === 'context-creation' ? 'Context creation failed' : error.kind === 'context-lost' ? 'Context lost' : 'Renderer failed';
+    setGraphics(label);
+    setGraphicsErrors(history => [...history, `${label}: ${error.message}`].slice(-4));
+    const previous = renderer.current; renderer.current = null; previous?.dispose();
+  }
+  function draw(pose: Parameters<FlightRenderer['draw']>[0], ms: number) {
+    if (!renderer.current) return false;
+    try { renderer.current.draw(pose, ms); return true; }
+    catch (error) { graphicsFailed(error); return false; }
+  }
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [timeMs, setTimeMs] = useState(0);
   const [state, setState] = useState('Ready to load');
 
   useEffect(() => {
-    const container = host.current!;
-    try { renderer.current = createFlightRenderer(container); }
-    catch { setAvailable(false); }
-    const lost = (event: Event) => { event.preventDefault(); setPlaying(false); setAvailable(false); setState('Graphics unavailable'); };
-    container.addEventListener('webglcontextlost', lost, true);
-    return () => { container.removeEventListener('webglcontextlost', lost, true); request.current?.abort(); renderer.current?.dispose(); renderer.current = null; };
-  }, []);
+    let active = true;
+    try {
+      renderer.current = createFlightRenderer(host.current!, error => { if (active) graphicsFailed(error); });
+      if (draw(preview ? previewPose(preview, elapsed.current) : null, elapsed.current)) {
+        setGraphics('Ready');
+        if (graphicsAttempt > 0) setState('Paused · graphics restored');
+      }
+    } catch (error) { graphicsFailed(error); }
+    return () => {
+      active = false; stopAnimation();
+      const previous = renderer.current; renderer.current = null; previous?.dispose();
+    };
+    // Initialization is explicitly bounded by mount or Retry, independent of data/playback changes.
+  }, [graphicsAttempt]);
+
+  useEffect(() => () => { request.current?.abort(); }, []);
 
   useEffect(() => {
-    const visibility = () => { if (document.hidden) { setPlaying(false); setState('Paused · tab hidden'); } };
+    const visibility = () => { if (document.hidden) { stopAnimation(); setPlaying(false); setState('Paused · tab hidden'); } };
     document.addEventListener('visibilitychange', visibility);
     return () => document.removeEventListener('visibilitychange', visibility);
   }, []);
 
   useEffect(() => {
-    renderer.current?.draw(preview ? previewPose(preview, elapsed.current) : null, elapsed.current);
+    if (!draw(preview ? previewPose(preview, elapsed.current) : null, elapsed.current)) return;
     if (!playing || !preview || !available) return;
     const start = performance.now() - elapsed.current;
     const duration = (preview.snapshots.length - 1) * preview.dt_ms;
-    let frame = 0;
     const animate = (now: number) => {
-      elapsed.current = Math.min(duration, Math.max(0, now - start));
-      renderer.current?.draw(previewPose(preview, elapsed.current), elapsed.current);
-      setTimeMs(elapsed.current);
+      const nextTime = Math.min(duration, Math.max(0, now - start));
+      if (!draw(previewPose(preview, nextTime), nextTime)) return;
+      elapsed.current = nextTime; setTimeMs(nextTime);
       if (elapsed.current >= duration) { setPlaying(false); setState('Complete · frozen'); }
-      else frame = requestAnimationFrame(animate);
+      else frame.current = requestAnimationFrame(animate);
     };
-    frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
+    frame.current = requestAnimationFrame(animate);
+    return stopAnimation;
   }, [preview, playing, available]);
 
   async function load() {
@@ -62,10 +89,16 @@ export function FlightStage() {
       if (!controller.signal.aborted) { setPreview(null); setError(cause instanceof Error ? cause.message : 'Preview unavailable.'); setState('Unavailable'); }
     } finally { if (!controller.signal.aborted) setLoading(false); }
   }
-  function freeze(label: string) { setPlaying(false); setState(label); }
+  function freeze(label: string) { stopAnimation(); setPlaying(false); setState(label); }
   function reset() {
     freeze('Reset · idle'); elapsed.current = 0; setTimeMs(0);
-    renderer.current?.draw(preview ? previewPose(preview, 0) : null, 0);
+    draw(preview ? previewPose(preview, 0) : null, 0);
+  }
+  function retryGraphics() {
+    if (retries.current >= 3 || available) return;
+    retries.current += 1;
+    stopAnimation(); setPlaying(false); setGraphics('Initializing');
+    setGraphicsAttempt(retries.current);
   }
   const pose = preview ? previewPose(preview, timeMs) : null;
   const completed = preview !== null && timeMs >= (preview.snapshots.length - 1) * preview.dt_ms;
@@ -74,7 +107,7 @@ export function FlightStage() {
     <div className="flight-viewport">
       <div ref={host} className="flight-canvas" data-testid="flight-canvas" />
       <div className="flight-overlay"><span>FLIGHT STUDY / 003</span><span>LOCAL PROCEDURAL SCENE</span></div>
-      {!available && <div className="flight-unavailable" role="status">3D view unavailable. WebGL2 is required. Playback is disabled; reload after enabling graphics.</div>}
+      {!available && <div className="flight-unavailable" role="status">3D view unavailable. {graphics === 'Context creation failed' ? 'The browser could not create a WebGL2 context.' : graphics === 'Context lost' ? 'The browser lost the graphics context.' : graphics === 'Initializing' ? 'Initializing graphics.' : 'Renderer or scene initialization failed.'} Playback is disabled.</div>}
       <div className="flight-caption">Original procedural fly · following spectator camera</div>
     </div>
     <div className="flight-controls">
@@ -83,6 +116,15 @@ export function FlightStage() {
       <button className="secondary" disabled={!playing} onClick={() => freeze('Paused · frozen')}>Pause</button>
       <button className="secondary" disabled={!preview} onClick={() => freeze('Stopped · frozen')}>Stop</button>
       <button className="secondary" disabled={!preview} onClick={reset}>Reset preview</button>
+    </div>
+    <div className="flight-graphics">
+      <p>Graphics: <strong data-testid="graphics-state">{graphics}</strong> · Preview data: <strong data-testid="preview-data-state">{loading ? 'Loading' : preview ? 'Loaded' : 'Not loaded'}</strong></p>
+      {!available && <button className="secondary" onClick={retryGraphics} disabled={graphics === 'Initializing' || graphicsAttempt >= 3}>Retry graphics</button>}
+      {!available && <p>{graphicsAttempt >= 3 ? 'Three retries used. Reload the page for another attempt.' : 'Retry makes one graphics attempt and keeps playback stopped. Up to three retries per page.'}</p>}
+      {graphicsErrors.length > 0 && <details><summary>Graphics diagnostics (local to this page)</summary>
+        <pre data-testid="graphics-details">{graphicsErrors.join('\n')}</pre>
+        <p>These messages do not identify the cause. Browser GPU diagnostics may provide more detail.</p>
+      </details>}
     </div>
     {error && <p role="alert" className="error">{error}</p>}
     <div className="flight-telemetry" aria-label="Synthetic replay telemetry">
