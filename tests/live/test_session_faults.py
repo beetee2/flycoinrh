@@ -35,8 +35,9 @@ def sessions(tmp_path, adapter_files):
 
     def make(mode, **overrides):
         capture_factory = overrides.pop("capture_factory", SyntheticCapture)
+        backend = overrides.pop("backend", "cpu")
         session = NeuralSession(config(**overrides), purpose="fixture", repository_root=tmp_path,
-            files=adapter_files, capture_factory=capture_factory,
+            files=adapter_files, capture_factory=capture_factory, backend=backend,
             worker_command=[sys.executable, "-m", "tests.live.session_fault_worker", mode])
         created.append(session)
         return session
@@ -106,11 +107,12 @@ def test_stale_response_is_only_historical_and_stop_cannot_revive_it(sessions):
     assert_released(session)
 
 
+@pytest.mark.parametrize("backend", ["cpu", "cuda"])
 @pytest.mark.parametrize("ending", ["stop", "source_lost", "lease_lost"])
-def test_typed_worker_response_drives_session_flight_and_terminal_replays(sessions, ending):
+def test_typed_worker_response_drives_session_flight_and_terminal_replays(sessions, ending, backend):
     from flytrap.live.flight import decode, replay
 
-    session = sessions("normal", lease_ms=800).start()
+    session = sessions("normal", lease_ms=800, backend=backend).start()
     wait_until(lambda: session.renew_lease() and session.snapshot().flight.position[0] > .002)
     before = session.snapshot()
     assert before.flight.applied_response_id == before.last_inferred.response_id
@@ -304,3 +306,27 @@ def test_parent_death_kills_child_and_releases_p00_lock(tmp_path, adapter_files)
         parent.stderr.close()
         if worker_pid is not None and alive(worker_pid):
             os.kill(worker_pid, signal.SIGKILL)
+
+
+@pytest.mark.parametrize("mode", ["gpu_missing", "gpu_initialization", "gpu_oom", "startup_hang",
+                                  "step_crash", "step_hang", "stale"])
+def test_cuda_fault_protocol_stops_without_fallback_and_allows_explicit_restart(sessions, mode):
+    """CUDA-labelled synthetic workers exercise lifecycle without loading a GPU."""
+    session = sessions(mode, backend="cuda", startup_deadline_ms=300 if mode == "startup_hang" else 1500,
+                       step_deadline_ms=300, response_max_age_ms=80).start()
+    if mode == "stale":
+        wait_until(lambda: session.snapshot().completed_calls == 1)
+        assert session.snapshot().rejected_results == 1
+        session.stop()
+    assert session.wait(2)
+    assert session.snapshot().sample is None
+    assert session.snapshot().flight.neutral
+    assert session.backend == "cuda"
+    assert_released(session)
+    replacement = sessions("gpu_initialization", backend="cuda").start()
+    assert replacement.wait(2)
+    assert replacement.session_id != session.session_id
+    assert replacement._child.pid != session._child.pid
+    assert replacement.snapshot().status.state == "failed"
+    assert replacement.snapshot().status.attempted_calls == 0
+    assert_released(replacement)

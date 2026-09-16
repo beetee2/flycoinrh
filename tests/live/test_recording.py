@@ -54,7 +54,11 @@ def write_record(store, fixture):
     return writer
 
 
-def test_exact_roundtrip_private_permissions_seek_and_terminal(tmp_path, sample_record):
+@pytest.mark.parametrize("model_id", ["fixture-storage", "fixture-cuda-storage"])
+def test_exact_roundtrip_private_permissions_seek_and_terminal(tmp_path, sample_record, model_id):
+    config, source, provenance, flight, sample, worker = sample_record
+    sample_record = (config, source, provenance.model_copy(update={"model_id": model_id}), flight,
+                     sample.model_copy(update={"model_id": model_id}), worker)
     store = RecordingStore(tmp_path / "private")
     writer = write_record(store, sample_record)
     restored = RecordingStore(store.root).read(writer.recording_id)

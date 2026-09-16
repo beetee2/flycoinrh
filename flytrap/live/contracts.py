@@ -288,6 +288,28 @@ class StreamEnvelope(Contract):
         return self
 
 
+class NeuralExecutionConfiguration(Contract):
+    batch_size: Literal[1]
+    steps: Literal[100]
+    dt_ms: Literal[0.2]
+    neural_state_mode: Literal["windowed_reset"]
+    gains: Literal["all-one"]
+    learning_enabled: Literal[False]
+    synaptic_accumulation: Label
+
+
+class NeuralExecution(Contract):
+    backend: Literal["cpu-numpy-csc-v1", "cuda-torch-csr-v1"]
+    source: Label
+    source_sha256: Digest
+    upstream_revision: Annotated[str, Field(pattern=r"^[0-9a-f]{40}$", max_length=40)] | None = None
+    device: Label
+    device_name: Label
+    dtype: Literal["float32"]
+    library_versions: Annotated[dict[Label, Label], Field(min_length=1, max_length=8)]
+    effective_configuration: NeuralExecutionConfiguration
+
+
 class Provenance(Contract):
     source_head: Annotated[str, Field(pattern=r"^[0-9a-f]{40}$", max_length=40)]
     source_tree_sha256: Digest
@@ -301,6 +323,7 @@ class Provenance(Contract):
     numpy_version: Label
     scipy_version: Label
     model_id: Id
+    neural_execution: NeuralExecution | None = None
     neural_state_mode: Literal["windowed_reset"]
     gains: Literal["all-one-float32"]
     learning_enabled: Literal[False]

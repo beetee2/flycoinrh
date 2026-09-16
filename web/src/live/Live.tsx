@@ -291,6 +291,7 @@ export function Live() {
       <p className="context" data-testid="launch-profile">{capabilities?.profile === 'art_review'
         ? 'Art review — capture-only demo and saved replays.'
         : capabilities ? 'Live flight — explicit source selection and Start required.' : 'Checking service capabilities…'}</p>
+      {capabilities && <p className="context" data-testid="neural-backend">Server neural backend: {capabilities.neural_backend === 'cuda' ? 'CUDA · optional GPU implementation' : capabilities.neural_backend === 'cpu' ? 'CPU · original NumPy implementation' : 'None · capture and replay only'}</p>}
       {!capabilities && <p>Controls stay disabled until the service capabilities are available. Check the launcher and reload.</p>}
       {capabilities && !capabilities.replay && <p>Saved replay playback is unavailable on this service.</p>}
       <nav className="mode-controls" aria-label="Flight experience">
@@ -332,6 +333,9 @@ export function Live() {
           <button disabled={!replayPlaying} onClick={() => setReplayPlaying(false)}>Pause recording</button>
           <label>Replay tick<input type="range" min="0" max={replay?.trace.ticks ?? 0} value={replayTick} disabled={!replay} onChange={event => { void seek(Number(event.target.value)); }} /><output>{replayTick} / {replay?.trace.ticks ?? 0}</output></label>
           <button disabled={!replay} onClick={download}>Download recording</button>
+          {replay && <p data-testid="recording-backend">{replay.manifest.provenance.neural_execution
+            ? `Recording neural backend: ${replay.manifest.provenance.neural_execution.backend === 'cuda-torch-csr-v1' ? 'CUDA · optional GPU implementation' : 'CPU · original NumPy implementation'}`
+            : 'Historical recording — backend descriptor unavailable'}</p>}
           {replay && <p>Loaded recording: <strong data-testid="loaded-recording-id">{loadedRecordingId}</strong> · session {replay.manifest.session_id}. Playback performs no capture or inference.</p>}
         </div>}
       </section>

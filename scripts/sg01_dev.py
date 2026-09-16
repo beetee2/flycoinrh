@@ -27,20 +27,22 @@ def port(value):
 
 
 @contextmanager
-def profile_service(profile):
+def profile_service(profile, backend="cpu"):
+    if profile == "review" and backend != "cpu":
+        raise ValueError("CUDA requires the live profile")
     if profile == "review":
         from scripts.sg01_preview import preview_service
         with tempfile.TemporaryDirectory(prefix="flyjam-sg01-") as directory:
             yield preview_service(Path(directory), ROOT / "artifacts/live/recordings")
     else:
         from flytrap.live.service import LiveService, source_metadata
-        yield LiveService(repository_root=ROOT, execution_purpose="human", source_provider=source_metadata)
+        yield LiveService(repository_root=ROOT, execution_purpose="human", source_provider=source_metadata, backend=backend)
 
 
-def serve_api(profile, fd):
+def serve_api(profile, fd, backend="cpu"):
     import uvicorn
     from flytrap.live.api import create_live_app
-    with socket.socket(fileno=fd) as listener, profile_service(profile) as service:
+    with socket.socket(fileno=fd) as listener, profile_service(profile, backend) as service:
         server = uvicorn.Server(uvicorn.Config(create_live_app(service=service),
             host="127.0.0.1", workers=1, limit_concurrency=16, timeout_keep_alive=5,
             timeout_graceful_shutdown=5, log_level="warning"))
@@ -98,14 +100,14 @@ def wait_api(process, api_port, timeout=15):
     raise RuntimeError("SG01 API did not become ready. Check the local server output and retry.")
 
 
-def run(profile, api_port, ui_port):
+def run(profile, api_port, ui_port, backend="cpu"):
     if api_port == ui_port:
         raise RuntimeError("API and frontend ports must be different.")
     children = []
     with reserve_port(api_port) as api_socket, reserve_port(ui_port) as ui_socket:
         try:
             api = subprocess.Popen([sys.executable, "-m", "scripts.sg01_dev", "--profile", profile,
-                "--api-fd", str(api_socket.fileno())], cwd=ROOT,
+                "--api-fd", str(api_socket.fileno()), "--backend", backend], cwd=ROOT,
                 pass_fds=(api_socket.fileno(),), start_new_session=True)
             children.append(api)
             wait_api(api, api_port)
@@ -115,7 +117,7 @@ def run(profile, api_port, ui_port):
                 "--port", str(ui_port), "--strictPort"], cwd=ROOT,
                 env={**os.environ, "FLYJAM_API_PORT": str(api_port)}, start_new_session=True)
             children.append(frontend)
-            print(f"{LABELS[profile]}\nhttp://127.0.0.1:{ui_port}/live\n"
+            print(f"{LABELS[profile]}\nNeural backend: {backend if profile == 'live' else 'none'}.\nhttp://127.0.0.1:{ui_port}/live\n"
                   "Startup is idle. Ctrl+C stops this launcher's processes.", flush=True)
             while True:
                 if api.poll() is not None:
@@ -142,9 +144,13 @@ def main(argv=None):
     parser.add_argument("--api-port", type=port)
     parser.add_argument("--ui-port", type=port, default=5173)
     parser.add_argument("--api-fd", type=int, help=argparse.SUPPRESS)
+    parser.add_argument("--backend", choices=("cpu", "cuda"), default="cpu",
+                        help="Explicit live neural implementation (CPU remains the default)")
     args = parser.parse_args(argv)
+    if args.profile == "review" and args.backend != "cpu":
+        parser.error("CUDA requires --profile live")
     if args.api_fd is not None:
-        serve_api(args.profile, args.api_fd)
+        serve_api(args.profile, args.api_fd, args.backend)
         return 0
 
     def interrupted(signum, frame):
@@ -152,7 +158,7 @@ def main(argv=None):
 
     old_handlers = {sig: signal.signal(sig, interrupted) for sig in (signal.SIGINT, signal.SIGTERM)}
     try:
-        return run(args.profile, args.api_port or (8770 if args.profile == "review" else 8767), args.ui_port)
+        return run(args.profile, args.api_port or (8770 if args.profile == "review" else 8767), args.ui_port, args.backend)
     except KeyboardInterrupt:
         return 130
     except (RuntimeError, OSError) as exc:

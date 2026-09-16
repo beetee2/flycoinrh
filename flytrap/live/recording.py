@@ -301,8 +301,13 @@ class RecordingStore:
         envelope = ManifestEnvelope.model_validate_json(data)
         if envelope.recording_id != recording_id:
             raise RecordingError("recording directory identity mismatch")
+        manifest_payload = envelope.manifest.model_dump(mode="json")
+        if "neural_execution" not in envelope.manifest.provenance.model_fields_set:
+            # Pre-GPU01 recordings were sealed without this optional descriptor.
+            # Preserve their original canonical payload when checking its hash.
+            manifest_payload["provenance"].pop("neural_execution")
         if envelope.sha256 != _hash(_json({"recording_id": envelope.recording_id,
-                                          "manifest": envelope.manifest.model_dump(mode="json")})):
+                                          "manifest": manifest_payload})):
             raise RecordingError("manifest hash mismatch")
         if _storage_bytes(directory) > envelope.manifest.config.recording_max_bytes:
             raise RecordingError("recording total byte cap reached")
@@ -527,6 +532,7 @@ def provenance_from_worker(identity, *, backend_version):
             "parameters_sha256", "calibration_sha256", "parameters", "calibration")})),
         backend_version=backend_version, python_version=runtime["python"],
         numpy_version=runtime["numpy"], scipy_version=runtime["scipy"], model_id=identity["model_id"],
+        neural_execution=identity.get("neural_execution"),
         neural_state_mode=model["neural_state_mode"], gains=model["gains"],
         learning_enabled=model["learning_enabled"])
 

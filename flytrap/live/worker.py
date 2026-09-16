@@ -13,7 +13,7 @@ import sys
 import time
 
 from .neural import StepRequest, StepResult, receive_packet, send_packet
-from .contracts import SessionConfig
+from .contracts import NeuralExecution, SessionConfig
 
 REPOSITORY = Path(__file__).resolve().parents[2]
 
@@ -49,21 +49,33 @@ def count_model_reads(files):
         builtins.open, io.open, os.open = originals
 
 
-def identity(controller, config):
+def identity(controller, config, execution=None):
     import numpy
     import scipy
 
     paths = sorted((REPOSITORY / "flytrap/live").glob("*.py"))
     hashes = {str(p.relative_to(REPOSITORY)): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
     model = controller.provenance
-    payload = {"model": model, "live_sources": hashes, "config": config,
+    if execution is None:
+        execution = dict(backend="cpu-numpy-csc-v1", source="flysim.py",
+            source_sha256=hashlib.sha256((REPOSITORY / "flysim.py").read_bytes()).hexdigest(),
+            device="cpu", device_name=platform.machine(), dtype="float32",
+            library_versions={"numpy": numpy.__version__, "scipy": scipy.__version__},
+            effective_configuration=dict(batch_size=1, steps=100, dt_ms=0.2,
+                neural_state_mode="windowed_reset", gains="all-one", learning_enabled=False,
+                synaptic_accumulation="float64-bincount-cast-float32"))
+    execution = NeuralExecution.model_validate(execution).model_dump(mode="json")
+    payload = {"neural_execution": execution, "model": model, "live_sources": hashes, "config": config,
                "source_head": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPOSITORY,
                                                         text=True, timeout=2).strip(),
                "runtime": {"python": platform.python_version(), "numpy": numpy.__version__,
                            "scipy": scipy.__version__}}
     digest = hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
+    prefix = "fixture-" if model["fixture"] else "baseline-"
+    if execution["backend"] == "cuda-torch-csr-v1":
+        prefix = "fixture-cuda-" if model["fixture"] else "cuda-baseline-"
     return {**payload, "identity_sha256": digest,
-            "model_id": ("fixture-" if model["fixture"] else "baseline-") + digest[:24],
+            "model_id": prefix + digest[:24],
             "model_loads": 1, "controller_resets": 1}
 
 
@@ -88,9 +100,17 @@ def execute(channel, init):
         raise ValueError("real accounting must use the fixed repository ledger")
     config = SessionConfig.model_validate(init["config"]).model_dump(mode="json")
     session_id, generation = init["session_id"], init["generation"]
+    backend = init.get("backend", "cpu")
+    if backend not in {"cpu", "cuda"}:
+        raise ValueError("unknown neural backend")
+    execution = None
+    if backend == "cuda":
+        # This owned exec child is the only live process that initializes CUDA.
+        from .gpu import attach_gpu
+        execution = attach_gpu(controller)
     controller.reset(run_seed=config["seed"], checkpoint=controller.checkpoint)
     retina = CompiledRetina(controller, annotations_path=files["annotations_path"])
-    provenance = identity(controller, config)
+    provenance = identity(controller, config, execution)
     global_ledger = LiveLedger.automated(root) if purpose == "automated" else None
     ledger = LiveLedger.session(root, session_id, cap=config["max_model_calls"],
                                mode="human" if purpose == "human" else "automated")

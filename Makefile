@@ -60,7 +60,11 @@ test-contract-web:
 	VITEST_JUNIT_PATH=../$(EVIDENCE)/web-contract.xml npm --prefix web run test-contract
 
 test-python:
-	$(PYTEST) tests --ignore=tests/real_data --ignore=tests/real_model -q --junitxml=$(EVIDENCE)/python.xml --cov=flytrap --cov-branch --cov-report=term-missing --cov-report=xml:$(EVIDENCE)/coverage.xml --cov-report=json:$(EVIDENCE)/coverage.json
+	$(PYTEST) tests --ignore=tests/real_data --ignore=tests/real_model --ignore=tests/gpu -q --junitxml=$(EVIDENCE)/python.xml --cov=flytrap --cov-branch --cov-report=term-missing --cov-report=xml:$(EVIDENCE)/coverage.xml --cov-report=json:$(EVIDENCE)/coverage.json
+
+.PHONY: test-gpu
+test-gpu:
+	$(PYTEST) tests/gpu -q --junitxml=$(LIVE_EVIDENCE)/gpu.xml
 
 .PHONY: test-controller test-controller-real
 test-controller:

@@ -52,6 +52,7 @@ class ServiceCapabilities(Contract):
     preview: bool
     inference: bool
     replay: bool
+    neural_backend: Literal["cpu", "cuda", "none"] = "cpu"
 
     @model_validator(mode="after")
     def review_cannot_infer(self):

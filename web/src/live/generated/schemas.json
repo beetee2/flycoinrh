@@ -2653,6 +2653,151 @@
         "title": "GroundFlightSnapshot",
         "type": "object"
       },
+      "NeuralExecution": {
+        "additionalProperties": false,
+        "properties": {
+          "backend": {
+            "enum": [
+              "cpu-numpy-csc-v1",
+              "cuda-torch-csr-v1"
+            ],
+            "title": "Backend",
+            "type": "string"
+          },
+          "source": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Source",
+            "type": "string"
+          },
+          "source_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "upstream_revision": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "pattern": "^[0-9a-f]{40}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Upstream Revision"
+          },
+          "device": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Device",
+            "type": "string"
+          },
+          "device_name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Device Name",
+            "type": "string"
+          },
+          "dtype": {
+            "const": "float32",
+            "title": "Dtype",
+            "type": "string"
+          },
+          "library_versions": {
+            "maxProperties": 8,
+            "minProperties": 1,
+            "patternProperties": {
+              "^[^\\x00-\\x1f\\x7f]+$": {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+                "type": "string"
+              }
+            },
+            "propertyNames": {
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "title": "Library Versions",
+            "type": "object"
+          },
+          "effective_configuration": {
+            "$ref": "#/$defs/NeuralExecutionConfiguration"
+          }
+        },
+        "required": [
+          "backend",
+          "source",
+          "source_sha256",
+          "device",
+          "device_name",
+          "dtype",
+          "library_versions",
+          "effective_configuration"
+        ],
+        "title": "NeuralExecution",
+        "type": "object"
+      },
+      "NeuralExecutionConfiguration": {
+        "additionalProperties": false,
+        "properties": {
+          "batch_size": {
+            "const": 1,
+            "title": "Batch Size",
+            "type": "integer"
+          },
+          "steps": {
+            "const": 100,
+            "title": "Steps",
+            "type": "integer"
+          },
+          "dt_ms": {
+            "const": 0.2,
+            "title": "Dt Ms",
+            "type": "number"
+          },
+          "neural_state_mode": {
+            "const": "windowed_reset",
+            "title": "Neural State Mode",
+            "type": "string"
+          },
+          "gains": {
+            "const": "all-one",
+            "title": "Gains",
+            "type": "string"
+          },
+          "learning_enabled": {
+            "const": false,
+            "title": "Learning Enabled",
+            "type": "boolean"
+          },
+          "synaptic_accumulation": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Synaptic Accumulation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "batch_size",
+          "steps",
+          "dt_ms",
+          "neural_state_mode",
+          "gains",
+          "learning_enabled",
+          "synaptic_accumulation"
+        ],
+        "title": "NeuralExecutionConfiguration",
+        "type": "object"
+      },
       "Provenance": {
         "additionalProperties": false,
         "properties": {
@@ -2731,6 +2876,17 @@
             "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
             "title": "Model Id",
             "type": "string"
+          },
+          "neural_execution": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/NeuralExecution"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
           },
           "neural_state_mode": {
             "const": "windowed_reset",
@@ -6763,6 +6919,16 @@
       "replay": {
         "title": "Replay",
         "type": "boolean"
+      },
+      "neural_backend": {
+        "default": "cpu",
+        "enum": [
+          "cpu",
+          "cuda",
+          "none"
+        ],
+        "title": "Neural Backend",
+        "type": "string"
       }
     },
     "required": [
@@ -7663,6 +7829,151 @@
         "title": "MotorRates",
         "type": "object"
       },
+      "NeuralExecution": {
+        "additionalProperties": false,
+        "properties": {
+          "backend": {
+            "enum": [
+              "cpu-numpy-csc-v1",
+              "cuda-torch-csr-v1"
+            ],
+            "title": "Backend",
+            "type": "string"
+          },
+          "source": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Source",
+            "type": "string"
+          },
+          "source_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "upstream_revision": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "pattern": "^[0-9a-f]{40}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Upstream Revision"
+          },
+          "device": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Device",
+            "type": "string"
+          },
+          "device_name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Device Name",
+            "type": "string"
+          },
+          "dtype": {
+            "const": "float32",
+            "title": "Dtype",
+            "type": "string"
+          },
+          "library_versions": {
+            "maxProperties": 8,
+            "minProperties": 1,
+            "patternProperties": {
+              "^[^\\x00-\\x1f\\x7f]+$": {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+                "type": "string"
+              }
+            },
+            "propertyNames": {
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "title": "Library Versions",
+            "type": "object"
+          },
+          "effective_configuration": {
+            "$ref": "#/$defs/NeuralExecutionConfiguration"
+          }
+        },
+        "required": [
+          "backend",
+          "source",
+          "source_sha256",
+          "device",
+          "device_name",
+          "dtype",
+          "library_versions",
+          "effective_configuration"
+        ],
+        "title": "NeuralExecution",
+        "type": "object"
+      },
+      "NeuralExecutionConfiguration": {
+        "additionalProperties": false,
+        "properties": {
+          "batch_size": {
+            "const": 1,
+            "title": "Batch Size",
+            "type": "integer"
+          },
+          "steps": {
+            "const": 100,
+            "title": "Steps",
+            "type": "integer"
+          },
+          "dt_ms": {
+            "const": 0.2,
+            "title": "Dt Ms",
+            "type": "number"
+          },
+          "neural_state_mode": {
+            "const": "windowed_reset",
+            "title": "Neural State Mode",
+            "type": "string"
+          },
+          "gains": {
+            "const": "all-one",
+            "title": "Gains",
+            "type": "string"
+          },
+          "learning_enabled": {
+            "const": false,
+            "title": "Learning Enabled",
+            "type": "boolean"
+          },
+          "synaptic_accumulation": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Synaptic Accumulation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "batch_size",
+          "steps",
+          "dt_ms",
+          "neural_state_mode",
+          "gains",
+          "learning_enabled",
+          "synaptic_accumulation"
+        ],
+        "title": "NeuralExecutionConfiguration",
+        "type": "object"
+      },
       "NeuralSample": {
         "additionalProperties": false,
         "properties": {
@@ -7862,6 +8173,17 @@
             "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
             "title": "Model Id",
             "type": "string"
+          },
+          "neural_execution": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/NeuralExecution"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
           },
           "neural_state_mode": {
             "const": "windowed_reset",
@@ -8810,6 +9132,151 @@
         "title": "GroundFlightSnapshot",
         "type": "object"
       },
+      "NeuralExecution": {
+        "additionalProperties": false,
+        "properties": {
+          "backend": {
+            "enum": [
+              "cpu-numpy-csc-v1",
+              "cuda-torch-csr-v1"
+            ],
+            "title": "Backend",
+            "type": "string"
+          },
+          "source": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Source",
+            "type": "string"
+          },
+          "source_sha256": {
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Source Sha256",
+            "type": "string"
+          },
+          "upstream_revision": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "pattern": "^[0-9a-f]{40}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Upstream Revision"
+          },
+          "device": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Device",
+            "type": "string"
+          },
+          "device_name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Device Name",
+            "type": "string"
+          },
+          "dtype": {
+            "const": "float32",
+            "title": "Dtype",
+            "type": "string"
+          },
+          "library_versions": {
+            "maxProperties": 8,
+            "minProperties": 1,
+            "patternProperties": {
+              "^[^\\x00-\\x1f\\x7f]+$": {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+                "type": "string"
+              }
+            },
+            "propertyNames": {
+              "maxLength": 128,
+              "minLength": 1
+            },
+            "title": "Library Versions",
+            "type": "object"
+          },
+          "effective_configuration": {
+            "$ref": "#/$defs/NeuralExecutionConfiguration"
+          }
+        },
+        "required": [
+          "backend",
+          "source",
+          "source_sha256",
+          "device",
+          "device_name",
+          "dtype",
+          "library_versions",
+          "effective_configuration"
+        ],
+        "title": "NeuralExecution",
+        "type": "object"
+      },
+      "NeuralExecutionConfiguration": {
+        "additionalProperties": false,
+        "properties": {
+          "batch_size": {
+            "const": 1,
+            "title": "Batch Size",
+            "type": "integer"
+          },
+          "steps": {
+            "const": 100,
+            "title": "Steps",
+            "type": "integer"
+          },
+          "dt_ms": {
+            "const": 0.2,
+            "title": "Dt Ms",
+            "type": "number"
+          },
+          "neural_state_mode": {
+            "const": "windowed_reset",
+            "title": "Neural State Mode",
+            "type": "string"
+          },
+          "gains": {
+            "const": "all-one",
+            "title": "Gains",
+            "type": "string"
+          },
+          "learning_enabled": {
+            "const": false,
+            "title": "Learning Enabled",
+            "type": "boolean"
+          },
+          "synaptic_accumulation": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+            "title": "Synaptic Accumulation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "batch_size",
+          "steps",
+          "dt_ms",
+          "neural_state_mode",
+          "gains",
+          "learning_enabled",
+          "synaptic_accumulation"
+        ],
+        "title": "NeuralExecutionConfiguration",
+        "type": "object"
+      },
       "Provenance": {
         "additionalProperties": false,
         "properties": {
@@ -8888,6 +9355,17 @@
             "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
             "title": "Model Id",
             "type": "string"
+          },
+          "neural_execution": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/NeuralExecution"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
           },
           "neural_state_mode": {
             "const": "windowed_reset",

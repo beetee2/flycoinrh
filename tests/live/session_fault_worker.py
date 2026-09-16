@@ -79,12 +79,17 @@ def worker(mode, fd):
     signal.signal(signal.SIGTERM, signal.SIG_IGN)
     with socket.socket(fileno=fd) as channel:
         init = receive_packet(channel)
+        if mode in {"gpu_missing", "gpu_initialization", "gpu_oom"}:
+            assert init["backend"] == "cuda"
+            send_packet(channel, {"kind": "failed", "reason": "Synthetic GPU initialization failure"})
+            return 26
         if mode == "startup_crash":
             return 23
         if mode == "startup_hang":
             time.sleep(10)
             return 0
-        send_packet(channel, {"kind": "ready", "provenance": {"model_id": "synthetic-fault-worker"}})
+        send_packet(channel, {"kind": "ready", "provenance": {"model_id": "synthetic-fault-worker",
+            "neural_execution": {"backend": "cuda-torch-csr-v1" if init.get("backend") == "cuda" else "cpu-numpy-csc-v1"}}})
         request = receive_packet(channel)
         if mode == "append_exit":
             from flytrap.live.accounting import LiveLedger, LiveOwnership

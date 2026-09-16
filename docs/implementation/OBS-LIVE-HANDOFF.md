@@ -1,4 +1,48 @@
-# SG01 — Screen Gremlin candidate
+# GPU01 — CPU/GPU manual comparison ready
+
+**The optional CUDA backend is locally qualified; CPU remains default.**
+The [GPU01 report](milestones/GPU01.md) records the environment, exact numerical
+comparisons, profiling, fault checks, regression commands and accounting.
+
+All 18 fixed-input CPU/GPU pairs matched, including integer spike totals,
+per-neuron rates, fired sets, membrane means and decoded controls; 18 GPU repeats
+also matched exactly. With Screen Gremlin visible in accelerated Chrome,
+32 calls per backend measured **506 / 555 ms CPU** versus **95 / 102 ms CUDA**
+live-step median/p95. Accepted-frame age at completion was **521 / 570 ms**
+versus **110 / 127 ms**. Observed completed-draw p95 worsened from **28 to 50 ms**
+in the shorter GPU run. This is not presented/display FPS. Your review must
+settle the responsiveness/rendering tradeoff and whether to promote GPU.
+
+From `/home/kernel_sanders/dev/flycoinrh`, run one at a time:
+
+```text
+./scripts/dev_sg01_live.sh --backend cpu
+./scripts/dev_sg01_live.sh --backend cuda
+```
+
+Open **http://127.0.0.1:5173/live**. Stop the launcher with Ctrl+C before changing
+backends. Both retain Screen Gremlin and start idle; the page labels the server
+backend. Explicitly select your approved OBS source and press Start. Use the
+same scene, seed and session bounds for comparison. Faster inference samples
+different real-time frames and may reach the unchanged call cap sooner.
+Occupied ports can be avoided with `--api-port 8772 --ui-port 5174` and
+`http://127.0.0.1:5174/live`.
+
+The optional dependencies are already installed in `.venv`. For a fresh matching
+environment: `uv sync --locked --extra model --extra gpu --group upstream --inexact`.
+CUDA requires the qualified RTX 3080, driver 610.57.04, Python 3.14.7 and pinned
+packages. Missing/stale qualification or unavailable CUDA fails honestly; it
+does not silently select CPU. Existing CPU use does not import Torch.
+
+Agent validation used only generated imagery, with no desktop capture or video
+recording. OBS recording stays disabled. Capture, inference and all owned test
+services/browsers are stopped. Accounting: **337/1,024**, **687 remaining**;
+GPU01 **118/384 used**, **266 unused**; P00 **144**, unchanged. No default
+promotion, remote push or public deployment occurred. Stop for your manual A/B.
+
+---
+
+# Historical SG01 — Screen Gremlin candidate
 
 The default is now **Screen Gremlin**; choose **Legacy** locally for comparison.
 Your ground-contact confirmation is recorded as operator evidence. Your manual

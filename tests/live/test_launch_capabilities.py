@@ -27,7 +27,7 @@ def test_normal_live_metadata_reads_remain_idle(tmp_path, monkeypatch):
         for _ in range(2):
             assert client.get("/api/live/capabilities").json() == {
                 "schema_version": "obs-capabilities-1", "profile": "live",
-                "preview": True, "inference": True, "replay": True}
+                "preview": True, "inference": True, "replay": True, "neural_backend": "cpu"}
             assert client.get("/api/live/sources").json()["sources"] == []
             assert client.get("/api/live/status").json()["current"] is None
         assert calls == ["metadata-only", "metadata-only"]

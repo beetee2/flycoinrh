@@ -1,4 +1,31 @@
-# Active routing — SG01 Screen Gremlin candidate review
+# Active routing — GPU01 optional CUDA candidate; manual A/B next
+
+**GPU01 implementation and local qualification PASS. CPU remains the default.**
+Read the [GPU01 report](milestones/GPU01.md) and
+[live handoff](OBS-LIVE-HANDOFF.md). The user authorized this bounded GPU
+workstream; older GPU restrictions remain historical for this task.
+
+All 18 fixed CPU/GPU pairs and 18 GPU repeats matched exactly. Visible accelerated
+Chrome measured median live steps of **506 ms CPU / 95 ms CUDA** across 32 calls
+each. Observed draw-interval p95 worsened from **28 ms to 50 ms**; these are
+completed draw/DOM timings, not display FPS. Keep CPU as default pending the
+operator's manual OBS A/B and promotion decision. No character, decoder, physics,
+learning or presentation changes were made.
+
+Accounting is **337/1,024 automated**, **687 remaining**; GPU01 used **118/384**,
+with **266 unused**. P00 remains **144**. Capture, inference, validation browsers
+and owned services are stopped. Local affected regressions and dedicated CUDA
+checks passed; no new hosted run, remote push or deployment was performed.
+
+Run one launcher at a time: `./scripts/dev_sg01_live.sh --backend cpu` or
+`./scripts/dev_sg01_live.sh --backend cuda`. Both start idle at
+`http://127.0.0.1:5173/live`. Select the approved OBS source explicitly; recording
+remains disabled. **Stop here for manual comparison.** Historical SG01 product
+review and prior accepted operator feedback remain preserved below.
+
+---
+
+# Historical routing — SG01 Screen Gremlin candidate review
 
 **SG01 implementation and final affected regressions PASS.**
 Screen Gremlin is the default, with local Legacy comparison,

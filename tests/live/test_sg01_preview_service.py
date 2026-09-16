@@ -22,7 +22,7 @@ def test_sg01_explicit_synthetic_preview_and_inference_guard(tmp_path, monkeypat
         assert client.get("/api/live/status").json()["current"] is None
         assert client.get("/api/live/capabilities").json() == {
             "schema_version": "obs-capabilities-1", "profile": "art_review",
-            "preview": True, "inference": False, "replay": True}
+            "preview": True, "inference": False, "replay": True, "neural_backend": "none"}
         assert client.get("/api/live/replays").json()["recordings"] == []
         sources = client.get("/api/live/sources").json()["sources"]
         assert [(s["source_id"], s["evidence_kind"]) for s in sources] == [("fixture-pattern", "fixture")]

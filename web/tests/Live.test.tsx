@@ -20,7 +20,7 @@ function mockReads() {
   const fetcher = vi.fn().mockImplementation(async (path: string, init?: RequestInit) => {
     let value: unknown;
     if (path === '/health/live') value = sample('LiveHealth');
-    else if (path === '/api/live/capabilities') value = { schema_version: 'obs-capabilities-1', profile: 'live', preview: true, inference: true, replay: true };
+    else if (path === '/api/live/capabilities') value = { schema_version: 'obs-capabilities-1', profile: 'live', preview: true, inference: true, replay: true, neural_backend: 'cpu' };
     else if (path === '/api/live/config') value = sample('LiveConfig');
     else if (path === '/api/live/control') value = sample('ControlBootstrap');
     else if (path === '/api/live/sources') value = { schema_version: 'obs-sources-1', sources: [source] };
@@ -196,8 +196,17 @@ it('shows a previous failure and reason after reload without taking ownership', 
 });
 
 
-async function loadDownloadFixture(pending = false) {
+async function loadDownloadFixture(pending = false, backend?: 'cpu' | 'cuda') {
   const payload = structuredClone(recorded);
+  if (backend) Object.assign(payload.manifest.provenance, { neural_execution: {
+    backend: backend === 'cuda' ? 'cuda-torch-csr-v1' : 'cpu-numpy-csc-v1',
+    source: backend === 'cuda' ? 'flytrap/live/gpu.py' : 'flysim.py', source_sha256: 'a'.repeat(64),
+    upstream_revision: null, device: backend === 'cuda' ? 'cuda:0' : 'cpu', device_name: 'synthetic fixture',
+    dtype: 'float32', library_versions: { numpy: 'fixture' }, effective_configuration: {
+      batch_size: 1, steps: 100, dt_ms: 0.2, neural_state_mode: 'windowed_reset', gains: 'all-one',
+      learning_enabled: false, synaptic_accumulation: 'synthetic fixture',
+    },
+  } });
   for (const sample of payload.samples) sample.raw_action.dy = -0;
   for (const result of payload.results) { result.raw_action.dy = -0; result.output.dy = -0; }
   const text = JSON.stringify(payload).replaceAll('"dy":0', '"dy":-0.0');
@@ -297,7 +306,7 @@ it('discards pending display frames after a source mode change without showing s
 it('explains art review before any click, disables neural controls, and keeps Preview and replay available', async () => {
   const fetcher = mockReads(); const original = fetcher.getMockImplementation()!;
   fetcher.mockImplementation((path, init) => path === '/api/live/capabilities' ? Promise.resolve(new Response(JSON.stringify({
-    schema_version: 'obs-capabilities-1', profile: 'art_review', preview: true, inference: false, replay: true,
+    schema_version: 'obs-capabilities-1', profile: 'art_review', preview: true, inference: false, replay: true, neural_backend: 'none',
   }))) : original(path, init));
   render(<Live />); await enterLive();
   expect(screen.getByTestId('launch-profile')).toHaveTextContent('Art review — capture-only demo and saved replays.');
@@ -320,4 +329,29 @@ it('keeps safe synthetic source inference available when the server supports it'
   expect(source.backend).toBe('synthetic');
   fireEvent.click(screen.getByRole('button', { name: 'Start live flight' }));
   await waitFor(() => expect(fetcher.mock.calls.some(call => call[0] === '/api/live/sessions')).toBe(true));
+});
+
+
+it('shows the server-selected CUDA implementation while capture is idle', async () => {
+  const fetcher = mockReads();
+  const original = fetcher.getMockImplementation()!;
+  fetcher.mockImplementation(async (path: string, init?: RequestInit) => path === '/api/live/capabilities'
+    ? new Response(JSON.stringify({ schema_version: 'obs-capabilities-1', profile: 'live',
+        preview: true, inference: true, replay: true, neural_backend: 'cuda' }))
+    : original(path, init));
+  vi.stubGlobal('fetch', fetcher);
+  render(<Live />);
+  expect(await screen.findByTestId('neural-backend')).toHaveTextContent('CUDA · optional GPU implementation');
+  expect(fetcher.mock.calls.some(([path]) => path === '/api/live/sessions')).toBe(false);
+});
+
+
+it.each([
+  [undefined, 'Historical recording — backend descriptor unavailable'],
+  ['cpu', 'Recording neural backend: CPU · original NumPy implementation'],
+  ['cuda', 'Recording neural backend: CUDA · optional GPU implementation'],
+] as const)('identifies replay backend independently of the CPU server (%s)', async (backend, expected) => {
+  await loadDownloadFixture(false, backend);
+  expect(screen.getByTestId('neural-backend')).toHaveTextContent('Server neural backend: CPU');
+  expect(screen.getByTestId('recording-backend')).toHaveTextContent(expected);
 });

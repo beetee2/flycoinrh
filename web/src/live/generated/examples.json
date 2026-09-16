@@ -883,7 +883,8 @@
         "model_id": "fixture-model",
         "neural_state_mode": "windowed_reset",
         "gains": "all-one-float32",
-        "learning_enabled": false
+        "learning_enabled": false,
+        "neural_execution": null
       },
       "events_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
       "event_count": 0,
@@ -3033,7 +3034,8 @@
       "profile": "live",
       "preview": true,
       "inference": true,
-      "replay": true
+      "replay": true,
+      "neural_backend": "cpu"
     }
   },
   {
@@ -3133,7 +3135,8 @@
       "profile": "art_review",
       "preview": true,
       "inference": false,
-      "replay": true
+      "replay": true,
+      "neural_backend": "none"
     }
   },
   {
@@ -3145,7 +3148,8 @@
       "profile": "art_review",
       "preview": true,
       "inference": true,
-      "replay": true
+      "replay": true,
+      "neural_backend": "cpu"
     }
   },
   {
@@ -4944,7 +4948,8 @@
         "model_id": "fixture-model",
         "neural_state_mode": "windowed_reset",
         "gains": "all-one-float32",
-        "learning_enabled": false
+        "learning_enabled": false,
+        "neural_execution": null
       },
       "events_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
       "event_count": 0,
@@ -6955,7 +6960,8 @@
         "model_id": "fixture-model",
         "neural_state_mode": "windowed_reset",
         "gains": "all-one-float32",
-        "learning_enabled": false
+        "learning_enabled": false,
+        "neural_execution": null
       },
       "events_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
       "event_count": 0,
@@ -7047,7 +7053,8 @@
         "model_id": "fixture-model",
         "neural_state_mode": "windowed_reset",
         "gains": "all-one-float32",
-        "learning_enabled": false
+        "learning_enabled": false,
+        "neural_execution": null
       },
       "events_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
       "event_count": 0,
@@ -11348,6 +11355,7 @@
       "preview": true,
       "inference": true,
       "replay": true,
+      "neural_backend": "cpu",
       "unrecognized": "forbidden"
     }
   },
@@ -11360,7 +11368,8 @@
       "profile": "live",
       "preview": true,
       "inference": true,
-      "replay": true
+      "replay": true,
+      "neural_backend": "cpu"
     }
   },
   {
@@ -11551,7 +11560,8 @@
       "profile": "unknown",
       "preview": true,
       "inference": true,
-      "replay": true
+      "replay": true,
+      "neural_backend": "cpu"
     }
   },
   {
@@ -11563,7 +11573,8 @@
       "profile": "live",
       "preview": true,
       "inference": "false",
-      "replay": true
+      "replay": true,
+      "neural_backend": "cpu"
     }
   },
   {
@@ -15609,7 +15620,8 @@
         "model_id": "fixture-model",
         "neural_state_mode": "windowed_reset",
         "gains": "all-one-float32",
-        "learning_enabled": false
+        "learning_enabled": false,
+        "neural_execution": null
       },
       "events_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
       "event_count": 0,
@@ -15700,7 +15712,8 @@
         "model_id": "fixture-model",
         "neural_state_mode": "windowed_reset",
         "gains": "all-one-float32",
-        "learning_enabled": false
+        "learning_enabled": false,
+        "neural_execution": null
       },
       "events_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
       "event_count": 0,
@@ -15791,7 +15804,8 @@
         "model_id": "fixture-model",
         "neural_state_mode": "windowed_reset",
         "gains": "all-one-float32",
-        "learning_enabled": false
+        "learning_enabled": false,
+        "neural_execution": null
       },
       "events_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
       "event_count": 0,
@@ -15882,7 +15896,8 @@
         "model_id": "fixture-model",
         "neural_state_mode": "windowed_reset",
         "gains": "all-one-float32",
-        "learning_enabled": false
+        "learning_enabled": false,
+        "neural_execution": null
       },
       "events_sha256": "invalid",
       "event_count": 0,
@@ -15973,7 +15988,8 @@
         "model_id": "fixture-model",
         "neural_state_mode": "windowed_reset",
         "gains": "all-one-float32",
-        "learning_enabled": false
+        "learning_enabled": false,
+        "neural_execution": null
       },
       "events_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
       "event_count": 0,
@@ -16064,7 +16080,8 @@
         "model_id": "fixture-model",
         "neural_state_mode": "windowed_reset",
         "gains": "all-one-float32",
-        "learning_enabled": false
+        "learning_enabled": false,
+        "neural_execution": null
       },
       "events_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
       "event_count": 0,
@@ -16155,7 +16172,8 @@
         "model_id": "fixture-model",
         "neural_state_mode": "windowed_reset",
         "gains": "all-one-float32",
-        "learning_enabled": false
+        "learning_enabled": false,
+        "neural_execution": null
       },
       "events_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
       "event_count": 0,
@@ -16246,7 +16264,8 @@
         "model_id": "fixture-model",
         "neural_state_mode": "windowed_reset",
         "gains": "all-one-float32",
-        "learning_enabled": false
+        "learning_enabled": false,
+        "neural_execution": null
       },
       "events_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
       "event_count": 0,

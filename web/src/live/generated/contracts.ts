@@ -1337,9 +1337,23 @@ export type PythonVersion = string;
 export type NumpyVersion = string;
 export type ScipyVersion = string;
 export type ModelId = string;
+export type Backend1 = "cpu-numpy-csc-v1" | "cuda-torch-csr-v1";
+export type Source = string;
+export type SourceSha256 = string;
+export type UpstreamRevision = string | null;
+export type Device = string;
+export type DeviceName = string;
+export type Dtype = "float32";
+export type BatchSize = 1;
+export type Steps = 100;
+export type DtMs = 0.2;
 export type NeuralStateMode1 = "windowed_reset";
-export type Gains = "all-one-float32";
+export type Gains = "all-one";
 export type LearningEnabled1 = false;
+export type SynapticAccumulation = string;
+export type NeuralStateMode2 = "windowed_reset";
+export type Gains1 = "all-one-float32";
+export type LearningEnabled2 = false;
 export type EventsSha256 = string;
 export type EventCount = number;
 export type EventsBytes = number;
@@ -1459,9 +1473,37 @@ export interface Provenance {
   numpy_version: NumpyVersion;
   scipy_version: ScipyVersion;
   model_id: ModelId;
+  neural_execution?: NeuralExecution | null;
+  neural_state_mode: NeuralStateMode2;
+  gains: Gains1;
+  learning_enabled: LearningEnabled2;
+}
+export interface NeuralExecution {
+  backend: Backend1;
+  source: Source;
+  source_sha256: SourceSha256;
+  upstream_revision?: UpstreamRevision;
+  device: Device;
+  device_name: DeviceName;
+  dtype: Dtype;
+  library_versions: LibraryVersions;
+  effective_configuration: NeuralExecutionConfiguration;
+}
+export interface LibraryVersions {
+  /**
+   * This interface was referenced by `LibraryVersions`'s JSON-Schema definition
+   * via the `patternProperty` "^[^\x00-\x1f\x7f]+$".
+   */
+  [k: string]: string;
+}
+export interface NeuralExecutionConfiguration {
+  batch_size: BatchSize;
+  steps: Steps;
+  dt_ms: DtMs;
   neural_state_mode: NeuralStateMode1;
   gains: Gains;
   learning_enabled: LearningEnabled1;
+  synaptic_accumulation: SynapticAccumulation;
 }
 
 }
@@ -3490,6 +3532,7 @@ export type Profile = "live" | "art_review";
 export type Preview = boolean;
 export type Inference = boolean;
 export type Replay = boolean;
+export type NeuralBackend = "cpu" | "cuda" | "none";
 
 export interface ServiceCapabilities {
   schema_version?: SchemaVersion;
@@ -3497,6 +3540,7 @@ export interface ServiceCapabilities {
   preview: Preview;
   inference: Inference;
   replay: Replay;
+  neural_backend?: NeuralBackend;
 }
 
 }
@@ -3660,9 +3704,23 @@ export type PythonVersion = string;
 export type NumpyVersion = string;
 export type ScipyVersion = string;
 export type ModelId = string;
+export type Backend1 = "cpu-numpy-csc-v1" | "cuda-torch-csr-v1";
+export type Source = string;
+export type SourceSha256 = string;
+export type UpstreamRevision = string | null;
+export type Device = string;
+export type DeviceName = string;
+export type Dtype = "float32";
+export type BatchSize = 1;
+export type Steps = 100;
+export type DtMs = 0.2;
 export type NeuralStateMode1 = "windowed_reset";
-export type Gains = "all-one-float32";
+export type Gains = "all-one";
 export type LearningEnabled1 = false;
+export type SynapticAccumulation = string;
+export type NeuralStateMode2 = "windowed_reset";
+export type Gains1 = "all-one-float32";
+export type LearningEnabled2 = false;
 export type EventsSha256 = string;
 export type EventCount = number;
 export type EventsBytes = number;
@@ -4218,7 +4276,7 @@ export type ModelId1 = string;
 export type StepIndex1 = number;
 export type CompletedMonotonicMs = number;
 export type NeuralMs = 20;
-export type NeuralStateMode2 = "windowed_reset";
+export type NeuralStateMode3 = "windowed_reset";
 export type SteerL = number;
 export type SteerR = number;
 export type FwdL = number;
@@ -4414,9 +4472,37 @@ export interface Provenance {
   numpy_version: NumpyVersion;
   scipy_version: ScipyVersion;
   model_id: ModelId;
+  neural_execution?: NeuralExecution | null;
+  neural_state_mode: NeuralStateMode2;
+  gains: Gains1;
+  learning_enabled: LearningEnabled2;
+}
+export interface NeuralExecution {
+  backend: Backend1;
+  source: Source;
+  source_sha256: SourceSha256;
+  upstream_revision?: UpstreamRevision;
+  device: Device;
+  device_name: DeviceName;
+  dtype: Dtype;
+  library_versions: LibraryVersions;
+  effective_configuration: NeuralExecutionConfiguration;
+}
+export interface LibraryVersions {
+  /**
+   * This interface was referenced by `LibraryVersions`'s JSON-Schema definition
+   * via the `patternProperty` "^[^\x00-\x1f\x7f]+$".
+   */
+  [k: string]: string;
+}
+export interface NeuralExecutionConfiguration {
+  batch_size: BatchSize;
+  steps: Steps;
+  dt_ms: DtMs;
   neural_state_mode: NeuralStateMode1;
   gains: Gains;
   learning_enabled: LearningEnabled1;
+  synaptic_accumulation: SynapticAccumulation;
 }
 export interface InputEvent {
   kind?: Kind;
@@ -4450,7 +4536,7 @@ export interface NeuralSample {
   step_index: StepIndex1;
   completed_monotonic_ms: CompletedMonotonicMs;
   neural_ms: NeuralMs;
-  neural_state_mode: NeuralStateMode2;
+  neural_state_mode: NeuralStateMode3;
   motor_rates_hz: MotorRates;
   raw_action: RawAction;
 }
@@ -4654,9 +4740,23 @@ export type PythonVersion = string;
 export type NumpyVersion = string;
 export type ScipyVersion = string;
 export type ModelId = string;
+export type Backend1 = "cpu-numpy-csc-v1" | "cuda-torch-csr-v1";
+export type Source = string;
+export type SourceSha256 = string;
+export type UpstreamRevision = string | null;
+export type Device = string;
+export type DeviceName = string;
+export type Dtype = "float32";
+export type BatchSize = 1;
+export type Steps = 100;
+export type DtMs = 0.2;
 export type NeuralStateMode1 = "windowed_reset";
-export type Gains = "all-one-float32";
+export type Gains = "all-one";
 export type LearningEnabled1 = false;
+export type SynapticAccumulation = string;
+export type NeuralStateMode2 = "windowed_reset";
+export type Gains1 = "all-one-float32";
+export type LearningEnabled2 = false;
 export type EventsSha256 = string;
 export type EventCount = number;
 export type EventsBytes = number;
@@ -4792,9 +4892,37 @@ export interface Provenance {
   numpy_version: NumpyVersion;
   scipy_version: ScipyVersion;
   model_id: ModelId;
+  neural_execution?: NeuralExecution | null;
+  neural_state_mode: NeuralStateMode2;
+  gains: Gains1;
+  learning_enabled: LearningEnabled2;
+}
+export interface NeuralExecution {
+  backend: Backend1;
+  source: Source;
+  source_sha256: SourceSha256;
+  upstream_revision?: UpstreamRevision;
+  device: Device;
+  device_name: DeviceName;
+  dtype: Dtype;
+  library_versions: LibraryVersions;
+  effective_configuration: NeuralExecutionConfiguration;
+}
+export interface LibraryVersions {
+  /**
+   * This interface was referenced by `LibraryVersions`'s JSON-Schema definition
+   * via the `patternProperty` "^[^\x00-\x1f\x7f]+$".
+   */
+  [k: string]: string;
+}
+export interface NeuralExecutionConfiguration {
+  batch_size: BatchSize;
+  steps: Steps;
+  dt_ms: DtMs;
   neural_state_mode: NeuralStateMode1;
   gains: Gains;
   learning_enabled: LearningEnabled1;
+  synaptic_accumulation: SynapticAccumulation;
 }
 
 }

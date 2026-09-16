@@ -38,7 +38,8 @@ def corpus():
                                "checkpoint_sha256", "model_source_sha256", "model_config_sha256"], "0"*64)
     provenance.update(source_head="0"*40, backend_version="synthetic", python_version="test",
                       numpy_version="test", scipy_version="test", model_id="fixture-model",
-                      neural_state_mode="windowed_reset", gains="all-one-float32", learning_enabled=False)
+                      neural_state_mode="windowed_reset", gains="all-one-float32", learning_enabled=False,
+                      neural_execution=None)
     replay = dict(schema_version="obs-replay-1", **identity, state="partial", config={**config, "recording": True},
                   source=source, initial_flight=flight, provenance=provenance, events_sha256="0"*64,
                   event_count=0, events_bytes=0, events_file="events.jsonl")
@@ -84,7 +85,7 @@ def corpus():
              for name, value in good.items()]
     cases.append(dict(name="art review capture and replay capabilities", contract="ServiceCapabilities",
         valid=True, value=ServiceCapabilities(profile="art_review", preview=True,
-            inference=False, replay=True).model_dump()))
+            inference=False, replay=True, neural_backend="none").model_dump()))
     cases.append(dict(name="art review cannot advertise inference", contract="ServiceCapabilities",
         valid=False, value={**good["ServiceCapabilities"], "profile": "art_review"}))
     for code, message in ERROR_MESSAGES.items():

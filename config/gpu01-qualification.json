@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "engine_sha256": "7bc7ed15251411f8d690588f80634be8caf98a7adf8d281e0b1b5348e1b5d69e",
+  "validated_full_source_sha256": "f5571a04f8e56fcaed072aa1a370a565f3a2fcaaa1fa7e2d537216655f52032c",
+  "report_sha256": "c3df2ada7f399b2cf53f85be32e18299ca38c120139d6093b3b95e4f21d86a2a",
+  "plan_sha256": "1a6fdbd63824f1e6e3c1cbb2540cfbd6ecb077617238c4ba183e1ea53a4e4f91",
+  "packages": {
+    "torch": "2.10.0+cu128",
+    "numpy": "2.4.2",
+    "scipy": "1.17.1",
+    "nvidia-cusparse-cu12": "12.5.8.93",
+    "nvidia-cuda-runtime-cu12": "12.8.90",
+    "nvidia-nvjitlink-cu12": "12.8.93"
+  },
+  "device_name": "NVIDIA GeForce RTX 3080",
+  "cuda_runtime": "12.8",
+  "graph_sha256": "4279e2222475b986a096634ea5f6ac9518d0f8feff3f3c2ed52ad1139d3cd2ed",
+  "checkpoint_sha256": "adfa5cc48f476d99b39ac61779143f5f22e88f5940ebf0226a143c5585410ccc",
+  "scope": "18 fixed safe input/seed pairs, 18 exact GPU repeats; local candidate, CPU remains default",
+  "python": "3.14.7",
+  "driver": "610.57.04"
+}

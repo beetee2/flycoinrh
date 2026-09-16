@@ -54,10 +54,10 @@ def safe_source_metadata():
 
 
 def neural_factory(config, *, repository_root, source, expected_device, recording_store,
-                   execution_purpose="automated"):
+                   execution_purpose="automated", backend="cpu"):
     from .session import NeuralSession
     return NeuralSession(config, purpose=execution_purpose, repository_root=repository_root,
-                         expected_device=expected_device, recording_store=recording_store, source=source)
+                         expected_device=expected_device, recording_store=recording_store, source=source, backend=backend)
 
 
 class PreviewSession:
@@ -173,15 +173,24 @@ class LiveService:
 
     def __init__(self, *, repository_root=None, session_factory=None,
                  source_provider=source_metadata, capture_factory=None, recording_store=None,
-                 execution_purpose="automated", profile="live"):
+                 execution_purpose="automated", profile="live", backend="cpu"):
         from pathlib import Path
         self.root = Path(repository_root) if repository_root is not None else Path(__file__).resolve().parents[2]
         if execution_purpose not in {"automated", "human"}:
             raise ValueError("execution purpose must be configured by the server")
+        if backend not in {"cpu", "cuda"}:
+            raise ValueError("neural backend must be configured by the server")
+        if backend == "cuda":
+            if profile != "live":
+                raise ValueError("CUDA requires the live profile")
+            from .gpu import require_qualified_gpu
+            require_qualified_gpu()
+        self.backend = backend
         self.execution_purpose = execution_purpose
         self._capabilities = ServiceCapabilities(profile=profile, preview=True,
-            inference=profile == "live", replay=True)
-        self.session_factory = session_factory or partial(neural_factory, execution_purpose=execution_purpose)
+            inference=profile == "live", replay=True,
+            neural_backend=backend if profile == "live" else "none")
+        self.session_factory = session_factory or partial(neural_factory, execution_purpose=execution_purpose, backend=backend)
         self.source_provider = source_provider
         self.capture_factory = capture_factory
         self.recording_store = recording_store

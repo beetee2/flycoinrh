@@ -38,6 +38,8 @@ def main(argv: list[str] | None = None) -> int:
                        help="Offer only deterministic safe imagery to the actual neural model")
     serve.add_argument("--execution-purpose", choices=("automated", "human"), default="automated",
                        help="Server accounting policy; automated includes every API/browser test call")
+    serve.add_argument("--backend", choices=("cpu", "cuda"), default="cpu",
+                       help="Explicit neural implementation; CUDA requires completed qualification")
     args = parser.parse_args(argv)
     if args.command in ("inspect-source", "preview"):
         from dataclasses import asdict
@@ -69,7 +71,7 @@ def main(argv: list[str] | None = None) -> int:
         import uvicorn
         from .api import create_live_app
         from .service import LiveService, safe_source_metadata, source_metadata
-        service = LiveService(execution_purpose=args.execution_purpose,
+        service = LiveService(execution_purpose=args.execution_purpose, backend=args.backend,
                               source_provider=safe_source_metadata if args.safe_source else source_metadata)
         uvicorn.run(create_live_app(service=service), host="127.0.0.1", port=args.port,
                     workers=1, limit_concurrency=16, timeout_keep_alive=5)

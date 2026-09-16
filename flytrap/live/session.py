@@ -28,7 +28,7 @@ TERMINAL = {"stopped", "source_lost", "failed", "limit_reached"}
 class NeuralSession:
     def __init__(self, config: SessionConfig, *, purpose: str, repository_root=REPOSITORY,
                  files=None, expected_device=None, monitor=None, capture_factory=Capture,
-                 worker_command=None, recording_store=None, source=None):
+                 worker_command=None, recording_store=None, source=None, backend="cpu"):
         self.config = SessionConfig.model_validate(config.model_dump())
         if self.config.recording and (recording_store is None or source is None):
             raise ValueError("recording requires a private store and explicit source metadata")
@@ -48,6 +48,9 @@ class NeuralSession:
                 raise ValueError("synthetic source must be labeled fixture")
         elif expected_device is None or self.config.evidence_kind != "real":
             raise ValueError("real session requires operator-confirmed source identity")
+        if backend not in {"cpu", "cuda"}:
+            raise ValueError("unknown neural backend")
+        self.backend = backend
         self.purpose = purpose
         self.session_id, self.generation = uuid.uuid4().hex, 1
         self.capture = capture_factory(source_id=config.source_id, session_id=self.session_id,
@@ -213,6 +216,7 @@ class NeuralSession:
                                                 "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1"})
             parent.settimeout(.05)
             send_packet(parent, {"config": self.config.model_dump(mode="json"), "purpose": self.purpose,
+                                 "backend": self.backend,
                                  "repository_root": str(self.root), "session_id": self.session_id,
                                  "generation": self.generation, "lock_fds": self._ownership.filenos,
                                  "files": {k: str(v) if isinstance(v, Path) else v for k, v in self.files.items()}})
@@ -254,6 +258,8 @@ class NeuralSession:
                 return
             if kind == "ready" and self._ready_time is None:
                 self._provenance = payload["provenance"]
+                if self.backend == "cuda" and self._provenance.get("neural_execution", {}).get("backend") != "cuda-torch-csr-v1":
+                    raise ValueError("CUDA worker returned an incorrect execution identity")
                 if self._recorder:
                     from .recording import provenance_from_worker
                     backend = "synthetic-fixture-v1"

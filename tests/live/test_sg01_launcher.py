@@ -33,7 +33,7 @@ def test_live_profile_uses_normal_metadata_and_human_neural_path(monkeypatch):
         assert live.session_factory("fixture-config", repository_root="fixture-root", source="fixture-source",
             expected_device=None, recording_store=None) is marker
         assert calls == [("fixture-config", dict(purpose="human", repository_root="fixture-root",
-            expected_device=None, recording_store=None, source="fixture-source"))]
+            expected_device=None, recording_store=None, source="fixture-source", backend="cpu"))]
 
 
 @pytest.mark.parametrize("conflict", ["api", "frontend"])
@@ -144,7 +144,8 @@ def test_actual_launcher_proxy_idle_reload_and_control_origin(profile, tmp_path)
         capabilities = client.get("/api/live/capabilities").json()
         assert capabilities == {"schema_version": "obs-capabilities-1",
             "profile": "art_review" if profile == "review" else "live",
-            "preview": True, "replay": True, "inference": profile == "live"}
+            "preview": True, "replay": True, "inference": profile == "live",
+            "neural_backend": "cpu" if profile == "live" else "none"}
         assert client.get("/api/live/config").json()["execution_purpose"] == (
             "automated" if profile == "review" else "human")
         sources = client.get("/api/live/sources").json()["sources"]
