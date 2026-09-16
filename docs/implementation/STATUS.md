@@ -6,10 +6,16 @@ original procedural Jam, an owned ephemeral JPEG backdrop, and clean landscape/
 portrait compositions. Read the [SG01 report](milestones/SG01.md) and
 [active handoff](OBS-LIVE-HANDOFF.md) for final validation and review media.
 
-**Ground contact works: operator confirmation recorded. Product approval remains
-PENDING.** SG01 real-OBS validation is NOT_RUN; the operator will approve and
-perform that smoke test after reviewing this candidate. No new full-connectome
-calls, desktop capture, decoder/model/physics changes or remote action.
+**Manual OBS smoke PASS / operator-confirmed** using the repaired live launcher
+at revision `05dbb75744352e6767a1408af4874ebea6c9936e` (recorded 2026-09-16).
+The repaired live workflow works. Agent-executed real OBS smoke remains NOT_RUN;
+prior ground-contact confirmation is preserved. Character, motion appeal and
+overall product approval remain PENDING; public release is not approved.
+
+**Hosted CI PASS** for that exact revision:
+[run 35132375273](https://github.com/beetee2/flycoinrh/actions/runs/35132375273)
+completed with `success`, verified 2026-09-16 at 18:14:22 UTC. The `foundation`
+job and all 16 reported steps succeeded. No new validation suite was run locally.
 
 **Launch-profile repair PASS.** `./scripts/dev_sg01.sh` is **Art review — capture-only demo
 and saved replays.** Its server-authoritative capabilities disable neural Start
@@ -18,10 +24,11 @@ human mode and matching frontend proxy. Both start idle at
 **http://127.0.0.1:5173/live**, require explicit source selection/actions, and refuse
 occupied ports. See the [operator handoff](OBS-LIVE-HANDOFF.md) and
 [repair evidence](milestones/SG01.md#launch-profile-and-unavailable-control-repair).
-Zero new full-model calls or desktop capture; actual OBS smoke is the operator's
-next step. SG01
-supersedes earlier presentation stops for this task only. Historical reports
-and evidence remain below.
+The manual workflow smoke is complete. This follow-up is documentation/status
+only: no new model calls, desktop capture, recording, application changes, push
+or milestone. Stop after this update; product review remains pending. SG01
+supersedes earlier presentation stops for this task only. Historical reports and
+evidence remain below.
 
 ---
 

@@ -1,8 +1,11 @@
 # SG01 — Screen Gremlin candidate
 
 The default is now **Screen Gremlin**; choose **Legacy** locally for comparison.
-Your ground-contact confirmation is recorded as operator evidence. Character,
-composition, real-motion appeal and overall product approval remain yours.
+Your ground-contact confirmation is recorded as operator evidence. Your manual
+OBS smoke test using the repaired live launcher also **PASSED**, confirmed at
+revision `05dbb75744352e6767a1408af4874ebea6c9936e` (recorded 2026-09-16).
+This confirms that the repaired live workflow works. It does not approve the
+character, motion appeal, overall product or public release.
 [SG01 report and final evidence](milestones/SG01.md).
 
 Final checks PASS: 679 live Python, 305 live UI/contracts, 20 live fixture browsers,
@@ -15,7 +18,15 @@ portrait turn, Legacy comparison and performance JSON.
 Launch-profile repair **PASS**: 727 live Python, 350 live UI/contracts and 20
 live desktop/mobile browser tests, plus lab regressions and the dedicated SG01
 proxy checks. All 155 protected identities and 3,801 historical evidence files
-remain unchanged. Zero new full-model calls or desktop capture.
+remained unchanged during agent validation, which made zero new full-model calls
+and performed no desktop capture. These are historical agent results, separate
+from your subsequent manual smoke confirmation.
+
+Hosted CI **PASS** for `05dbb75744352e6767a1408af4874ebea6c9936e`:
+[run 35132375273](https://github.com/beetee2/flycoinrh/actions/runs/35132375273)
+is `completed` / `success`, verified 2026-09-16 at 18:14:22 UTC. The `foundation`
+job and all 16 reported steps succeeded. This is the hosted result; the local
+validation suite was not repeated for this documentation update.
 
 Choose one launcher from `/home/kernel_sanders/dev/flycoinrh`:
 
@@ -39,7 +50,7 @@ reload. Stop the launcher with Ctrl+C before switching profiles.
 - **Live flight.** `dev_sg01_live.sh` uses the normal live API on 8767 with
   server-controlled **human** execution purpose, normal device metadata and the
   existing neural-session factory. Explicitly select your approved OBS source,
-  Preview if desired, then Start for your manual smoke test. OBS recording stays
+  Preview if desired, then Start for manual use. OBS recording stays
   disabled. Start still requires ready graphics and respects existing ownership,
   session limits and accounting. A synthetic source on the ordinary
   `--safe-source` API remains inference-capable; source type is independent of
@@ -58,14 +69,17 @@ confirm its capabilities, controls stay disabled; check the launcher and reload.
 After connection/source loss, use the explanation, correct the source, and Start
 explicitly. No automatic recovery starts capture or inference.
 
-SG01 real OBS is **NOT_RUN by the repair agent**; you will perform the actual
-smoke test manually. No OBS configuration changes were made. The focused
+SG01 real OBS smoke is **PASS / operator-confirmed**, and remains **NOT_RUN by
+the repair agent**. The manual smoke is complete. The focused
 [launch-profile repair report](milestones/SG01.md#launch-profile-and-unavailable-control-repair)
 records fixture tests and metadata-only checks separately from prior evidence.
 
-Capture and inference are stopped at handoff. Historical model accounting and
-recording restrictions are preserved. Do not run another milestone or neural
-experiment as part of this review. Older handoffs remain historical below.
+The repair agent reported capture and inference stopped at its handoff; current
+service state and model accounting were not rechecked for this documentation
+update. No new model calls, desktop capture, recording, application changes, push
+or milestone were performed. Character, motion appeal and overall product review
+remain pending; public release remains unapproved. Stop after this update.
+Older handoffs remain historical below.
 
 ---
 
