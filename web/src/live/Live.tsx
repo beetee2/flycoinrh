@@ -1,8 +1,8 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 const FlightStage = lazy(() => import('./FlightStage').then(module => ({ default: module.FlightStage })));
 import { parseLiveContract } from './contracts';
-import type { ApiSnapshot, FlightSnapshot, LiveConfig, ReplayList, ReplayPayload, SourceCapability, SourcePreview } from './contracts';
-import { SessionClient } from './session-client';
+import type { ApiSnapshot, FlightSnapshot, LiveConfig, ReplayList, ReplayPayload, SourceCapability, SourcePreview, DisplayFrame } from './contracts';
+import { SessionClient, DisplayBackpressureError } from './session-client';
 import type { StageMode } from './FlightStage';
 
 const activeStates = new Set(['previewing', 'starting', 'running', 'stopping']);
@@ -59,6 +59,10 @@ export function Live() {
   const [seed, setSeed] = useState(0);
   const [record, setRecord] = useState(false);
   const [inspect, setInspect] = useState(false);
+  const [display, setDisplay] = useState<DisplayFrame | null>(null);
+  const [displayUrl, setDisplayUrl] = useState<string | null>(null);
+  const [displayReceivedAt, setDisplayReceivedAt] = useState(0);
+  const [seekSerial, setSeekSerial] = useState(0);
   const [latest, setLatest] = useState<SourcePreview | null>(null);
   const [recordings, setRecordings] = useState<ReplayList['recordings']>([]);
   const [recordingId, setRecordingId] = useState('');
@@ -89,7 +93,7 @@ export function Live() {
       },
       onNeutral: reason => {
         if (!mounted.current) return;
-        setNeutral(reason); setRenderHz(0);
+        setNeutral(reason); setRenderHz(0); setLatest(null); setDisplay(null);
         if (reason !== 'Session is terminal.') setFreezePose(true);
       },
     });
@@ -137,6 +141,41 @@ export function Live() {
     return () => { valid = false; clearTimeout(timer); };
   }, [inspect, active, snapshot?.status.session_id, snapshot?.status.generation]);
 
+  // Presentation has its own paced, capacity-one reader. Inspector state does not control it.
+  useEffect(() => {
+    setDisplay(null);
+    if (!active || !snapshot || (mode !== 'live' && mode !== 'preview')) return;
+    const target = snapshot.status;
+    const controller = new AbortController();
+    let valid = true;
+    let lastSequence = -1;
+    let timer: ReturnType<typeof setTimeout>;
+    const poll = async () => {
+      try {
+        const reply = await client.current!.displayFrame(target.session_id, target.generation, controller.signal);
+        if (valid) {
+          if (!reply.latest || !activeStates.has(reply.status.state)) setDisplay(null);
+          else if (reply.latest.frame.sequence > lastSequence) {
+            lastSequence = reply.latest.frame.sequence; setDisplay(reply.latest); setDisplayReceivedAt(performance.now());
+          }
+        }
+      } catch (cause) {
+        if (valid && !(cause instanceof DisplayBackpressureError)) { setDisplay(null); client.current?.stop(); setError(message(cause)); }
+      }
+      if (valid) timer = setTimeout(() => { void poll(); }, 70);
+    };
+    void poll();
+    return () => { valid = false; controller.abort(); clearTimeout(timer); };
+  }, [active, mode, snapshot?.status.session_id, snapshot?.status.generation]);
+
+  useEffect(() => {
+    if (!display || !active) { setDisplayUrl(null); return; }
+    const bytes = Uint8Array.from(atob(display.jpeg_base64), c => c.charCodeAt(0));
+    const url = URL.createObjectURL(new Blob([bytes], { type: 'image/jpeg' }));
+    setDisplayUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [display, active]);
+
   // Terminal recording publication may finish after resources have been reaped.
   useEffect(() => {
     if (!snapshot || active || !neutral) return;
@@ -154,10 +193,10 @@ export function Live() {
 
   function switchMode(next: StageMode) {
     action.current++; client.current?.stop(); setBusy(false); setReplayPlaying(false); setMode(next);
-    setError(null); setLatest(null); setRecord(false); setNeutral(null); setSnapshot(null); setFreezePose(false);
+    setError(null); setLatest(null); setDisplay(null); setRecord(false); setNeutral(null); setSnapshot(null); setFreezePose(false);
   }
   function stop() {
-    action.current++; client.current?.stop(); setReplayPlaying(false); setBusy(false); setRenderHz(0);
+    action.current++; client.current?.stop(); setReplayPlaying(false); setBusy(false); setRenderHz(0); setDisplay(null); setLatest(null);
   }
   async function start(preview: boolean) {
     if (!selected || !client.current || busy) return;
@@ -165,7 +204,7 @@ export function Live() {
       setError('Use a duration from 1 to 120 seconds, 1 to 512 model calls, and an integer seed from 0 to 4294967295.'); return;
     }
     const serial = ++action.current;
-    setBusy(true); setError(null); setNeutral(null); setLatest(null); setSnapshot(null); setFreezePose(false);
+    setBusy(true); setError(null); setNeutral(null); setLatest(null); setDisplay(null); setSnapshot(null); setFreezePose(false);
     setMode(preview ? 'preview' : 'live'); setReplayPlaying(false);
     try {
       await client.current.inspect(selected.source_id);
@@ -201,7 +240,7 @@ export function Live() {
       const state = await client.current!.seek(loadedRecordingId, tick);
       if (serial !== action.current) return;
       if (state.snapshot.session_id !== replay.manifest.session_id || state.snapshot.generation !== replay.manifest.generation || state.snapshot.tick !== tick) throw new Error('Foreign replay seek state.');
-      setReplayTick(tick); setReplayPose(state.snapshot);
+      setReplayTick(tick); setReplayPose(state.snapshot); setSeekSerial(value => value + 1);
     } catch (cause) { if (serial === action.current) setError(message(cause)); }
   }
   useEffect(() => {
@@ -242,25 +281,24 @@ export function Live() {
   const pose = mode === 'replay' ? replayPose : snapshot?.flight ?? null;
   const age = (value: number | null | undefined) => value == null ? 'Unknown' : `${Math.round(value + (active ? Math.max(0, clock - receivedAt) : 0))} ms`;
   const status = mode === 'replay' ? replay ? `${replayPlaying ? 'Playing' : 'Paused'} · recorded playback` : 'Choose a recording' : neutral ?? snapshot?.status.state ?? (config ? 'Idle · local service available' : 'Checking local service…');
-  return <div className="shell">
-    <header className="masthead"><a className="wordmark" href="/live">FLYJAM <span>LIVE</span></a><span className="edition">LOCAL · OBS05</span></header>
+  return <div className="shell flyjam-shell">
+    <header className="masthead"><a className="wordmark" href="/live">FLYJAM <span>SCREEN GREMLIN</span></a><span className="edition">LOCAL / SG01</span></header>
     <main>
-      <section className="intro"><p className="eyebrow">OBS TO FLIGHT</p><h1>A fly, in open air.</h1>
-        <p className="lede">Choose a source, inspect its input, then start a bounded neural flight session.</p></section>
+      <section className="intro"><p className="eyebrow">MEET YOUR SCREEN GREMLIN</p><h1>Your screen.<br />One very small problem.</h1>
+        <p className="lede">A simulated fly connectome drives the motion. We designed the body and the mapping.</p></section>
       <nav className="mode-controls" aria-label="Flight experience">
         <button aria-pressed={mode === 'synthetic'} onClick={() => switchMode('synthetic')}>Synthetic demonstration</button>
         <button aria-pressed={mode === 'live' || mode === 'preview'} onClick={() => switchMode('live')}>Live source</button>
         <button aria-pressed={mode === 'replay'} onClick={() => { switchMode('replay'); void refreshRecordings(); }}>Recorded playback</button>
       </nav>
-      <Suspense fallback={<p>Loading flight stage…</p>}><FlightStage mode={mode} modelMode={snapshot?.model_mode ?? 'none'} snapshot={pose} motionAllowed={motionAllowed} freezePose={freezePose}
-        onGraphicsReady={setGraphicsReady} onRenderingRate={setRenderHz} onGraphicsFailure={() => { stop(); setNeutral('Graphics unavailable · retry graphics, then explicitly Start.'); }} /></Suspense>
+      <div className="session-strip"><span>{active ? `Active · ${snapshot?.status.state}` : mode === 'synthetic' ? 'Local synthetic demonstration · no capture or inference' : 'Local session controls'}</span></div>
       <section className="status-card" aria-labelledby="live-status-title">
         <h2 id="live-status-title">Session controls</h2>
         <p role="status" data-testid="session-status" className="availability">{status}</p>
         {error && <div role="alert" className="error">{error}</div>}
         {(mode === 'live' || mode === 'preview') && <>
           <div className="session-fields">
-            <label>Source<select value={sourceId} disabled={active || busy} onChange={event => { setSourceId(event.target.value); setRecord(false); setLatest(null); setSnapshot(null); setNeutral(null); }}><option value="">Explicit selection required</option>
+            <label>Source<select value={sourceId} disabled={active || busy} onChange={event => { setSourceId(event.target.value); setRecord(false); setLatest(null); setDisplay(null); setSnapshot(null); setNeutral(null); }}><option value="">Explicit selection required</option>
               {sources.map(source => <option key={source.source_id} value={source.source_id}>{source.name} · {source.source_id}</option>)}</select></label>
             <label>Session duration (seconds)<input type="number" min="1" max="120" value={duration} disabled={active || busy} onChange={event => setDuration(Number(event.target.value))} /></label>
             <label>Maximum model calls<input type="number" min="1" max="512" value={calls} disabled={active || busy} onChange={event => setCalls(Number(event.target.value))} /></label>
@@ -285,7 +323,12 @@ export function Live() {
           <button disabled={!replay} onClick={download}>Download recording</button>
           {replay && <p>Loaded recording: <strong data-testid="loaded-recording-id">{loadedRecordingId}</strong> · session {replay.manifest.session_id}. Playback performs no capture or inference.</p>}
         </div>}
-        <dl className="facts">
+      </section>
+      <Suspense fallback={<p>Loading flight stage…</p>}><FlightStage mode={mode} modelMode={snapshot?.model_mode ?? 'none'} snapshot={pose} motionAllowed={motionAllowed} freezePose={freezePose}
+        backdropUrl={active && display && display.receipt_age_ms + Math.max(0, clock - displayReceivedAt) < 2000 ? displayUrl : null} backdropLabel={active ? display ? `${display.frame.evidence_kind === 'fixture' ? 'SYNTHETIC SELECTED SOURCE' : 'SELECTED SOURCE'} · ${display.width} × ${display.height}` : 'Waiting for selected source display' : 'Source unavailable / stopped'} sessionActive={active || busy} onStop={stop} historyKey={`${mode}:${pose?.session_id ?? ''}:${pose?.generation ?? ''}:${seekSerial}`}
+        onGraphicsReady={setGraphicsReady} onRenderingRate={setRenderHz} onGraphicsFailure={() => { stop(); setNeutral('Graphics unavailable · retry graphics, then explicitly Start.'); }} /></Suspense>
+      <section className="status-card technical-card">
+        <details className="session-inspector"><summary>Session details & input inspector</summary><dl className="facts">
           <div><dt>Capture rate</dt><dd data-testid="capture-hz">{active ? (snapshot?.capture_hz ?? 0).toFixed(1) : '0.0'} Hz</dd></div>
           <div><dt>Neural update rate</dt><dd data-testid="neural-hz">{active ? (snapshot?.model_hz ?? 0).toFixed(2) : '0.00'} Hz</dd></div>
           <div><dt>Rendering rate</dt><dd data-testid="rendering-hz">{renderHz.toFixed(1)} Hz</dd></div>
@@ -301,6 +344,7 @@ export function Live() {
         </dl>
         <label className="inspection-toggle"><input type="checkbox" checked={inspect} onChange={event => setInspect(event.target.checked)} />Inspect input</label>
         {inspect && <section className="input-inspection" aria-label="Input inspection">
+          <div className="display-identity"><h3>Presentation backdrop · independent timing</h3><p data-testid="display-frame-id">{display ? `${display.frame.source_id} / ${display.frame.session_id} / ${display.frame.generation} / ${display.frame.sequence}` : 'No active display frame'}</p><p>Display receipt age: {display ? `${Math.round(display.receipt_age_ms + Math.max(0, clock - displayReceivedAt))} ms` : 'unavailable'}. It may be newer than the last neural response.</p></div>
           <div><h3>Newest source preview</h3><p data-testid="source-preview-id">{latest ? `${latest.frame.source_id} / ${latest.frame.session_id} / ${latest.frame.generation} / ${latest.frame.sequence}` : 'No source preview'}</p>
             {latest && <><SourceThumbnail source={latest} /><p>Processed newest frame · 16×16</p><Pixels bytes={latest.observation_u8} label="Newest processed source frame" /></>}<output data-testid="source-preview-bytes" className="bytes-evidence">{JSON.stringify(latest?.observation_u8 ?? null)}</output></div>
           <div><h3>Exact last-inferred input · 16×16</h3><p data-testid="inferred-input-id">{inferred ? `${inferred.frame.source_id} / ${inferred.frame.session_id} / ${inferred.frame.generation} / ${inferred.frame.sequence} · ${inferred.response_id}` : 'Waiting for a neural response'}</p>
@@ -310,8 +354,9 @@ export function Live() {
         </section>}
         <p className="context">Recording is off by default and requires consent on each Start. It saves private processed 16×16 inputs, raw neural responses and flight replay locally. These inputs can contain sensitive content. Downloads contain the same private processed inputs; keep them local. Full-resolution source video is never saved.</p>
         <p className="context">Hiding or closing this tab, losing the connection, source loss or graphics failure stops ownership. Recovery requires an explicit Start. A failed session stays stopped.</p>
+        </details>
       </section>
     </main>
-    <footer><span>Private local workspace</span><span>OBS05 · <a href="http://127.0.0.1:8766/lab">Diagnostic lab</a></span></footer>
+    <footer><span>Private local workspace</span><span>SG01 · <a href="http://127.0.0.1:8766/lab">Diagnostic lab</a></span></footer>
   </div>;
 }

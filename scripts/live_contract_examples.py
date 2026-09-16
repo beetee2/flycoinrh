@@ -1,6 +1,9 @@
 """Declared synthetic wire corpus, shared by Python and browser validators."""
 import json
 import base64
+from io import BytesIO
+
+from PIL import Image
 
 from flytrap.live.contracts import EncoderConfig, GROUND_ENVIRONMENT, LiveConfig, LiveHealth, SessionConfig
 from flytrap.live.api_contracts import ControlBootstrap
@@ -64,8 +67,35 @@ def corpus():
         PreviewReply=dict(schema_version="obs-source-preview-1", status=status, latest=preview_image),
         ReplayList=dict(schema_version="obs-replay-list-1", recordings=[]),
         FlightState=dict(physics_id="flight-fixed20-v1", snapshot=flight, velocity=[0., 0., 0.], yaw_rate=0.))
+    with BytesIO() as output, Image.new("RGB", (4, 3), "ivory") as image:
+        image.save(output, format="JPEG", quality=85)
+        jpeg = output.getvalue()
+    display = dict(schema_version="screen-gremlin-display-1", frame=frame, width=4, height=3,
+        mime_type="image/jpeg", jpeg_base64=base64.b64encode(jpeg).decode(), encoded_bytes=len(jpeg),
+        delivered_monotonic_ms=200., receipt_age_ms=100.)
+    display_reply = dict(schema_version="screen-gremlin-display-reply-1",
+                         status={**status, "state": "previewing"}, latest=display)
+    good.update(DisplayFrame=display, DisplayReply=display_reply)
     cases = [dict(name=f"{name} valid synthetic", contract=name, valid=True, value=value)
              for name, value in good.items()]
+    for label, patch in (
+        ("oversized width", {"width": 961}),
+        ("oversized encoded image", {"encoded_bytes": 262145}),
+        ("invalid JPEG", {"jpeg_base64": "AAAA", "encoded_bytes": 4}),
+        ("incorrect dimensions", {"width": 3}),
+        ("unknown field", {"caption": "never enters this protocol"}),
+        ("unknown version", {"schema_version": "screen-gremlin-display-99"}),
+        ("delivery predates capture", {"delivered_monotonic_ms": 0.}),
+    ):
+        cases.append(dict(name=f"DisplayFrame {label}", contract="DisplayFrame", valid=False,
+                          value={**display, **patch}))
+    for label, patch in (
+        ("foreign session", {"session_id": "foreign"}),
+        ("foreign generation", {"generation": 2}),
+        ("inactive session", {"state": "stopped"}),
+    ):
+        cases.append(dict(name=f"DisplayReply {label}", contract="DisplayReply", valid=False,
+            value={**display_reply, "status": {**display_reply["status"], **patch}}))
     cases.append(dict(name="real source metadata shape only, no hardware evidence", contract="SourceCapability",
                       valid=True, value={**source, "evidence_kind": "real", "backend": "ffmpeg-v4l2",
                                          "producer_detection": "unknown"}))

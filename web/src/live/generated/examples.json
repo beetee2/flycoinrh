@@ -3025,6 +3025,439 @@
     }
   },
   {
+    "name": "DisplayFrame valid synthetic",
+    "contract": "DisplayFrame",
+    "valid": true,
+    "value": {
+      "schema_version": "screen-gremlin-display-1",
+      "frame": {
+        "schema_version": "obs-frame-1",
+        "session_id": "fixture-session",
+        "generation": 1,
+        "evidence_kind": "fixture",
+        "source_id": "fixture-source",
+        "sequence": 7,
+        "width": 640,
+        "height": 480,
+        "pixel_format": "RGB24",
+        "receipt_monotonic_ms": 100.0,
+        "source_timestamp_ms": null,
+        "source_sequence": null,
+        "source_clock": "unknown"
+      },
+      "width": 4,
+      "height": 3,
+      "mime_type": "image/jpeg",
+      "jpeg_base64": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAADAAQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7IoooriKP/9k=",
+      "encoded_bytes": 632,
+      "delivered_monotonic_ms": 200.0,
+      "receipt_age_ms": 100.0
+    }
+  },
+  {
+    "name": "DisplayReply valid synthetic",
+    "contract": "DisplayReply",
+    "valid": true,
+    "value": {
+      "schema_version": "screen-gremlin-display-reply-1",
+      "status": {
+        "schema_version": "obs-session-status-1",
+        "session_id": "fixture-session",
+        "generation": 1,
+        "evidence_kind": "fixture",
+        "state": "previewing",
+        "reason": null,
+        "attempted_calls": 0,
+        "accepted_frames": 0,
+        "overwritten_frames": 0,
+        "content_unchanged_ms": 0.0,
+        "producer_health": "unknown",
+        "last_frame_sequence": null,
+        "last_response_id": null
+      },
+      "latest": {
+        "schema_version": "screen-gremlin-display-1",
+        "frame": {
+          "schema_version": "obs-frame-1",
+          "session_id": "fixture-session",
+          "generation": 1,
+          "evidence_kind": "fixture",
+          "source_id": "fixture-source",
+          "sequence": 7,
+          "width": 640,
+          "height": 480,
+          "pixel_format": "RGB24",
+          "receipt_monotonic_ms": 100.0,
+          "source_timestamp_ms": null,
+          "source_sequence": null,
+          "source_clock": "unknown"
+        },
+        "width": 4,
+        "height": 3,
+        "mime_type": "image/jpeg",
+        "jpeg_base64": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAADAAQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7IoooriKP/9k=",
+        "encoded_bytes": 632,
+        "delivered_monotonic_ms": 200.0,
+        "receipt_age_ms": 100.0
+      }
+    }
+  },
+  {
+    "name": "DisplayFrame oversized width",
+    "contract": "DisplayFrame",
+    "valid": false,
+    "value": {
+      "schema_version": "screen-gremlin-display-1",
+      "frame": {
+        "schema_version": "obs-frame-1",
+        "session_id": "fixture-session",
+        "generation": 1,
+        "evidence_kind": "fixture",
+        "source_id": "fixture-source",
+        "sequence": 7,
+        "width": 640,
+        "height": 480,
+        "pixel_format": "RGB24",
+        "receipt_monotonic_ms": 100.0,
+        "source_timestamp_ms": null,
+        "source_sequence": null,
+        "source_clock": "unknown"
+      },
+      "width": 961,
+      "height": 3,
+      "mime_type": "image/jpeg",
+      "jpeg_base64": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAADAAQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7IoooriKP/9k=",
+      "encoded_bytes": 632,
+      "delivered_monotonic_ms": 200.0,
+      "receipt_age_ms": 100.0
+    }
+  },
+  {
+    "name": "DisplayFrame oversized encoded image",
+    "contract": "DisplayFrame",
+    "valid": false,
+    "value": {
+      "schema_version": "screen-gremlin-display-1",
+      "frame": {
+        "schema_version": "obs-frame-1",
+        "session_id": "fixture-session",
+        "generation": 1,
+        "evidence_kind": "fixture",
+        "source_id": "fixture-source",
+        "sequence": 7,
+        "width": 640,
+        "height": 480,
+        "pixel_format": "RGB24",
+        "receipt_monotonic_ms": 100.0,
+        "source_timestamp_ms": null,
+        "source_sequence": null,
+        "source_clock": "unknown"
+      },
+      "width": 4,
+      "height": 3,
+      "mime_type": "image/jpeg",
+      "jpeg_base64": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAADAAQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7IoooriKP/9k=",
+      "encoded_bytes": 262145,
+      "delivered_monotonic_ms": 200.0,
+      "receipt_age_ms": 100.0
+    }
+  },
+  {
+    "name": "DisplayFrame invalid JPEG",
+    "contract": "DisplayFrame",
+    "valid": false,
+    "value": {
+      "schema_version": "screen-gremlin-display-1",
+      "frame": {
+        "schema_version": "obs-frame-1",
+        "session_id": "fixture-session",
+        "generation": 1,
+        "evidence_kind": "fixture",
+        "source_id": "fixture-source",
+        "sequence": 7,
+        "width": 640,
+        "height": 480,
+        "pixel_format": "RGB24",
+        "receipt_monotonic_ms": 100.0,
+        "source_timestamp_ms": null,
+        "source_sequence": null,
+        "source_clock": "unknown"
+      },
+      "width": 4,
+      "height": 3,
+      "mime_type": "image/jpeg",
+      "jpeg_base64": "AAAA",
+      "encoded_bytes": 4,
+      "delivered_monotonic_ms": 200.0,
+      "receipt_age_ms": 100.0
+    }
+  },
+  {
+    "name": "DisplayFrame incorrect dimensions",
+    "contract": "DisplayFrame",
+    "valid": false,
+    "value": {
+      "schema_version": "screen-gremlin-display-1",
+      "frame": {
+        "schema_version": "obs-frame-1",
+        "session_id": "fixture-session",
+        "generation": 1,
+        "evidence_kind": "fixture",
+        "source_id": "fixture-source",
+        "sequence": 7,
+        "width": 640,
+        "height": 480,
+        "pixel_format": "RGB24",
+        "receipt_monotonic_ms": 100.0,
+        "source_timestamp_ms": null,
+        "source_sequence": null,
+        "source_clock": "unknown"
+      },
+      "width": 3,
+      "height": 3,
+      "mime_type": "image/jpeg",
+      "jpeg_base64": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAADAAQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7IoooriKP/9k=",
+      "encoded_bytes": 632,
+      "delivered_monotonic_ms": 200.0,
+      "receipt_age_ms": 100.0
+    }
+  },
+  {
+    "name": "DisplayFrame unknown field",
+    "contract": "DisplayFrame",
+    "valid": false,
+    "value": {
+      "schema_version": "screen-gremlin-display-1",
+      "frame": {
+        "schema_version": "obs-frame-1",
+        "session_id": "fixture-session",
+        "generation": 1,
+        "evidence_kind": "fixture",
+        "source_id": "fixture-source",
+        "sequence": 7,
+        "width": 640,
+        "height": 480,
+        "pixel_format": "RGB24",
+        "receipt_monotonic_ms": 100.0,
+        "source_timestamp_ms": null,
+        "source_sequence": null,
+        "source_clock": "unknown"
+      },
+      "width": 4,
+      "height": 3,
+      "mime_type": "image/jpeg",
+      "jpeg_base64": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAADAAQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7IoooriKP/9k=",
+      "encoded_bytes": 632,
+      "delivered_monotonic_ms": 200.0,
+      "receipt_age_ms": 100.0,
+      "caption": "never enters this protocol"
+    }
+  },
+  {
+    "name": "DisplayFrame unknown version",
+    "contract": "DisplayFrame",
+    "valid": false,
+    "value": {
+      "schema_version": "screen-gremlin-display-99",
+      "frame": {
+        "schema_version": "obs-frame-1",
+        "session_id": "fixture-session",
+        "generation": 1,
+        "evidence_kind": "fixture",
+        "source_id": "fixture-source",
+        "sequence": 7,
+        "width": 640,
+        "height": 480,
+        "pixel_format": "RGB24",
+        "receipt_monotonic_ms": 100.0,
+        "source_timestamp_ms": null,
+        "source_sequence": null,
+        "source_clock": "unknown"
+      },
+      "width": 4,
+      "height": 3,
+      "mime_type": "image/jpeg",
+      "jpeg_base64": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAADAAQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7IoooriKP/9k=",
+      "encoded_bytes": 632,
+      "delivered_monotonic_ms": 200.0,
+      "receipt_age_ms": 100.0
+    }
+  },
+  {
+    "name": "DisplayFrame delivery predates capture",
+    "contract": "DisplayFrame",
+    "valid": false,
+    "value": {
+      "schema_version": "screen-gremlin-display-1",
+      "frame": {
+        "schema_version": "obs-frame-1",
+        "session_id": "fixture-session",
+        "generation": 1,
+        "evidence_kind": "fixture",
+        "source_id": "fixture-source",
+        "sequence": 7,
+        "width": 640,
+        "height": 480,
+        "pixel_format": "RGB24",
+        "receipt_monotonic_ms": 100.0,
+        "source_timestamp_ms": null,
+        "source_sequence": null,
+        "source_clock": "unknown"
+      },
+      "width": 4,
+      "height": 3,
+      "mime_type": "image/jpeg",
+      "jpeg_base64": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAADAAQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7IoooriKP/9k=",
+      "encoded_bytes": 632,
+      "delivered_monotonic_ms": 0.0,
+      "receipt_age_ms": 100.0
+    }
+  },
+  {
+    "name": "DisplayReply foreign session",
+    "contract": "DisplayReply",
+    "valid": false,
+    "value": {
+      "schema_version": "screen-gremlin-display-reply-1",
+      "status": {
+        "schema_version": "obs-session-status-1",
+        "session_id": "foreign",
+        "generation": 1,
+        "evidence_kind": "fixture",
+        "state": "previewing",
+        "reason": null,
+        "attempted_calls": 0,
+        "accepted_frames": 0,
+        "overwritten_frames": 0,
+        "content_unchanged_ms": 0.0,
+        "producer_health": "unknown",
+        "last_frame_sequence": null,
+        "last_response_id": null
+      },
+      "latest": {
+        "schema_version": "screen-gremlin-display-1",
+        "frame": {
+          "schema_version": "obs-frame-1",
+          "session_id": "fixture-session",
+          "generation": 1,
+          "evidence_kind": "fixture",
+          "source_id": "fixture-source",
+          "sequence": 7,
+          "width": 640,
+          "height": 480,
+          "pixel_format": "RGB24",
+          "receipt_monotonic_ms": 100.0,
+          "source_timestamp_ms": null,
+          "source_sequence": null,
+          "source_clock": "unknown"
+        },
+        "width": 4,
+        "height": 3,
+        "mime_type": "image/jpeg",
+        "jpeg_base64": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAADAAQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7IoooriKP/9k=",
+        "encoded_bytes": 632,
+        "delivered_monotonic_ms": 200.0,
+        "receipt_age_ms": 100.0
+      }
+    }
+  },
+  {
+    "name": "DisplayReply foreign generation",
+    "contract": "DisplayReply",
+    "valid": false,
+    "value": {
+      "schema_version": "screen-gremlin-display-reply-1",
+      "status": {
+        "schema_version": "obs-session-status-1",
+        "session_id": "fixture-session",
+        "generation": 2,
+        "evidence_kind": "fixture",
+        "state": "previewing",
+        "reason": null,
+        "attempted_calls": 0,
+        "accepted_frames": 0,
+        "overwritten_frames": 0,
+        "content_unchanged_ms": 0.0,
+        "producer_health": "unknown",
+        "last_frame_sequence": null,
+        "last_response_id": null
+      },
+      "latest": {
+        "schema_version": "screen-gremlin-display-1",
+        "frame": {
+          "schema_version": "obs-frame-1",
+          "session_id": "fixture-session",
+          "generation": 1,
+          "evidence_kind": "fixture",
+          "source_id": "fixture-source",
+          "sequence": 7,
+          "width": 640,
+          "height": 480,
+          "pixel_format": "RGB24",
+          "receipt_monotonic_ms": 100.0,
+          "source_timestamp_ms": null,
+          "source_sequence": null,
+          "source_clock": "unknown"
+        },
+        "width": 4,
+        "height": 3,
+        "mime_type": "image/jpeg",
+        "jpeg_base64": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAADAAQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7IoooriKP/9k=",
+        "encoded_bytes": 632,
+        "delivered_monotonic_ms": 200.0,
+        "receipt_age_ms": 100.0
+      }
+    }
+  },
+  {
+    "name": "DisplayReply inactive session",
+    "contract": "DisplayReply",
+    "valid": false,
+    "value": {
+      "schema_version": "screen-gremlin-display-reply-1",
+      "status": {
+        "schema_version": "obs-session-status-1",
+        "session_id": "fixture-session",
+        "generation": 1,
+        "evidence_kind": "fixture",
+        "state": "stopped",
+        "reason": null,
+        "attempted_calls": 0,
+        "accepted_frames": 0,
+        "overwritten_frames": 0,
+        "content_unchanged_ms": 0.0,
+        "producer_health": "unknown",
+        "last_frame_sequence": null,
+        "last_response_id": null
+      },
+      "latest": {
+        "schema_version": "screen-gremlin-display-1",
+        "frame": {
+          "schema_version": "obs-frame-1",
+          "session_id": "fixture-session",
+          "generation": 1,
+          "evidence_kind": "fixture",
+          "source_id": "fixture-source",
+          "sequence": 7,
+          "width": 640,
+          "height": 480,
+          "pixel_format": "RGB24",
+          "receipt_monotonic_ms": 100.0,
+          "source_timestamp_ms": null,
+          "source_sequence": null,
+          "source_clock": "unknown"
+        },
+        "width": 4,
+        "height": 3,
+        "mime_type": "image/jpeg",
+        "jpeg_base64": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAADAAQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7IoooriKP/9k=",
+        "encoded_bytes": 632,
+        "delivered_monotonic_ms": 200.0,
+        "receipt_age_ms": 100.0
+      }
+    }
+  },
+  {
     "name": "real source metadata shape only, no hardware evidence",
     "contract": "SourceCapability",
     "valid": true,
@@ -10657,6 +11090,164 @@
       ],
       "yaw_rate": 0.0,
       "schema_version": "future-999"
+    }
+  },
+  {
+    "name": "DisplayFrame unknown field",
+    "contract": "DisplayFrame",
+    "valid": false,
+    "value": {
+      "schema_version": "screen-gremlin-display-1",
+      "frame": {
+        "schema_version": "obs-frame-1",
+        "session_id": "fixture-session",
+        "generation": 1,
+        "evidence_kind": "fixture",
+        "source_id": "fixture-source",
+        "sequence": 7,
+        "width": 640,
+        "height": 480,
+        "pixel_format": "RGB24",
+        "receipt_monotonic_ms": 100.0,
+        "source_timestamp_ms": null,
+        "source_sequence": null,
+        "source_clock": "unknown"
+      },
+      "width": 4,
+      "height": 3,
+      "mime_type": "image/jpeg",
+      "jpeg_base64": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAADAAQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7IoooriKP/9k=",
+      "encoded_bytes": 632,
+      "delivered_monotonic_ms": 200.0,
+      "receipt_age_ms": 100.0,
+      "unrecognized": "forbidden"
+    }
+  },
+  {
+    "name": "DisplayFrame unknown version",
+    "contract": "DisplayFrame",
+    "valid": false,
+    "value": {
+      "schema_version": "future-999",
+      "frame": {
+        "schema_version": "obs-frame-1",
+        "session_id": "fixture-session",
+        "generation": 1,
+        "evidence_kind": "fixture",
+        "source_id": "fixture-source",
+        "sequence": 7,
+        "width": 640,
+        "height": 480,
+        "pixel_format": "RGB24",
+        "receipt_monotonic_ms": 100.0,
+        "source_timestamp_ms": null,
+        "source_sequence": null,
+        "source_clock": "unknown"
+      },
+      "width": 4,
+      "height": 3,
+      "mime_type": "image/jpeg",
+      "jpeg_base64": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAADAAQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7IoooriKP/9k=",
+      "encoded_bytes": 632,
+      "delivered_monotonic_ms": 200.0,
+      "receipt_age_ms": 100.0
+    }
+  },
+  {
+    "name": "DisplayReply unknown field",
+    "contract": "DisplayReply",
+    "valid": false,
+    "value": {
+      "schema_version": "screen-gremlin-display-reply-1",
+      "status": {
+        "schema_version": "obs-session-status-1",
+        "session_id": "fixture-session",
+        "generation": 1,
+        "evidence_kind": "fixture",
+        "state": "previewing",
+        "reason": null,
+        "attempted_calls": 0,
+        "accepted_frames": 0,
+        "overwritten_frames": 0,
+        "content_unchanged_ms": 0.0,
+        "producer_health": "unknown",
+        "last_frame_sequence": null,
+        "last_response_id": null
+      },
+      "latest": {
+        "schema_version": "screen-gremlin-display-1",
+        "frame": {
+          "schema_version": "obs-frame-1",
+          "session_id": "fixture-session",
+          "generation": 1,
+          "evidence_kind": "fixture",
+          "source_id": "fixture-source",
+          "sequence": 7,
+          "width": 640,
+          "height": 480,
+          "pixel_format": "RGB24",
+          "receipt_monotonic_ms": 100.0,
+          "source_timestamp_ms": null,
+          "source_sequence": null,
+          "source_clock": "unknown"
+        },
+        "width": 4,
+        "height": 3,
+        "mime_type": "image/jpeg",
+        "jpeg_base64": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAADAAQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7IoooriKP/9k=",
+        "encoded_bytes": 632,
+        "delivered_monotonic_ms": 200.0,
+        "receipt_age_ms": 100.0
+      },
+      "unrecognized": "forbidden"
+    }
+  },
+  {
+    "name": "DisplayReply unknown version",
+    "contract": "DisplayReply",
+    "valid": false,
+    "value": {
+      "schema_version": "future-999",
+      "status": {
+        "schema_version": "obs-session-status-1",
+        "session_id": "fixture-session",
+        "generation": 1,
+        "evidence_kind": "fixture",
+        "state": "previewing",
+        "reason": null,
+        "attempted_calls": 0,
+        "accepted_frames": 0,
+        "overwritten_frames": 0,
+        "content_unchanged_ms": 0.0,
+        "producer_health": "unknown",
+        "last_frame_sequence": null,
+        "last_response_id": null
+      },
+      "latest": {
+        "schema_version": "screen-gremlin-display-1",
+        "frame": {
+          "schema_version": "obs-frame-1",
+          "session_id": "fixture-session",
+          "generation": 1,
+          "evidence_kind": "fixture",
+          "source_id": "fixture-source",
+          "sequence": 7,
+          "width": 640,
+          "height": 480,
+          "pixel_format": "RGB24",
+          "receipt_monotonic_ms": 100.0,
+          "source_timestamp_ms": null,
+          "source_sequence": null,
+          "source_clock": "unknown"
+        },
+        "width": 4,
+        "height": 3,
+        "mime_type": "image/jpeg",
+        "jpeg_base64": "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAADAAQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7IoooriKP/9k=",
+        "encoded_bytes": 632,
+        "delivered_monotonic_ms": 200.0,
+        "receipt_age_ms": 100.0
+      }
     }
   },
   {

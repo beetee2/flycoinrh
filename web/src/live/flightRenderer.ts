@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { createScreenGremlinRenderer } from './screenGremlinRenderer';
+import type { PresentationSettings } from './presentationSettings';
 import type { FlightSnapshot } from './contracts';
 import schemas from './generated/schemas.json' with { type: 'json' };
 
@@ -8,7 +10,7 @@ export function groundHeight(pose: FlightSnapshot | null): number {
   return pose?.schema_version === 'obs-flight-2' ? pose.environment.ground_z : FLIGHT_GROUND.ground_z.const;
 }
 
-export type FlightRenderer = { draw: (pose: FlightSnapshot | null, decorativeMs: number) => void; resize: () => void; dispose: () => void };
+export type FlightRenderer = { draw: (pose: FlightSnapshot | null, decorativeMs: number) => void; resize: () => void; dispose: () => void; resetHistory?: () => void; updateSettings?: (settings: PresentationSettings) => void };
 
 export type GraphicsFailureKind = 'context-creation' | 'renderer' | 'context-lost';
 export class FlightGraphicsError extends Error {
@@ -34,7 +36,7 @@ export const FLIGHT_CONTEXT_ATTRIBUTES: WebGLContextAttributes = {
 };
 
 /** Original procedural fly. Local three.js geometry only; no imported artwork. */
-export function createFlightRenderer(host: HTMLDivElement, onFailure?: (error: FlightGraphicsError) => void): FlightRenderer {
+export function createLegacyFlightRenderer(host: HTMLDivElement, onFailure?: (error: FlightGraphicsError) => void): FlightRenderer {
   const canvas = document.createElement('canvas');
   let context: WebGL2RenderingContext | null = null;
   let renderer: THREE.WebGLRenderer | undefined;
@@ -180,4 +182,10 @@ export function createFlightRenderer(host: HTMLDivElement, onFailure?: (error: F
   } catch (error) {
     dispose(); throw new FlightGraphicsError('renderer', error);
   }
+}
+
+export type PresentationMode = 'screen-gremlin' | 'legacy';
+export function createFlightRenderer(host: HTMLDivElement, onFailure?: (error: FlightGraphicsError) => void,
+  options: { presentation?: PresentationMode; settings?: PresentationSettings } = {}): FlightRenderer {
+  return options.presentation === 'legacy' ? createLegacyFlightRenderer(host, onFailure) : createScreenGremlinRenderer(host, onFailure, options.settings);
 }

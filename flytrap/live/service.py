@@ -10,8 +10,9 @@ import time
 import uuid
 
 from .accounting import BusyError, LiveOwnership
-from .api_contracts import ApiSnapshot, PreviewReply, SourceList, SourcePreview
+from .api_contracts import ApiSnapshot, DisplayReply, PreviewReply, SourceList, SourcePreview
 from .contracts import SessionConfig, SessionStatus, SourceCapability, SourceFormat
+from .display import DisplayBuffer
 
 
 class NotFound(ValueError):
@@ -154,6 +155,7 @@ class Entry:
     rate_started: float = field(default_factory=time.monotonic)
     rate_frames: int = 0
     capture_hz: float = 0.
+    display: DisplayBuffer = field(default_factory=DisplayBuffer)
 
 
 class LiveService:
@@ -181,6 +183,7 @@ class LiveService:
         self._dropped = 0
         self._task = None
         self._closed = False
+        self._display_requests = threading.BoundedSemaphore(self.max_clients)
 
     def sources(self):
         return SourceList(sources=self.source_provider())
@@ -279,6 +282,7 @@ class LiveService:
                 raise Forbidden("Only the control owner can renew or stop this session.")
         if stop:
             entry.session.stop()
+            entry.display.clear()
         elif not entry.session.renew_lease():
             raise Conflict("Control lease ended; an explicit new Start is required.")
         return self.snapshot(session_id)
@@ -328,6 +332,41 @@ class LiveService:
                 rgb_base64=base64.b64encode(pair.source.rgb).decode(), observation_u8=list(pair.encoded.u8))
         return PreviewReply(status=status, latest=latest)
 
+    def display(self, session_id, request):
+        """Owner-authorized read; it cannot start capture, renew a lease or infer."""
+        if not self._display_requests.acquire(blocking=False):
+            raise BusyError("Display request limit reached; sample again later.")
+        try:
+            with self._lock:
+                entry = self.entry(session_id, request.generation)
+                if not secrets.compare_digest(entry.owner_token, request.owner_token):
+                    raise Forbidden("Only the active source owner can read display frames.")
+            def current_status():
+                return (entry.session.status() if entry.kind == "preview"
+                        else entry.session.snapshot().status)
+
+            status = current_status()
+            active = {"previewing", "starting", "running"}
+            if status.state not in active or session_id != self.current_id:
+                entry.display.clear()
+                return DisplayReply(status=status, latest=None)
+            latest = entry.display.get(entry.session.capture.slot)
+            # Source loss/Stop may have occurred while JPEG encoding ran.
+            status = current_status()
+            if status.state not in active or entry.session.capture.slot.closed:
+                entry.display.clear()
+                latest = None
+            if latest and latest.frame.source_id != entry.session.config.source_id:
+                entry.display.clear()
+                raise Conflict("Display frame disagrees with the selected source.")
+            if latest:
+                now = time.monotonic()*1000
+                latest = latest.model_copy(update={"delivered_monotonic_ms": now,
+                    "receipt_age_ms": max(0., now-latest.frame.receipt_monotonic_ms)})
+            return DisplayReply(status=status, latest=latest)
+        finally:
+            self._display_requests.release()
+
     async def open(self):
         self._task = asyncio.create_task(self._publish())
 
@@ -342,10 +381,14 @@ class LiveService:
         for entry in list(self.sessions.values()):
             if not entry.session.wait(0):
                 await asyncio.to_thread(entry.session.stop)
+            entry.display.clear()
         self._clients.clear()
 
     async def _publish(self):
         while True:
+            for entry in list(self.sessions.values()):
+                if entry.session.capture.slot.closed and entry.display.latest is not None:
+                    await asyncio.to_thread(entry.display.clear)
             for client_id, (session_id, queue) in list(self._clients.items()):
                 try:
                     snapshot = await asyncio.to_thread(self.snapshot, session_id)

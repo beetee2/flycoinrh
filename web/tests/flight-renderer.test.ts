@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as THREE from 'three';
-import { createFlightRenderer, FlightGraphicsError, FLIGHT_CONTEXT_ATTRIBUTES, FLIGHT_GROUND, sanitizeGraphicsDetail } from '../src/live/flightRenderer';
+import { createLegacyFlightRenderer as createFlightRenderer, createFlightRenderer as createGremlinRenderer, FlightGraphicsError, FLIGHT_CONTEXT_ATTRIBUTES, FLIGHT_GROUND, sanitizeGraphicsDetail } from '../src/live/flightRenderer';
+import { createJamCharacter } from '../src/live/jamCharacter';
+import { DEFAULT_PRESENTATION_SETTINGS } from '../src/live/presentationSettings';
 import type { FlightSnapshot } from '../src/live/contracts';
 
 const mocks = vi.hoisted(() => ({ construct: vi.fn(), render: vi.fn(), setSize: vi.fn(), dispose: vi.fn(), forceContextLoss: vi.fn() }));
@@ -182,5 +184,174 @@ describe('ground geometry and camera', () => {
     expect(floor.position.y).toBeCloseTo(4.14);
     expect(below.position[2]).toBe(-8.14);
     renderer.dispose();
+  });
+});
+
+
+describe('Screen Gremlin presentation boundary', () => {
+  it('keeps six legs, two wings, and a shared modest material budget with no scenery or fog', () => {
+    const renderer = createGremlinRenderer(document.createElement('div'));
+    const scene = mocks.render.mock.calls.at(-1)![0] as THREE.Scene;
+    const fly = scene.getObjectByName('Jam')!;
+    expect(fly.children.filter(child => child.name === 'leg')).toHaveLength(6);
+    expect(fly.children.filter(child => child.name === 'wing')).toHaveLength(2);
+    expect(scene.fog).toBeNull();
+    expect(scene.children.some(child => child instanceof THREE.GridHelper)).toBe(false);
+    const materials = new Set<THREE.Material>();
+    fly.traverse(object => { if (object instanceof THREE.Mesh || object instanceof THREE.Line) for (const material of Array.isArray(object.material) ? object.material : [object.material]) materials.add(material); });
+    expect(materials.size).toBeLessThanOrEqual(10);
+    renderer.dispose();
+  });
+  it('preserves actual world displacement inside a camera dead zone and freezes on repeated playback time', () => {
+    const renderer = createGremlinRenderer(document.createElement('div'));
+    const first = structuredClone(pose);
+    renderer.draw(first, 0);
+    const [scene, camera] = mocks.render.mock.calls.at(-1)! as [THREE.Scene, THREE.PerspectiveCamera];
+    const cameraBefore = camera.position.clone();
+    const next: FlightSnapshot = { ...first, position: [first.position[0] + .4, first.position[1] + .2, first.position[2] + .1], tick: 3 };
+    const copy = structuredClone(next);
+    renderer.draw(next, 20);
+    const fly = scene.getObjectByName('Jam')!;
+    expect(fly.position.x).toBeCloseTo(.4); expect(fly.position.y).toBeCloseTo(.1); expect(fly.position.z).toBeCloseTo(-.2);
+    expect(camera.position.toArray()).toEqual(cameraBefore.toArray());
+    const transform = fly.matrix.clone();
+    for (let i = 0; i < 10; i++) renderer.draw(next, 20);
+    expect(camera.position.toArray()).toEqual(cameraBefore.toArray());
+    expect(fly.matrix).toEqual(transform); expect(next).toEqual(copy); expect(first).toEqual(pose);
+    renderer.dispose();
+  });
+  it('resets camera and secondary animation repeatably; view settings do not mutate trajectory', () => {
+    const renderer = createGremlinRenderer(document.createElement('div'));
+    const sequence = Array.from({ length: 10 }, (_, index) => ({ ...pose, tick: index, position: [index * .6, index * -.1, 0] as [number, number, number], yaw_rad: index * .02 }));
+    function play() {
+      renderer.resetHistory?.();
+      return sequence.map((snapshot, index) => {
+        renderer.draw(snapshot, index * 20);
+        const [scene, camera] = mocks.render.mock.calls.at(-1)! as [THREE.Scene, THREE.PerspectiveCamera];
+        return { position: scene.getObjectByName('Jam')!.position.toArray(), rotation: scene.getObjectByName('Jam')!.rotation.toArray(), camera: camera.position.toArray() };
+      });
+    }
+    expect(play()).toEqual(play());
+    const original = structuredClone(sequence);
+    renderer.updateSettings?.({ ...DEFAULT_PRESENTATION_SETTINGS, caption: '<b>hello</b>', cameraDistance: 22, wingOpacity: .2 });
+    play(); expect(sequence).toEqual(original);
+    renderer.dispose();
+  });
+  it('produces the same camera and character transforms under different render schedules', () => {
+    const renderer = createGremlinRenderer(document.createElement('div'));
+    function renderSchedule(times: number[]) {
+      renderer.resetHistory?.();
+      for (const ms of times) renderer.draw({ ...pose, tick: ms / 20, position: [ms * .006, ms * .002, -ms * .001], yaw_rad: ms * .0004 }, ms);
+      const [scene, camera] = mocks.render.mock.calls.at(-1)! as [THREE.Scene, THREE.PerspectiveCamera];
+      scene.updateMatrixWorld(true); camera.updateMatrixWorld(true);
+      const transforms: number[][] = [];
+      scene.getObjectByName('Jam')!.traverse(object => transforms.push(object.matrixWorld.toArray()));
+      return { camera: camera.matrixWorld.toArray(), transforms };
+    }
+    const dense = Array.from({ length: 121 }, (_, i) => i * 1000 / 120);
+    expect(renderSchedule([0, 200, 400, 600, 800, 1000])).toEqual(renderSchedule(dense));
+    expect(renderSchedule([0, 1000])).toEqual(renderSchedule(dense));
+    renderer.dispose();
+  });
+  it('keeps actual mesh vertices above v2 ground through contact, ascent, turn, and descent poses', () => {
+    const renderer = createGremlinRenderer(document.createElement('div'));
+    let minimum = Infinity;
+    for (const contact of [true, false]) for (const pitch of [-.45, -.225, 0, .225, .45]) for (const yaw of [-Math.PI, -.8, 0, 1, Math.PI]) for (const ms of [0, 25, 75, 150, 225]) {
+      const snapshot: FlightSnapshot = { ...pose, schema_version: 'obs-flight-2', physics_id: 'flight-fixed20-ground-v2', environment: { environment_id: 'flat-ground-v1', ground_z: -4, collision_proxy: 'fly-clearance-v1', clearance: 1.5 }, ground_contact: contact, pitch_rad: pitch, yaw_rad: yaw, position: [20, 30, -2.5] };
+      renderer.draw(snapshot, ms);
+      const [scene, camera] = mocks.render.mock.calls.at(-1)! as [THREE.Scene, THREE.PerspectiveCamera]; scene.updateMatrixWorld(true);
+      const floor = scene.getObjectByName('authoritative ground')!;
+      expect(camera.position.y).toBeGreaterThan(floor.position.y + .49);
+      scene.getObjectByName('Jam')!.traverse(object => {
+        if (!(object instanceof THREE.Mesh || object instanceof THREE.Line)) return;
+        const vertices = object.geometry.getAttribute('position');
+        for (let index = 0; index < vertices.count; index++) {
+          const vertex = new THREE.Vector3().fromBufferAttribute(vertices, index).applyMatrix4(object.matrixWorld);
+          minimum = Math.min(minimum, vertex.y - floor.position.y);
+        }
+      });
+    }
+    expect(minimum).toBeGreaterThan(.05); renderer.dispose();
+  });
+  it('covers maximum decorative bank and flight-leg tuck within the unchanged clearance', () => {
+    const resources = new Set<THREE.BufferGeometry | THREE.Material>();
+    const jam = createJamCharacter(resource => { resources.add(resource); return resource; });
+    let maximumDownwardSupport = 0;
+    for (const pitch of [-.45, 0, .45]) for (const bank of [-.045, 0, .045]) for (const time of [0, Math.PI / 2 / .021, Math.PI * 1.5 / .021]) {
+      jam.root.rotation.set(0, 0, pitch, 'YXZ'); jam.animate(time, true, bank); jam.root.updateMatrixWorld(true);
+      jam.root.traverse(object => {
+        if (!(object instanceof THREE.Mesh || object instanceof THREE.Line)) return;
+        const vertices = object.geometry.getAttribute('position');
+        for (let i = 0; i < vertices.count; i++) maximumDownwardSupport = Math.max(maximumDownwardSupport, -new THREE.Vector3().fromBufferAttribute(vertices, i).applyMatrix4(object.matrixWorld).y);
+      });
+    }
+    expect(maximumDownwardSupport).toBeLessThan(1.45);
+    resources.forEach(resource => resource.dispose());
+  });
+  it('keeps actual character geometry inside the portrait frustum across moving turns', () => {
+    const host = document.createElement('div');
+    Object.defineProperty(host, 'clientWidth', { value: 450 }); Object.defineProperty(host, 'clientHeight', { value: 800 });
+    const renderer = createGremlinRenderer(host);
+    renderer.draw({ ...pose, position: [0, 0, 0], yaw_rad: 0 }, 0);
+    let maximum = 0;
+    for (let step = 1; step <= 30; step++) {
+      const snapshot: FlightSnapshot = { ...pose, schema_version: 'obs-flight-2', physics_id: 'flight-fixed20-ground-v2', environment: { environment_id: 'flat-ground-v1', ground_z: -4, collision_proxy: 'fly-clearance-v1', clearance: 1.5 }, ground_contact: step % 2 === 0, position: [step * 1.2, step * -.8, -2.5], yaw_rad: step * Math.PI / 15, pitch_rad: Math.sin(step) * .45 };
+      const before = structuredClone(snapshot);
+      renderer.draw(snapshot, step * 200);
+      const [scene, camera] = mocks.render.mock.calls.at(-1)! as [THREE.Scene, THREE.PerspectiveCamera];
+      scene.updateMatrixWorld(true); camera.updateMatrixWorld(true);
+      scene.getObjectByName('Jam')!.traverse(object => {
+        if (!(object instanceof THREE.Mesh || object instanceof THREE.Line)) return;
+        const vertices = object.geometry.getAttribute('position');
+        for (let i = 0; i < vertices.count; i++) {
+          const projected = new THREE.Vector3().fromBufferAttribute(vertices, i).applyMatrix4(object.matrixWorld).project(camera);
+          maximum = Math.max(maximum, Math.abs(projected.x), Math.abs(projected.y));
+        }
+      });
+      expect(snapshot).toEqual(before);
+      expect(scene.getObjectByName('Jam')!.position.toArray()).toEqual([step * 1.2, -2.5, step * .8]);
+    }
+    expect(maximum).toBeLessThan(.96); renderer.dispose();
+  });
+  it('preserves historical v1 below-ground semantics in Screen Gremlin', () => {
+    const renderer = createGremlinRenderer(document.createElement('div'));
+    renderer.draw({ ...pose, position: [0, 0, -8.14] }, 0);
+    const scene = mocks.render.mock.calls.at(-1)![0] as THREE.Scene;
+    expect(scene.getObjectByName('authoritative ground')!.position.y).toBeCloseTo(4.14);
+    expect(scene.getObjectByName('Jam')!.position.y).toBe(0);
+    renderer.dispose();
+  });
+  it('stops after context loss and allows a fresh explicit renderer recreation', () => {
+    const host = document.createElement('div'), failure = vi.fn();
+    const renderer = createGremlinRenderer(host, failure), canvas = host.querySelector('canvas')!;
+    context.isContextLost.mockReturnValue(true);
+    canvas.dispatchEvent(new Event('webglcontextlost', { cancelable: true }));
+    const calls = mocks.render.mock.calls.length;
+    renderer.draw(pose, 500); renderer.resize(); resize([], {} as ResizeObserver);
+    expect(mocks.render).toHaveBeenCalledTimes(calls); expect(failure).toHaveBeenCalledTimes(1);
+    expect(failure.mock.calls[0][0].kind).toBe('context-lost'); expect(host.children).toHaveLength(0);
+    context.isContextLost.mockReturnValue(false);
+    const retry = createGremlinRenderer(host); expect(host.querySelectorAll('canvas')).toHaveLength(1); retry.dispose();
+  });
+  it('disposes candidate resources when its first render fails', () => {
+    const geometry = vi.spyOn(THREE.BufferGeometry.prototype, 'dispose'), material = vi.spyOn(THREE.Material.prototype, 'dispose');
+    mocks.render.mockImplementationOnce(() => { throw new Error('Candidate initial draw failed'); });
+    const host = document.createElement('div');
+    expect(() => createGremlinRenderer(host)).toThrow('Candidate initial draw failed');
+    expect(geometry).toHaveBeenCalled(); expect(material).toHaveBeenCalled();
+    expect(loseContext).toHaveBeenCalledTimes(1); expect(host.children).toHaveLength(0);
+  });
+  it('reuses and releases every scene geometry/material, context, and canvas exactly once', () => {
+    const host = document.createElement('div'); const renderer = createGremlinRenderer(host);
+    const scene = mocks.render.mock.calls.at(-1)![0] as THREE.Scene;
+    const resources = new Set<THREE.BufferGeometry | THREE.Material>();
+    scene.traverse(object => { if (object instanceof THREE.Mesh || object instanceof THREE.Line) { resources.add(object.geometry); for (const material of Array.isArray(object.material) ? object.material : [object.material]) resources.add(material); } });
+    const released = [...resources].map(resource => { const callback = vi.fn(); resource.addEventListener('dispose', callback); return callback; });
+    const geometry = vi.spyOn(THREE.BufferGeometry.prototype, 'clone');
+    for (let ms = 0; ms < 1000; ms += 20) renderer.draw(pose, ms);
+    expect(geometry).not.toHaveBeenCalled();
+    renderer.dispose(); renderer.dispose();
+    for (const callback of released) expect(callback).toHaveBeenCalledTimes(1);
+    expect(host.children).toHaveLength(0); expect(disconnect).toHaveBeenCalledTimes(1); expect(loseContext).toHaveBeenCalledTimes(1);
   });
 });

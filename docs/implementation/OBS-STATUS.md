@@ -1,3 +1,24 @@
+# Active routing — SG01 Screen Gremlin candidate review
+
+**SG01 implementation and final affected regressions PASS.**
+Screen Gremlin is the default, with local Legacy comparison,
+original procedural Jam, an owned ephemeral JPEG backdrop, and clean landscape/
+portrait compositions. Read the [SG01 report](milestones/SG01.md) and
+[active handoff](OBS-LIVE-HANDOFF.md) for final validation and review media.
+
+**Ground contact works: operator confirmation recorded. Product approval remains
+PENDING.** SG01 real-OBS validation is NOT_RUN; the operator will approve and
+perform that smoke test after reviewing this candidate. No new full-connectome
+calls, desktop capture, decoder/model/physics changes or remote action.
+
+Safe development preview: `./scripts/dev_sg01.sh` →
+**http://127.0.0.1:5173/live**. Explicit synthetic Preview and existing safe measured
+replay only; neural Start is unavailable on this dedicated service. SG01
+supersedes earlier presentation stops for this task only. Historical reports
+and evidence remain below.
+
+---
+
 # Active routing — ground repair complete; human re-review
 
 **Ground repair implementation PASS. Product approval remains withheld pending

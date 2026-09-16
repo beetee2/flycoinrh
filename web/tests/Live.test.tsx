@@ -30,6 +30,8 @@ function mockReads() {
       current.status.state = current.kind === 'preview' ? 'previewing' : 'running';
       if (current.kind === 'preview') { current.model_mode = 'none'; current.neural_sample = null; current.last_inferred = null; current.flight = null; current.completed_calls = 0; current.model_hz = 0; current.recording_state = 'off'; current.recording_id = null; }
       value = current;
+    } else if (path.endsWith('/display')) {
+      value = { schema_version: 'screen-gremlin-display-reply-1', status: current.status, latest: null };
     } else if (path.endsWith('/preview')) {
       const preview = sample('PreviewReply'); preview.status = current.status; preview.latest!.frame.sequence = 99;
       preview.latest!.observation_u8.fill(200); value = preview;
@@ -98,6 +100,7 @@ describe('OBS05 operator session page', () => {
     expect(screen.getByTestId('neural-hz')).toHaveTextContent('2.00 Hz');
     expect(screen.getByTestId('model-mode')).toHaveTextContent('Actual neural model');
     expect(screen.getByText('NEURAL-DRIVEN LIVE FLIGHT')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('Session details & input inspector'));
     const squares = screen.getByRole('img', { name: 'Exact input used for displayed neural response' }).querySelectorAll('rect');
     current.last_inferred!.observation_u8.forEach((value, index) => expect(squares[index]).toHaveAttribute('fill', `rgb(${value},${value},${value})`));
   });
@@ -253,4 +256,39 @@ it('draws validated RGB thumbnail bytes exactly and clears the ephemeral canvas 
   expect(context.clearRect).toHaveBeenCalledTimes(1);
   expect(Array.from(context.putImageData.mock.calls[1][0].data)).toEqual([2, 4, 6, 255, 8, 10, 12, 255]);
   view.unmount(); expect(context.clearRect).toHaveBeenCalledTimes(2);
+});
+
+it('delivers the owned backdrop with inspectors collapsed and releases every image URL on Stop', async () => {
+  const fetcher = mockReads(); const original = fetcher.getMockImplementation()!;
+  const packet = sample('DisplayReply'); packet.status = current.status;
+  packet.latest!.frame.source_id = source.source_id;
+  const create = vi.fn(() => 'blob:ephemeral-source'); const revoke = vi.fn();
+  vi.stubGlobal('URL', class extends URL { static createObjectURL = create; static revokeObjectURL = revoke; });
+  fetcher.mockImplementation((path, init) => path.endsWith('/display') ? Promise.resolve(new Response(JSON.stringify(packet))) : original(path, init));
+  const view = render(<Live />); await enterLive();
+  expect(screen.getByLabelText('Inspect input')).not.toBeChecked();
+  fireEvent.click(screen.getByRole('button', { name: 'Start live flight' }));
+  const image = await screen.findByRole('img', { name: 'Selected source presentation frame' });
+  expect(image).toHaveAttribute('src', 'blob:ephemeral-source');
+  expect(fetcher.mock.calls.some(call => call[0].endsWith('/display'))).toBe(true);
+  expect(fetcher.mock.calls.filter(call => call[0].includes('/sessions/') && call[0].endsWith('/preview'))).toHaveLength(0);
+  fireEvent.click(screen.getByRole('button', { name: 'Stop session' }));
+  await waitFor(() => expect(screen.queryByRole('img', { name: 'Selected source presentation frame' })).not.toBeInTheDocument());
+  expect(revoke).toHaveBeenCalledWith('blob:ephemeral-source');
+  view.unmount(); expect(create.mock.calls.length).toBe(revoke.mock.calls.length);
+});
+
+it('discards pending display frames after a source mode change without showing synthetic content in live mode', async () => {
+  const fetcher = mockReads(); const original = fetcher.getMockImplementation()!;
+  let resolveDisplay: (response: Response) => void = () => {};
+  fetcher.mockImplementation((path, init) => path.endsWith('/display') ? new Promise<Response>(resolve => { resolveDisplay = resolve; }) : original(path, init));
+  const create = vi.fn(() => 'blob:late');
+  vi.stubGlobal('URL', class extends URL { static createObjectURL = create; static revokeObjectURL = vi.fn(); });
+  render(<Live />); await enterLive(); fireEvent.click(screen.getByRole('button', { name: 'Start live flight' }));
+  await waitFor(() => expect(fetcher.mock.calls.some(call => call[0].endsWith('/display'))).toBe(true));
+  fireEvent.click(screen.getByRole('button', { name: 'Recorded playback' }));
+  await act(async () => resolveDisplay(new Response(JSON.stringify(sample('DisplayReply')))));
+  expect(create).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole('button', { name: 'Live source' }));
+  expect(screen.getByTestId('screen-backdrop').querySelector('img')).toBeNull();
 });

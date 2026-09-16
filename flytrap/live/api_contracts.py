@@ -69,6 +69,56 @@ class SourcePreview(Contract):
         return self
 
 
+class DisplayFrame(Contract):
+    """Presentation only: compressed color never enters a neural/replay envelope."""
+    schema_version: Literal["screen-gremlin-display-1"] = "screen-gremlin-display-1"
+    frame: FrameIdentity
+    width: Annotated[int, Field(ge=1, le=960)]
+    height: Annotated[int, Field(ge=1, le=540)]
+    mime_type: Literal["image/jpeg"] = "image/jpeg"
+    jpeg_base64: Annotated[str, Field(max_length=349528, pattern=r"^[A-Za-z0-9+/]*={0,2}$")]
+    encoded_bytes: Annotated[int, Field(ge=4, le=262144)]
+    delivered_monotonic_ms: Millis
+    receipt_age_ms: Millis
+
+    @model_validator(mode="after")
+    def image_bounds(self):
+        from io import BytesIO
+        from PIL import Image
+        data = base64.b64decode(self.jpeg_base64, validate=True)
+        if len(data) != self.encoded_bytes or not data.startswith(b"\xff\xd8") or not data.endswith(b"\xff\xd9"):
+            raise ValueError("display JPEG byte count or signature is invalid")
+        try:
+            with Image.open(BytesIO(data)) as image:
+                if image.format != "JPEG" or image.size != (self.width, self.height):
+                    raise ValueError("display JPEG dimensions disagree")
+        except OSError as exc:
+            raise ValueError("invalid display JPEG") from exc
+        if self.width > self.frame.width or self.height > self.frame.height:
+            raise ValueError("display frames cannot invent source resolution")
+        if abs(self.width*self.frame.height - self.height*self.frame.width) > max(self.frame.width, self.frame.height):
+            raise ValueError("display frame must preserve source aspect ratio")
+        if self.delivered_monotonic_ms < self.frame.receipt_monotonic_ms:
+            raise ValueError("display delivery predates source receipt")
+        return self
+
+
+class DisplayReply(Contract):
+    schema_version: Literal["screen-gremlin-display-reply-1"] = "screen-gremlin-display-reply-1"
+    status: SessionStatus
+    latest: DisplayFrame | None
+
+    @model_validator(mode="after")
+    def identity(self):
+        if self.latest:
+            if any(getattr(self.latest.frame, key) != getattr(self.status, key)
+                   for key in ("session_id", "generation", "evidence_kind")):
+                raise ValueError("foreign display frame")
+            if self.status.state not in {"previewing", "starting", "running"}:
+                raise ValueError("inactive session cannot retain a display frame")
+        return self
+
+
 class ApiSnapshot(StreamEnvelope):
     schema_version: Literal["obs-api-snapshot-1"] = "obs-api-snapshot-1"
     kind: Literal["session", "preview"]
@@ -125,4 +175,5 @@ class PreviewReply(Contract):
 
 
 API_CONTRACTS = {cls.__name__: cls for cls in (StartRequest, OwnerRequest, PreviewRequest,
-    SourceList, InspectRequest, ControlBootstrap, SourcePreview, ApiSnapshot, ServiceStatus, PreviewReply)}
+    SourceList, InspectRequest, ControlBootstrap, SourcePreview, DisplayFrame, DisplayReply,
+    ApiSnapshot, ServiceStatus, PreviewReply)}

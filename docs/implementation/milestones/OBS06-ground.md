@@ -145,3 +145,13 @@ Final product approval remains **CHANGES_REQUESTED / awaiting human re-review**.
 real_obs_status and causal_validation_status remain accepted as recorded; those
 gates were **not rerun** in this zero-call repair. **human_review: PENDING** for
 this repair, with the prior CHANGES_REQUESTED decision preserved.
+
+
+## Operator confirmation during SG01 authorization
+
+2026-09-15: the operator explicitly confirms ground contact works at the supplied
+last-reviewed revision `e08dad056077db96d825fb7c4a950833f7e141ac`. This is operator
+confirmation, not a new agent-executed real-OBS check. The original repair evidence
+and CHANGES_REQUESTED history remain intact. Overall product approval is still
+pending. SG01 separately authorizes the Screen Gremlin presentation candidate;
+see [SG01](SG01.md).

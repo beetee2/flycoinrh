@@ -27,6 +27,8 @@ export type LiveContracts = {
   InspectRequest: C.InspectRequest;
   ControlBootstrap: C.ControlBootstrap;
   SourcePreview: C.SourcePreview;
+  DisplayFrame: C.DisplayFrame;
+  DisplayReply: C.DisplayReply;
   ApiSnapshot: C.ApiSnapshot;
   ServiceStatus: C.ServiceStatus;
   PreviewReply: C.PreviewReply;
@@ -176,6 +178,47 @@ function checkSemantics(name: ContractName, value: LiveContracts[ContractName]):
       checkFrame(preview.frame);
       requireCondition(atob(preview.rgb_base64).length === preview.width*preview.height*3,
         'preview RGB byte count disagrees with dimensions');
+      break;
+    }
+    case 'DisplayReply': {
+      const reply = value as C.DisplayReply;
+      if (reply.latest) {
+        checkSemantics('DisplayFrame', reply.latest);
+        requireCondition(['session_id', 'generation', 'evidence_kind'].every(key =>
+          reply.latest!.frame[key as keyof C.FrameIdentity] === reply.status[key as keyof C.SessionStatus]),
+        'foreign display frame');
+        requireCondition(['previewing', 'starting', 'running'].includes(reply.status.state),
+          'inactive session cannot retain a display frame');
+      }
+      break;
+    }
+    case 'DisplayFrame': {
+      const display = value as C.DisplayFrame;
+      checkFrame(display.frame);
+      const jpeg = atob(display.jpeg_base64);
+      requireCondition(jpeg.length === display.encoded_bytes && jpeg.charCodeAt(0) === 255 &&
+        jpeg.charCodeAt(1) === 216 && jpeg.charCodeAt(jpeg.length-2) === 255 &&
+        jpeg.charCodeAt(jpeg.length-1) === 217, 'display JPEG bytes disagree');
+      let offset = 2, dimensions = false;
+      while (offset + 4 <= jpeg.length) {
+        requireCondition(jpeg.charCodeAt(offset) === 255, 'invalid JPEG marker');
+        const marker = jpeg.charCodeAt(offset+1);
+        const length = jpeg.charCodeAt(offset+2)*256+jpeg.charCodeAt(offset+3);
+        requireCondition(length >= 2 && offset+2+length <= jpeg.length, 'invalid JPEG segment');
+        if ([192, 193, 194].includes(marker)) {
+          requireCondition(length >= 8 && jpeg.charCodeAt(offset+5)*256+jpeg.charCodeAt(offset+6) === display.height &&
+            jpeg.charCodeAt(offset+7)*256+jpeg.charCodeAt(offset+8) === display.width,
+          'display JPEG dimensions disagree');
+          dimensions = true;
+          break;
+        }
+        offset += 2+length;
+      }
+      requireCondition(dimensions && display.width <= display.frame.width && display.height <= display.frame.height &&
+        Math.abs(display.width*display.frame.height-display.height*display.frame.width) <=
+          Math.max(display.frame.width, display.frame.height) &&
+        display.delivered_monotonic_ms >= display.frame.receipt_monotonic_ms,
+      'invalid display size, aspect or delivery time');
       break;
     }
     case 'ReplayList':

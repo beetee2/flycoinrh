@@ -78,7 +78,7 @@ describe('flight stage lifecycle', () => {
   });
   it('reports unavailable WebGL without enabling playback', async () => {
     mocks.create.mockImplementation(() => { throw new Error('WebGL unavailable'); });
-    render(<FlightStage />); expect(screen.getByRole('status')).toHaveTextContent('3D view unavailable');
+    render(<FlightStage />); expect(screen.getByText(/3D view unavailable\./)).toBeInTheDocument();
     await load(); expect(screen.getByRole('button', { name: 'Play synthetic preview' })).toBeDisabled(); expect(frames.size).toBe(0);
   });
   it('freezes immediately if the WebGL context is lost', async () => {
@@ -107,6 +107,9 @@ describe('flight stage lifecycle', () => {
     render(<FlightStage />); await load();
     expect(screen.getByTestId('graphics-state')).toHaveTextContent('Renderer failed');
     for (let count = 0; count < 5; count++) fireEvent.click(screen.getByRole('button', { name: 'Retry graphics' }));
+    expect(mocks.create).toHaveBeenCalledTimes(4);
+    expect(screen.getByLabelText('Presentation')).toBeDisabled();
+    fireEvent.change(screen.getByLabelText('Presentation'), { target: { value: 'legacy' } });
     expect(mocks.create).toHaveBeenCalledTimes(4);
     expect(screen.getByRole('button', { name: 'Retry graphics' })).toBeDisabled();
     fireEvent.click(screen.getByRole('button', { name: 'Reset preview' })); advance(2000); await load();
@@ -210,4 +213,20 @@ it('reports measured render calls separately from neural updates and returns to 
     now = 1000; act(() => vi.advanceTimersByTime(500)); expect(rate).toHaveBeenLastCalledWith(0);
     view.unmount(); expect(vi.getTimerCount()).toBe(0);
   } finally { vi.useRealTimers(); }
+});
+
+it('keeps authoritative poses identical across view, caption, and background changes with no control request', () => {
+  const snapshot = fixture().snapshots[25] as FlightSnapshot;
+  render(<FlightStage mode="replay" snapshot={snapshot} />);
+  expect(mocks.draw.mock.calls.at(-1)![0]).toEqual(snapshot);
+  fireEvent.change(screen.getByLabelText('Presentation'), { target: { value: 'legacy' } });
+  expect(mocks.draw.mock.calls.at(-1)![0]).toEqual(snapshot);
+  fireEvent.change(screen.getByLabelText('Presentation'), { target: { value: 'screen-gremlin' } });
+  expect(mocks.draw.mock.calls.at(-1)![0]).toEqual(snapshot);
+  fireEvent.change(screen.getByLabelText('Caption'), { target: { value: '<img src=x onerror=alert(1)>' } });
+  expect(screen.getByText('<img src=x onerror=alert(1)>')).toBeInTheDocument();
+  expect(document.querySelector('.user-caption img')).toBeNull();
+  fireEvent.change(screen.getByLabelText('Safe test background'), { target: { value: 'black' } });
+  expect(mocks.draw.mock.calls.at(-1)![0]).toEqual(snapshot);
+  expect(fetch).not.toHaveBeenCalled(); expect(frames.size).toBe(0);
 });

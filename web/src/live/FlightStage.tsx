@@ -3,13 +3,20 @@ import { createFlightRenderer, FlightGraphicsError, type FlightRenderer } from '
 import { interpolatePose, parseFlightPreview, previewPose, type FlightPreview } from './flightPreview';
 import type { FlightSnapshot } from './contracts';
 import './flight.css';
+import { DEFAULT_PRESENTATION_SETTINGS } from './presentationSettings';
+import { PresentationPanel } from './PresentationPanel';
 import threeLicenseUrl from './three-LICENSE.txt?url&no-inline';
 
 export type StageMode = 'synthetic' | 'preview' | 'live' | 'replay';
 type Props = { mode?: StageMode; modelMode?: 'real' | 'fixture' | 'none'; snapshot?: FlightSnapshot | null; motionAllowed?: boolean; freezePose?: boolean;
+  backdropUrl?: string | null; backdropLabel?: string; onStop?: () => void; sessionActive?: boolean; historyKey?: string;
   onGraphicsFailure?: () => void; onGraphicsReady?: (ready: boolean) => void; onRenderingRate?: (hz: number) => void };
 export function FlightStage({ mode = 'synthetic', modelMode = 'none', snapshot = null, motionAllowed = false, freezePose = false,
-  onGraphicsFailure, onGraphicsReady, onRenderingRate }: Props) {
+  onGraphicsFailure, onGraphicsReady, onRenderingRate, backdropUrl = null, backdropLabel = 'Source unavailable', onStop, sessionActive = false, historyKey = '' }: Props) {
+  const [presentation, setPresentation] = useState<'screen-gremlin' | 'legacy'>('screen-gremlin');
+  const [settings, setSettings] = useState({ ...DEFAULT_PRESENTATION_SETTINGS });
+  const [clean, setClean] = useState(false);
+  const [demoBackground, setDemoBackground] = useState('busy');
   const callbacks = useRef({ onGraphicsFailure, onGraphicsReady, onRenderingRate });
   callbacks.current = { onGraphicsFailure, onGraphicsReady, onRenderingRate };
   const displayed = useRef<FlightSnapshot | null>(null);
@@ -54,7 +61,7 @@ export function FlightStage({ mode = 'synthetic', modelMode = 'none', snapshot =
   useEffect(() => {
     let active = true;
     try {
-      renderer.current = createFlightRenderer(host.current!, error => { if (active) graphicsFailed(error); });
+      renderer.current = createFlightRenderer(host.current!, error => { if (active) graphicsFailed(error); }, { presentation, settings });
       if (draw(mode === 'synthetic' ? (preview ? previewPose(preview, elapsed.current) : null) : displayed.current, elapsed.current)) {
         setGraphics('Ready'); callbacks.current.onGraphicsReady?.(true);
         if (graphicsAttempt > 0) setState('Paused · graphics restored');
@@ -65,7 +72,10 @@ export function FlightStage({ mode = 'synthetic', modelMode = 'none', snapshot =
       const previous = renderer.current; renderer.current = null; previous?.dispose();
     };
     // Initialization is explicitly bounded by mount or Retry, independent of data/playback changes.
-  }, [graphicsAttempt]);
+  }, [graphicsAttempt, presentation]);
+
+  useEffect(() => { renderer.current?.updateSettings?.(settings); }, [settings]);
+  useEffect(() => { renderer.current?.resetHistory?.(); }, [mode, historyKey]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -132,14 +142,14 @@ export function FlightStage({ mode = 'synthetic', modelMode = 'none', snapshot =
       if (!response.ok) throw new Error(`Preview service returned HTTP ${response.status}.`);
       const checked = parseFlightPreview(await response.json());
       if (controller.signal.aborted) return;
-      elapsed.current = 0; setTimeMs(0); setPreview(checked); setState('Loaded · idle');
+      renderer.current?.resetHistory?.(); elapsed.current = 0; setTimeMs(0); setPreview(checked); setState('Loaded · idle');
     } catch (cause) {
       if (!controller.signal.aborted) { setPreview(null); setError(cause instanceof Error ? cause.message : 'Preview unavailable.'); setState('Unavailable'); }
     } finally { if (!controller.signal.aborted) setLoading(false); }
   }
   function freeze(label: string) { stopAnimation(); setPlaying(false); setState(label); }
   function reset() {
-    freeze('Reset · idle'); elapsed.current = 0; setTimeMs(0);
+    renderer.current?.resetHistory?.(); freeze('Reset · idle'); elapsed.current = 0; setTimeMs(0);
     draw(preview ? previewPose(preview, 0) : null, 0);
   }
   function retryGraphics() {
@@ -150,13 +160,21 @@ export function FlightStage({ mode = 'synthetic', modelMode = 'none', snapshot =
   }
   const pose = mode === 'synthetic' ? (preview ? previewPose(preview, timeMs) : null) : rendered;
   const completed = preview !== null && timeMs >= (preview.snapshots.length - 1) * preview.dt_ms;
-  return <section className="flight-section" aria-labelledby="flight-heading">
-    <div className="flight-heading"><h2 id="flight-heading">An open space for flight</h2><span className="flight-label">{mode === 'synthetic' ? 'SYNTHETIC CONTROL REPLAY' : mode === 'preview' ? 'CAPTURE-ONLY PREVIEW' : mode === 'replay' ? 'RECORDED PLAYBACK' : modelMode === 'fixture' ? 'FIXTURE NEURAL SESSION' : 'NEURAL-DRIVEN LIVE FLIGHT'}</span></div>
-    <div className="flight-viewport">
+  const illustrative = mode === 'synthetic' || mode === 'replay';
+  const imageUrl = illustrative ? `/sg01/${demoBackground}.svg` : backdropUrl;
+  const imageLabel = mode === 'synthetic' ? 'ILLUSTRATIVE DEMO · ORIGINAL GENERATED ART' : mode === 'replay' ? 'ORIGINAL COLOR BACKDROP UNAVAILABLE · ILLUSTRATION' : backdropLabel;
+  const actualMode = mode === 'synthetic' ? playing ? 'synthetic' : 'synthetic · paused' : mode === 'replay' ? motionAllowed ? 'replay' : 'replay · paused' : !motionAllowed ? mode === 'preview' && sessionActive ? 'preview · no inference' : 'paused' : modelMode === 'fixture' ? 'synthetic · fixture' : 'live';
+  return <section className={`flight-section ${clean ? 'clean-view' : ''} presentation-${presentation}`} aria-labelledby="flight-heading">
+    <div className="flight-heading"><div><h2 id="flight-heading">Meet Jam.</h2><span className="flight-label">{mode === 'synthetic' ? 'SYNTHETIC CONTROL REPLAY' : mode === 'preview' ? 'CAPTURE-ONLY PREVIEW' : mode === 'replay' ? 'RECORDED PLAYBACK' : modelMode === 'fixture' ? 'FIXTURE NEURAL SESSION' : 'NEURAL-DRIVEN LIVE FLIGHT'}</span></div>
+      <div className="view-actions"><label>Presentation<select aria-label="Presentation" disabled={!available} value={presentation} onChange={e => { if (!available) return; freeze('Paused · presentation changed'); setPresentation(e.target.value as 'screen-gremlin' | 'legacy'); }}><option value="screen-gremlin">Screen Gremlin</option><option value="legacy">Legacy</option></select></label><button onClick={() => setClean(!clean)}>{clean ? 'Exit clean view' : 'Clean view'}</button>{sessionActive && clean && <button className="urgent-stop" onClick={onStop}>Stop session</button>}</div>
+    </div>
+    <div className={`flight-viewport ratio-${settings.compositionRatio}`}>
+      {presentation === 'screen-gremlin' && <div className="screen-backdrop" data-testid="screen-backdrop">{imageUrl ? <img src={imageUrl} alt={illustrative ? 'Original illustrative screen content; not the recorded stimulus' : 'Selected source presentation frame'} style={{ objectFit: settings.backdropFit }} /> : <div className="backdrop-empty"><span>YOUR SCREEN GOES HERE</span><p>{backdropLabel}</p><small>Select a source, then explicitly Preview or Start.</small></div>}</div>}
       <div ref={host} className="flight-canvas" data-testid="flight-canvas" />
-      <div className="flight-overlay"><span>FLIGHT STUDY / 003</span><span>LOCAL PROCEDURAL SCENE</span></div>
+      <div className="flight-overlay"><span className="stage-mark">FLYJAM<span>ONE VERY SMALL PROBLEM</span></span><span className="stage-mode">{actualMode}</span></div>
       {!available && <div className="flight-unavailable" role="status">3D view unavailable. {graphics === 'Context creation failed' ? 'The browser could not create a WebGL2 context.' : graphics === 'Context lost' ? 'The browser lost the graphics context.' : graphics === 'Initializing' ? 'Initializing graphics.' : 'Renderer or scene initialization failed.'} Playback is disabled.</div>}
-      <div className="flight-caption">Original procedural fly · following spectator camera</div>
+      {settings.caption && <div className="user-caption">{settings.caption}</div>}
+      <div className="flight-caption">{imageLabel}</div>
     </div>
     {mode === 'synthetic' && <div className="flight-controls">
       <button onClick={() => { void load(); }} disabled={loading || playing}>Load synthetic preview</button>
@@ -165,6 +183,9 @@ export function FlightStage({ mode = 'synthetic', modelMode = 'none', snapshot =
       <button className="secondary" disabled={!preview} onClick={() => freeze('Stopped · frozen')}>Stop</button>
       <button className="secondary" disabled={!preview} onClick={reset}>Reset preview</button>
     </div>}
+    <div className="stage-summary"><span data-testid="visible-motion-state">{mode === 'synthetic' ? `Sequence: ${state}` : motionAllowed ? 'Active' : 'Stopped / paused'}</span><span>Ground: {!pose ? '—' : pose.schema_version === 'obs-flight-1' ? 'legacy · unconstrained' : pose.ground_contact ? 'contact' : 'clear'}</span></div>
+    <PresentationPanel settings={settings} change={setSettings} />
+    {illustrative && <details className="art-panel"><summary>Illustrative background checks</summary><label>Safe test background<select aria-label="Safe test background" value={demoBackground} onChange={e => setDemoBackground(e.target.value)}>{['white', 'black', 'colorful', 'busy'].map(name => <option key={name} value={name}>{name}</option>)}</select></label><p>Generated local art. Replay footage is unavailable.</p></details>}
     <div className="flight-graphics">
       <p>Graphics: <strong data-testid="graphics-state">{graphics}</strong> · Preview data: <strong data-testid="preview-data-state">{loading ? 'Loading' : preview ? 'Loaded' : 'Not loaded'}</strong></p>
       {!available && <button className="secondary" onClick={retryGraphics} disabled={graphics === 'Initializing' || graphicsAttempt >= 3}>Retry graphics</button>}
@@ -175,13 +196,13 @@ export function FlightStage({ mode = 'synthetic', modelMode = 'none', snapshot =
       </details>}
     </div>
     {error && <p role="alert" className="error">{error}</p>}
-    <div className="flight-telemetry" aria-label={mode === 'synthetic' ? 'Synthetic replay telemetry' : 'Flight telemetry'}>
+    <details className="stage-inspector"><summary>Flight details & provenance</summary><div className="flight-telemetry" aria-label={mode === 'synthetic' ? 'Synthetic replay telemetry' : 'Flight telemetry'}>
       <p><span>PREVIEW STATE</span><strong data-testid="preview-state">{mode === 'synthetic' ? state : motionAllowed ? 'Receiving authoritative poses' : 'Frozen'}</strong></p>
       <p><span>GROUND CONTACT</span><strong data-testid="ground-contact">{!pose ? '—' : pose.schema_version === 'obs-flight-1' ? 'Legacy · unconstrained' : pose.ground_contact ? 'Contact · downward motion constrained' : 'Clear'}</strong></p>
       <p><span>SERVER TICK · 20 MS</span><strong data-testid="flight-tick">{pose?.tick ?? '—'}</strong></p>
       <p><span>POSITION · WORLD UNITS</span><strong data-testid="flight-position">{pose ? pose.position.map(value => value.toFixed(2)).join(' / ') : '—'}</strong></p>
     </div>
     {mode === 'synthetic' ? <p className="flight-explanation">A fixed synthetic control sequence, computed by the server’s flight physics. This is a visual development preview; real neural output is not connected to this stage. The browser interpolates saved poses. Wing motion is decorative. Pause and Stop freeze travel; Reset returns to the first pose. Built with locally bundled <a href={threeLicenseUrl}>three.js (MIT)</a>.</p> : <p className="flight-explanation">Server-authoritative flight poses; display interpolation ends within 100 ms of the last accepted snapshot. Connection loss, stale state and Stop freeze travel. Wing motion is decorative. Built with locally bundled <a href={threeLicenseUrl}>three.js (MIT)</a>.</p>}
-    <output aria-hidden="true" className="pose-evidence" data-testid="rendered-pose" aria-label="Rendered pose">{JSON.stringify(rendered)}</output>
+    </details><output aria-hidden="true" className="pose-evidence" data-testid="rendered-pose" aria-label="Rendered pose">{JSON.stringify(rendered)}</output>
   </section>;
 }

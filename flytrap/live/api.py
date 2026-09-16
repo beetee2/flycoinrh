@@ -6,6 +6,7 @@ import hashlib
 import hmac
 from pathlib import Path
 import secrets
+import threading
 from typing import Annotated
 
 from fastapi import FastAPI, HTTPException, Query, Request, Response
@@ -16,7 +17,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from .contracts import LiveConfig, LiveHealth, SourceCapability
 from .flight import SyntheticFlightPreview, synthetic_preview
 from .accounting import BusyError
-from .api_contracts import (ApiSnapshot, ControlBootstrap, InspectRequest, OwnerRequest, PreviewReply, PreviewRequest,
+from .api_contracts import (ApiSnapshot, ControlBootstrap, DisplayReply, InspectRequest, OwnerRequest, PreviewReply, PreviewRequest,
                             ServiceStatus, SourceList, StartRequest)
 from .service import Conflict, Forbidden, LiveService, NotFound, Unavailable
 from .recording import RecordingError, ReplayList, ReplayPayload
@@ -25,9 +26,23 @@ from .flight import FlightState
 DIST = Path(__file__).resolve().parents[2] / "web/dist"
 
 
+class DisplayResponse(Response):
+    """Retain client admission through all ASGI sends, even pre-body disconnects."""
+    def __init__(self, response, admission):
+        self.response = response
+        self.admission = admission
+
+    async def __call__(self, scope, receive, send):
+        try:
+            await self.response(scope, receive, send)
+        finally:
+            self.admission.release()
+
+
 def create_live_app(*, dist: Path = DIST, service=None):
     service = service or LiveService()
     signing_key = secrets.token_bytes(32)
+    display_clients = threading.BoundedSemaphore(service.max_clients)
 
     @asynccontextmanager
     async def lifespan(app):
@@ -67,13 +82,24 @@ def create_live_app(*, dist: Path = DIST, service=None):
             except TimeoutError:
                 return JSONResponse(status_code=408, content={"detail": "Control body deadline exceeded."})
             request._body = bytes(body)
-        response = await call_next(request)
+        is_display = (request.method == "POST" and request.url.path.startswith("/api/live/sessions/")
+                      and request.url.path.endswith("/display"))
+        if is_display and not display_clients.acquire(blocking=False):
+            return JSONResponse(status_code=429, content={"detail": "Display client limit reached."},
+                                headers={"Cache-Control": "no-store"})
+        try:
+            response = await call_next(request)
+        except BaseException:
+            if is_display:
+                display_clients.release()
+            raise
         response.headers["Cache-Control"] = "no-store"
         response.headers["X-Content-Type-Options"] = "nosniff"
         # Existing AJV browser validators compile bundled, trusted schemas.
         # No client-supplied schema/code or remote scripts are accepted.
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; script-src 'self' 'unsafe-eval'; "
+            "img-src 'self' blob:; "
             "frame-ancestors 'none'; object-src 'none'; base-uri 'none'"
         )
         if request.url.path == "/live/obs-test":
@@ -81,7 +107,8 @@ def create_live_app(*, dist: Path = DIST, service=None):
                 "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; "
                 "frame-ancestors 'none'; object-src 'none'; base-uri 'none'"
             )
-        return response
+        # The whole response lifecycle owns admission, including header-send failure.
+        return DisplayResponse(response, display_clients) if is_display else response
 
     for error, code in ((BusyError, 409), (Conflict, 409), (Forbidden, 403),
                         (NotFound, 404), (Unavailable, 503), (RecordingError, 422)):
@@ -131,6 +158,13 @@ def create_live_app(*, dist: Path = DIST, service=None):
     @app.get("/api/live/sessions/{session_id}/preview", response_model=PreviewReply)
     def current_preview(session_id: str):
         return service.preview(session_id)
+
+    @app.post("/api/live/sessions/{session_id}/display", response_model=DisplayReply)
+    def display_frame(session_id: str, request: OwnerRequest):
+        try:
+            return service.display(session_id, request)
+        except BusyError as exc:
+            raise HTTPException(429, str(exc)) from None
 
     @app.post("/api/live/sessions/{session_id}/renew", response_model=ApiSnapshot)
     def renew(session_id: str, request: OwnerRequest):
@@ -230,4 +264,6 @@ def create_live_app(*, dist: Path = DIST, service=None):
 
     if (dist / "assets").is_dir():
         app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
+    if (dist / "sg01").is_dir():
+        app.mount("/sg01", StaticFiles(directory=dist / "sg01"), name="sg01")
     return app

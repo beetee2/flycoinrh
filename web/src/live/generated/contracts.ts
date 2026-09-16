@@ -2025,6 +2025,153 @@ export interface FrameIdentity {
 }
 export type SourcePreview = SourcePreviewContract.SourcePreview;
 
+export namespace DisplayFrameContract {
+export type SchemaVersion = "screen-gremlin-display-1";
+export type SchemaVersion1 = "obs-frame-1";
+export type SourceId = string;
+export type SessionId = string;
+export type Generation = number;
+export type Sequence = number;
+export type EvidenceKind = "real" | "fixture";
+export type Width = number;
+export type Height = number;
+export type PixelFormat = "RGB24";
+export type ReceiptMonotonicMs = number;
+export type SourceTimestampMs = number | null;
+export type SourceSequence = number | null;
+export type SourceClock = "unknown" | "producer" | "local_monotonic";
+export type Width1 = number;
+export type Height1 = number;
+export type MimeType = "image/jpeg";
+export type JpegBase64 = string;
+export type EncodedBytes = number;
+export type DeliveredMonotonicMs = number;
+export type ReceiptAgeMs = number;
+
+/**
+ * Presentation only: compressed color never enters a neural/replay envelope.
+ */
+export interface DisplayFrame {
+  schema_version?: SchemaVersion;
+  frame: FrameIdentity;
+  width: Width1;
+  height: Height1;
+  mime_type?: MimeType;
+  jpeg_base64: JpegBase64;
+  encoded_bytes: EncodedBytes;
+  delivered_monotonic_ms: DeliveredMonotonicMs;
+  receipt_age_ms: ReceiptAgeMs;
+}
+export interface FrameIdentity {
+  schema_version: SchemaVersion1;
+  source_id: SourceId;
+  session_id: SessionId;
+  generation: Generation;
+  sequence: Sequence;
+  evidence_kind: EvidenceKind;
+  width: Width;
+  height: Height;
+  pixel_format: PixelFormat;
+  receipt_monotonic_ms: ReceiptMonotonicMs;
+  source_timestamp_ms: SourceTimestampMs;
+  source_sequence: SourceSequence;
+  source_clock: SourceClock;
+}
+
+}
+export type DisplayFrame = DisplayFrameContract.DisplayFrame;
+
+export namespace DisplayReplyContract {
+export type SchemaVersion = "screen-gremlin-display-reply-1";
+export type SchemaVersion1 = "obs-session-status-1";
+export type SessionId = string;
+export type Generation = number;
+export type EvidenceKind = "real" | "fixture";
+export type State =
+  "idle" | "previewing" | "starting" | "running" | "stopping" | "stopped" | "source_lost" | "failed" | "limit_reached";
+export type Reason = string | null;
+export type AttemptedCalls = number;
+export type AcceptedFrames = number;
+export type OverwrittenFrames = number;
+export type ContentUnchangedMs = number;
+export type ProducerHealth = "unknown" | "active" | "inactive";
+export type LastFrameSequence = number | null;
+export type LastResponseId = string | null;
+export type SchemaVersion2 = "screen-gremlin-display-1";
+export type SchemaVersion3 = "obs-frame-1";
+export type SourceId = string;
+export type SessionId1 = string;
+export type Generation1 = number;
+export type Sequence = number;
+export type EvidenceKind1 = "real" | "fixture";
+export type Width = number;
+export type Height = number;
+export type PixelFormat = "RGB24";
+export type ReceiptMonotonicMs = number;
+export type SourceTimestampMs = number | null;
+export type SourceSequence = number | null;
+export type SourceClock = "unknown" | "producer" | "local_monotonic";
+export type Width1 = number;
+export type Height1 = number;
+export type MimeType = "image/jpeg";
+export type JpegBase64 = string;
+export type EncodedBytes = number;
+export type DeliveredMonotonicMs = number;
+export type ReceiptAgeMs = number;
+
+export interface DisplayReply {
+  schema_version?: SchemaVersion;
+  status: SessionStatus;
+  latest: DisplayFrame | null;
+}
+export interface SessionStatus {
+  schema_version: SchemaVersion1;
+  session_id: SessionId;
+  generation: Generation;
+  evidence_kind: EvidenceKind;
+  state: State;
+  reason: Reason;
+  attempted_calls: AttemptedCalls;
+  accepted_frames: AcceptedFrames;
+  overwritten_frames: OverwrittenFrames;
+  content_unchanged_ms: ContentUnchangedMs;
+  producer_health: ProducerHealth;
+  last_frame_sequence: LastFrameSequence;
+  last_response_id: LastResponseId;
+}
+/**
+ * Presentation only: compressed color never enters a neural/replay envelope.
+ */
+export interface DisplayFrame {
+  schema_version?: SchemaVersion2;
+  frame: FrameIdentity;
+  width: Width1;
+  height: Height1;
+  mime_type?: MimeType;
+  jpeg_base64: JpegBase64;
+  encoded_bytes: EncodedBytes;
+  delivered_monotonic_ms: DeliveredMonotonicMs;
+  receipt_age_ms: ReceiptAgeMs;
+}
+export interface FrameIdentity {
+  schema_version: SchemaVersion3;
+  source_id: SourceId;
+  session_id: SessionId1;
+  generation: Generation1;
+  sequence: Sequence;
+  evidence_kind: EvidenceKind1;
+  width: Width;
+  height: Height;
+  pixel_format: PixelFormat;
+  receipt_monotonic_ms: ReceiptMonotonicMs;
+  source_timestamp_ms: SourceTimestampMs;
+  source_sequence: SourceSequence;
+  source_clock: SourceClock;
+}
+
+}
+export type DisplayReply = DisplayReplyContract.DisplayReply;
+
 export namespace ApiSnapshotContract {
 export type SchemaVersion = "obs-api-snapshot-1";
 export type EventSequence = number;

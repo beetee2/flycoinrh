@@ -4078,6 +4078,545 @@
     "title": "SourcePreview",
     "type": "object"
   },
+  "DisplayFrame": {
+    "$defs": {
+      "FrameIdentity": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-frame-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "sequence": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "width": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Width",
+            "type": "integer"
+          },
+          "height": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Height",
+            "type": "integer"
+          },
+          "pixel_format": {
+            "const": "RGB24",
+            "title": "Pixel Format",
+            "type": "string"
+          },
+          "receipt_monotonic_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Receipt Monotonic Ms",
+            "type": "number"
+          },
+          "source_timestamp_ms": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Timestamp Ms"
+          },
+          "source_sequence": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Sequence"
+          },
+          "source_clock": {
+            "enum": [
+              "unknown",
+              "producer",
+              "local_monotonic"
+            ],
+            "title": "Source Clock",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "source_id",
+          "session_id",
+          "generation",
+          "sequence",
+          "evidence_kind",
+          "width",
+          "height",
+          "pixel_format",
+          "receipt_monotonic_ms",
+          "source_timestamp_ms",
+          "source_sequence",
+          "source_clock"
+        ],
+        "title": "FrameIdentity",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "description": "Presentation only: compressed color never enters a neural/replay envelope.",
+    "properties": {
+      "schema_version": {
+        "const": "screen-gremlin-display-1",
+        "default": "screen-gremlin-display-1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "frame": {
+        "$ref": "#/$defs/FrameIdentity"
+      },
+      "width": {
+        "maximum": 960,
+        "minimum": 1,
+        "title": "Width",
+        "type": "integer"
+      },
+      "height": {
+        "maximum": 540,
+        "minimum": 1,
+        "title": "Height",
+        "type": "integer"
+      },
+      "mime_type": {
+        "const": "image/jpeg",
+        "default": "image/jpeg",
+        "title": "Mime Type",
+        "type": "string"
+      },
+      "jpeg_base64": {
+        "maxLength": 349528,
+        "pattern": "^[A-Za-z0-9+/]*={0,2}$",
+        "title": "Jpeg Base64",
+        "type": "string"
+      },
+      "encoded_bytes": {
+        "maximum": 262144,
+        "minimum": 4,
+        "title": "Encoded Bytes",
+        "type": "integer"
+      },
+      "delivered_monotonic_ms": {
+        "maximum": 9007199254740991,
+        "minimum": 0,
+        "title": "Delivered Monotonic Ms",
+        "type": "number"
+      },
+      "receipt_age_ms": {
+        "maximum": 9007199254740991,
+        "minimum": 0,
+        "title": "Receipt Age Ms",
+        "type": "number"
+      }
+    },
+    "required": [
+      "frame",
+      "width",
+      "height",
+      "jpeg_base64",
+      "encoded_bytes",
+      "delivered_monotonic_ms",
+      "receipt_age_ms"
+    ],
+    "title": "DisplayFrame",
+    "type": "object"
+  },
+  "DisplayReply": {
+    "$defs": {
+      "DisplayFrame": {
+        "additionalProperties": false,
+        "description": "Presentation only: compressed color never enters a neural/replay envelope.",
+        "properties": {
+          "schema_version": {
+            "const": "screen-gremlin-display-1",
+            "default": "screen-gremlin-display-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "frame": {
+            "$ref": "#/$defs/FrameIdentity"
+          },
+          "width": {
+            "maximum": 960,
+            "minimum": 1,
+            "title": "Width",
+            "type": "integer"
+          },
+          "height": {
+            "maximum": 540,
+            "minimum": 1,
+            "title": "Height",
+            "type": "integer"
+          },
+          "mime_type": {
+            "const": "image/jpeg",
+            "default": "image/jpeg",
+            "title": "Mime Type",
+            "type": "string"
+          },
+          "jpeg_base64": {
+            "maxLength": 349528,
+            "pattern": "^[A-Za-z0-9+/]*={0,2}$",
+            "title": "Jpeg Base64",
+            "type": "string"
+          },
+          "encoded_bytes": {
+            "maximum": 262144,
+            "minimum": 4,
+            "title": "Encoded Bytes",
+            "type": "integer"
+          },
+          "delivered_monotonic_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Delivered Monotonic Ms",
+            "type": "number"
+          },
+          "receipt_age_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Receipt Age Ms",
+            "type": "number"
+          }
+        },
+        "required": [
+          "frame",
+          "width",
+          "height",
+          "jpeg_base64",
+          "encoded_bytes",
+          "delivered_monotonic_ms",
+          "receipt_age_ms"
+        ],
+        "title": "DisplayFrame",
+        "type": "object"
+      },
+      "FrameIdentity": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-frame-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "sequence": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "width": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Width",
+            "type": "integer"
+          },
+          "height": {
+            "maximum": 8192,
+            "minimum": 1,
+            "title": "Height",
+            "type": "integer"
+          },
+          "pixel_format": {
+            "const": "RGB24",
+            "title": "Pixel Format",
+            "type": "string"
+          },
+          "receipt_monotonic_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Receipt Monotonic Ms",
+            "type": "number"
+          },
+          "source_timestamp_ms": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Timestamp Ms"
+          },
+          "source_sequence": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Sequence"
+          },
+          "source_clock": {
+            "enum": [
+              "unknown",
+              "producer",
+              "local_monotonic"
+            ],
+            "title": "Source Clock",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "source_id",
+          "session_id",
+          "generation",
+          "sequence",
+          "evidence_kind",
+          "width",
+          "height",
+          "pixel_format",
+          "receipt_monotonic_ms",
+          "source_timestamp_ms",
+          "source_sequence",
+          "source_clock"
+        ],
+        "title": "FrameIdentity",
+        "type": "object"
+      },
+      "SessionStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-session-status-1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "idle",
+              "previewing",
+              "starting",
+              "running",
+              "stopping",
+              "stopped",
+              "source_lost",
+              "failed",
+              "limit_reached"
+            ],
+            "title": "State",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "pattern": "^[^\\x00-\\x1f\\x7f]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "attempted_calls": {
+            "maximum": 512,
+            "minimum": 0,
+            "title": "Attempted Calls",
+            "type": "integer"
+          },
+          "accepted_frames": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Accepted Frames",
+            "type": "integer"
+          },
+          "overwritten_frames": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Overwritten Frames",
+            "type": "integer"
+          },
+          "content_unchanged_ms": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Content Unchanged Ms",
+            "type": "number"
+          },
+          "producer_health": {
+            "enum": [
+              "unknown",
+              "active",
+              "inactive"
+            ],
+            "title": "Producer Health",
+            "type": "string"
+          },
+          "last_frame_sequence": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Frame Sequence"
+          },
+          "last_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Response Id"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "state",
+          "reason",
+          "attempted_calls",
+          "accepted_frames",
+          "overwritten_frames",
+          "content_unchanged_ms",
+          "producer_health",
+          "last_frame_sequence",
+          "last_response_id"
+        ],
+        "title": "SessionStatus",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "schema_version": {
+        "const": "screen-gremlin-display-reply-1",
+        "default": "screen-gremlin-display-reply-1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "status": {
+        "$ref": "#/$defs/SessionStatus"
+      },
+      "latest": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/DisplayFrame"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      }
+    },
+    "required": [
+      "status",
+      "latest"
+    ],
+    "title": "DisplayReply",
+    "type": "object"
+  },
   "ApiSnapshot": {
     "$defs": {
       "FlightSnapshot": {

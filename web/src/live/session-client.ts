@@ -1,5 +1,7 @@
 import { parseLiveContract, type ApiSnapshot, type ContractName, type LiveContracts, type SessionConfig, type ReplayManifest } from './contracts';
 
+export class DisplayBackpressureError extends Error {}
+
 type Identity = { sessionId: string; generation: number };
 type Stream = Pick<EventTarget, 'addEventListener'> & { close(): void };
 type Options = {
@@ -25,7 +27,7 @@ function identity(sessionId: string, generation: number): Identity {
   return { sessionId, generation };
 }
 function decode<K extends ContractName>(name: K, text: string): LiveContracts[K] {
-  if (text.length > (name === 'ReplayPayload' || name === 'ReplayList' ? 33554432 : maxJsonLength)) throw new Error('Live response exceeds the client bound.');
+  if (text.length > (name === 'ReplayPayload' || name === 'ReplayList' ? 33554432 : name === 'DisplayReply' ? 360448 : maxJsonLength)) throw new Error('Live response exceeds the client bound.');
   return parseLiveContract(name, JSON.parse(text));
 }
 
@@ -67,6 +69,7 @@ export class SessionClient {
 
   private async read<K extends ContractName>(path: string, name: K, init?: RequestInit): Promise<LiveContracts[K]> {
     const response = await this.transport(`/api/live${path}`, { credentials: 'same-origin', ...init });
+    if (name === 'DisplayReply' && response.status === 429) throw new DisplayBackpressureError('Display busy; sample again later.');
     if (!response.ok) throw new Error(`Local session request failed (${response.status}).`);
     return decode(name, await response.text());
   }
@@ -132,6 +135,22 @@ export class SessionClient {
       if (reply.status.session_id !== sessionId || reply.status.generation !== generation) throw new Error('Foreign preview identity.');
       return reply;
     });
+  }
+
+  async displayFrame(sessionId: string, generation: number, signal?: AbortSignal) {
+    const target = identity(sessionId, generation);
+    if (!this.owner || !same(this.owner, target) || !this.watchedSource || !this.csrf) throw new Error('Display requires current source ownership.');
+    const source = this.watchedSource;
+    const requestedAt = this.now();
+    const reply = await this.read(`/sessions/${target.sessionId}/display`, 'DisplayReply', {
+      method: 'POST', signal, cache: 'no-store', headers: { 'Content-Type': 'application/json', 'X-Live-CSRF': this.csrf },
+      body: JSON.stringify({ generation, owner_token: this.ownerToken }),
+    });
+    if (!this.owner || !same(this.owner, target) || this.watchedSource !== source ||
+      reply.status.session_id !== sessionId || reply.status.generation !== generation ||
+      (reply.latest && reply.latest.frame.source_id !== source)) throw new Error('Foreign or expired display identity.');
+    if (reply.latest && reply.latest.receipt_age_ms + Math.max(0, this.now() - requestedAt) >= 2000) return { ...reply, latest: null };
+    return reply;
   }
 
   private write(path: string, body: unknown, keepalive = false) {

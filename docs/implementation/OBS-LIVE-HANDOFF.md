@@ -1,3 +1,52 @@
+# SG01 — Screen Gremlin candidate
+
+The default is now **Screen Gremlin**; choose **Legacy** locally for comparison.
+Your ground-contact confirmation is recorded as operator evidence. Character,
+composition, real-motion appeal and overall product approval remain yours.
+[SG01 report and final evidence](milestones/SG01.md).
+
+Final checks PASS: 679 live Python, 305 live UI/contracts, 20 live fixture browsers,
+10 SG01 browsers, plus lab regressions and build/schema/lint checks. Installed
+RTX 3080 / Chrome measured 59.8 display draws/s with neural updates at zero during
+the synthetic test. Review media are in `artifacts/milestones/SG01/review/`: the
+10-second `movement.webm`, four character backgrounds, landscape/portrait,
+portrait turn, Legacy comparison and performance JSON.
+
+From `/home/kernel_sanders/dev/flycoinrh`, run:
+
+```text
+./scripts/dev_sg01.sh
+```
+
+Open **http://127.0.0.1:5173/live**. This is Vite hot reload with a same-origin
+proxy to the safe API on 8770. It provides no desktop source and no neural Start.
+
+- **Synthetic demonstration:** Load synthetic preview → Play. The existing
+  12-second sequence descends, contacts, turns and departs. Pause/Stop freeze.
+- **Live source:** explicitly select the labeled deterministic synthetic source
+  and choose Preview source. The backdrop updates with inspectors collapsed.
+  Stop clears it. This exercises the real display transport with safe content.
+- **Recorded playback:** load `8d4d624e6f4a4d3f8a9a7dbdc26d3d62`, the verified
+  existing CPU-model recording of generated safe stimuli. No new inference;
+  original color footage is absent and the illustrative background is labeled.
+- Compare presentations while paused at the same time. Art & composition offers
+  strict local view settings, caption, and landscape/portrait previews. Clean
+  view has a visible exit and active Stop. It does not export or record video.
+
+SG01 real OBS is **NOT_RUN**, awaiting your approval and execution. Real-source
+integration is implemented in the ordinary live API; the dedicated safe command
+cannot silently switch to it. The existing 8767 process may predate SG01; when
+you approve the real smoke test, restart the ordinary service with the existing
+manual command `.venv/bin/python -m flytrap.live serve --port 8767 --execution-purpose human`
+to load the new endpoint and built assets. No automated test uses that human
+service. No OBS settings/device changes were made.
+
+Capture and inference are stopped at handoff. Historical model accounting and
+recording restrictions are preserved. Do not run another milestone or neural
+experiment as part of this review. Older handoffs remain historical below.
+
+---
+
 # Ground-contact repair — human re-review
 
 **Focused repair PASS; final product approval awaits your review.** Your

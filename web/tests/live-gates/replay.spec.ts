@@ -24,6 +24,7 @@ test('existing safe real recording plays, seeks and downloads exactly with zero 
     expect(payload.results.every(result => result.output.model_mode === 'windowed_reset')).toBe(true);
     await page.goto('/live');
     await expect(page.getByTestId('graphics-state')).toHaveText('Ready');
+    await page.getByText('Session details & input inspector', { exact: true }).click();
     await page.getByLabel('Inspect input', { exact: true }).check();
     await replayRecorded(page, { recording_state: 'complete', recording_id: recordingId,
       last_inferred: payload.samples.at(-1)!, flight: payload.final.snapshot,

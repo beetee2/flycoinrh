@@ -30,6 +30,7 @@ test('explicit synthetic flight plays, freezes, resets, and reloads idle', async
   await expect(page.getByTestId('graphics-state')).toHaveText('Ready');
   const canvas = page.getByTestId('flight-canvas').locator('canvas');
   await expect(canvas).toBeVisible();
+  await page.getByText('Flight details & provenance', { exact: true }).click();
   const licenseHref = await page.getByRole('link', { name: 'three.js (MIT)' }).getAttribute('href');
   expect(licenseHref).toMatch(/^\/assets\/three-LICENSE-.*\.txt$/);
   const license = await page.request.get(licenseHref!);

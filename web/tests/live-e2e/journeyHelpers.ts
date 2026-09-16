@@ -44,6 +44,7 @@ export async function selectLive(page: Page, source = 'fixture-pattern') {
   await expect(page.getByTestId('graphics-state')).toHaveText('Ready');
   await page.getByRole('button', { name: 'Live source', exact: true }).click();
   await page.getByRole('combobox', { name: 'Source', exact: true }).selectOption(source);
+  await page.getByText('Session details & input inspector', { exact: true }).click();
   await page.getByLabel('Inspect input', { exact: true }).check();
 }
 
