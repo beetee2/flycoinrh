@@ -6735,6 +6735,114 @@
     "title": "PreviewReply",
     "type": "object"
   },
+  "ServiceCapabilities": {
+    "additionalProperties": false,
+    "properties": {
+      "schema_version": {
+        "const": "obs-capabilities-1",
+        "default": "obs-capabilities-1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "profile": {
+        "enum": [
+          "live",
+          "art_review"
+        ],
+        "title": "Profile",
+        "type": "string"
+      },
+      "preview": {
+        "title": "Preview",
+        "type": "boolean"
+      },
+      "inference": {
+        "title": "Inference",
+        "type": "boolean"
+      },
+      "replay": {
+        "title": "Replay",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "profile",
+      "preview",
+      "inference",
+      "replay"
+    ],
+    "title": "ServiceCapabilities",
+    "type": "object"
+  },
+  "ApiError": {
+    "additionalProperties": false,
+    "properties": {
+      "schema_version": {
+        "const": "obs-error-1",
+        "default": "obs-error-1",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "code": {
+        "enum": [
+          "inference_unavailable",
+          "source_unavailable",
+          "service_unavailable",
+          "control_busy",
+          "control_conflict",
+          "owner_required",
+          "recording_forbidden",
+          "session_not_found",
+          "origin_required",
+          "csrf_required",
+          "invalid_request",
+          "json_required",
+          "request_too_large",
+          "request_timeout",
+          "client_limit",
+          "replay_unavailable",
+          "seek_out_of_range",
+          "ui_unavailable",
+          "not_found",
+          "internal_error"
+        ],
+        "title": "Code",
+        "type": "string"
+      },
+      "message": {
+        "enum": [
+          "Art review cannot run inference. Use the live launcher to start live flight.",
+          "Selected source is unavailable. Refresh sources and check source access.",
+          "Local source or storage is unavailable. Check the service and try again.",
+          "Another session owns the source or model. Stop it or wait for its lease to end.",
+          "Session state changed. Refresh status and start a new session if needed.",
+          "Only the active control owner can perform this operation. Return to the owning tab.",
+          "Recording the selected OBS source is disabled. Use the safe deterministic input.",
+          "Session is no longer available. Refresh status and start a new session.",
+          "Same-origin control is required. Open the UI through its local launcher URL.",
+          "Local control token is missing or expired. Reload the page and try again.",
+          "Request settings are invalid. Refresh the page and check the selected options.",
+          "JSON is required for control requests. Reload the page and try again.",
+          "Control request exceeds its size limit. Reload the page and try again.",
+          "Control request timed out. Check the local service and try again.",
+          "Local client limit reached. Close extra viewer tabs and try again.",
+          "Recording is missing, incomplete or unsupported. Select another saved replay.",
+          "Replay position is outside this recording. Select an earlier position.",
+          "Local UI is unavailable. Build it with npm --prefix web run build.",
+          "Requested resource is unavailable. Refresh the page and try again.",
+          "Local service could not complete the request. Restart the idle service and try again."
+        ],
+        "title": "Message",
+        "type": "string"
+      }
+    },
+    "required": [
+      "code",
+      "message"
+    ],
+    "title": "ApiError",
+    "type": "object"
+  },
   "ReplayPayload": {
     "$defs": {
       "ControlTick": {

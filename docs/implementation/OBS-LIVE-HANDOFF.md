@@ -12,34 +12,56 @@ the synthetic test. Review media are in `artifacts/milestones/SG01/review/`: the
 10-second `movement.webm`, four character backgrounds, landscape/portrait,
 portrait turn, Legacy comparison and performance JSON.
 
-From `/home/kernel_sanders/dev/flycoinrh`, run:
+Launch-profile repair **PASS**: 727 live Python, 350 live UI/contracts and 20
+live desktop/mobile browser tests, plus lab regressions and the dedicated SG01
+proxy checks. All 155 protected identities and 3,801 historical evidence files
+remain unchanged. Zero new full-model calls or desktop capture.
+
+Choose one launcher from `/home/kernel_sanders/dev/flycoinrh`:
 
 ```text
 ./scripts/dev_sg01.sh
+./scripts/dev_sg01_live.sh
 ```
 
-Open **http://127.0.0.1:5173/live**. This is Vite hot reload with a same-origin
-proxy to the safe API on 8770. It provides no desktop source and no neural Start.
+Both open the same Screen Gremlin frontend at **http://127.0.0.1:5173/live**.
+Run one at a time. Neither selects a source, captures, or infers on startup or
+reload. Stop the launcher with Ctrl+C before switching profiles.
 
-- **Synthetic demonstration:** Load synthetic preview → Play. The existing
-  12-second sequence descends, contacts, turns and departs. Pause/Stop freeze.
-- **Live source:** explicitly select the labeled deterministic synthetic source
-  and choose Preview source. The backdrop updates with inspectors collapsed.
-  Stop clears it. This exercises the real display transport with safe content.
-- **Recorded playback:** load `8d4d624e6f4a4d3f8a9a7dbdc26d3d62`, the verified
-  existing CPU-model recording of generated safe stimuli. No new inference;
-  original color footage is absent and the illustrative background is labeled.
-- Compare presentations while paused at the same time. Art & composition offers
-  strict local view settings, caption, and landscape/portrait previews. Clean
-  view has a visible exit and active Stop. It does not export or record video.
+- **Art review — capture-only demo and saved replays.** `dev_sg01.sh` uses the
+  dedicated safe API on 8770. The page labels this profile and disables Start,
+  model-call/seed inputs and recording, with an explanation before a click.
+  Load/Play synthetic preview is the existing 12-second movement demonstration.
+  Live source → explicitly select the synthetic source → Preview source exercises
+  capture-only display; Stop clears it. This service cannot perform inference.
+  Recorded playback retains the read-only safe recording
+  `8d4d624e6f4a4d3f8a9a7dbdc26d3d62`; original color footage remains absent.
+- **Live flight.** `dev_sg01_live.sh` uses the normal live API on 8767 with
+  server-controlled **human** execution purpose, normal device metadata and the
+  existing neural-session factory. Explicitly select your approved OBS source,
+  Preview if desired, then Start for your manual smoke test. OBS recording stays
+  disabled. Start still requires ready graphics and respects existing ownership,
+  session limits and accounting. A synthetic source on the ordinary
+  `--safe-source` API remains inference-capable; source type is independent of
+  the server's inference capability.
 
-SG01 real OBS is **NOT_RUN**, awaiting your approval and execution. Real-source
-integration is implemented in the ordinary live API; the dedicated safe command
-cannot silently switch to it. The existing 8767 process may predate SG01; when
-you approve the real smoke test, restart the ordinary service with the existing
-manual command `.venv/bin/python -m flytrap.live serve --port 8767 --execution-purpose human`
-to load the new endpoint and built assets. No automated test uses that human
-service. No OBS settings/device changes were made.
+The launchers refuse occupied API or frontend ports, including an older service
+on 8767. They never reuse that service or stop its owner. Stop your old launcher
+explicitly, or select free ports, for example:
+`./scripts/dev_sg01_live.sh --api-port 8772 --ui-port 5174`, then open
+`http://127.0.0.1:5174/live`. The proxy target follows the chosen API port and
+preserves Host/Origin checks. Ctrl+C and startup failure clean up only this
+launcher's child processes.
+
+API errors show fixed, validated guidance and stable codes. If the service cannot
+confirm its capabilities, controls stay disabled; check the launcher and reload.
+After connection/source loss, use the explanation, correct the source, and Start
+explicitly. No automatic recovery starts capture or inference.
+
+SG01 real OBS is **NOT_RUN by the repair agent**; you will perform the actual
+smoke test manually. No OBS configuration changes were made. The focused
+[launch-profile repair report](milestones/SG01.md#launch-profile-and-unavailable-control-repair)
+records fixture tests and metadata-only checks separately from prior evidence.
 
 Capture and inference are stopped at handoff. Historical model accounting and
 recording restrictions are preserved. Do not run another milestone or neural

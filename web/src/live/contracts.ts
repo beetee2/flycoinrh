@@ -31,6 +31,8 @@ export type LiveContracts = {
   DisplayReply: C.DisplayReply;
   ApiSnapshot: C.ApiSnapshot;
   ServiceStatus: C.ServiceStatus;
+  ServiceCapabilities: C.ServiceCapabilities;
+  ApiError: C.ApiError;
   PreviewReply: C.PreviewReply;
   ReplayPayload: C.ReplayPayload;
   ReplayList: C.ReplayList;
@@ -89,6 +91,11 @@ function checkFlight(snapshot: FlightSnapshot): void {
 // with flytrap/live/contracts.py and the shared generated compatibility corpus.
 function checkSemantics(name: ContractName, value: LiveContracts[ContractName]): void {
   switch (name) {
+    case 'ServiceCapabilities': {
+      const capabilities = value as C.ServiceCapabilities;
+      requireCondition(capabilities.profile !== 'art_review' || !capabilities.inference, 'art review cannot infer');
+      break;
+    }
     case 'GroundFlightSnapshot':
       checkFlight(value as C.GroundFlightSnapshot);
       break;

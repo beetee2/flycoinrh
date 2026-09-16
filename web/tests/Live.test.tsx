@@ -20,6 +20,7 @@ function mockReads() {
   const fetcher = vi.fn().mockImplementation(async (path: string, init?: RequestInit) => {
     let value: unknown;
     if (path === '/health/live') value = sample('LiveHealth');
+    else if (path === '/api/live/capabilities') value = { schema_version: 'obs-capabilities-1', profile: 'live', preview: true, inference: true, replay: true };
     else if (path === '/api/live/config') value = sample('LiveConfig');
     else if (path === '/api/live/control') value = sample('ControlBootstrap');
     else if (path === '/api/live/sources') value = { schema_version: 'obs-sources-1', sources: [source] };
@@ -66,7 +67,7 @@ describe('OBS05 operator session page', () => {
     await enterLive();
     expect(screen.getByLabelText('Record this session locally')).not.toBeChecked();
     expect(screen.getByRole('button', { name: 'Start live flight' })).toBeEnabled();
-    expect(fetcher.mock.calls.map(call => call[0])).toEqual(['/health/live', '/api/live/config', '/api/live/sources', '/api/live/status']);
+    expect(fetcher.mock.calls.map(call => call[0])).toEqual(['/health/live', '/api/live/config', '/api/live/sources', '/api/live/status', '/api/live/capabilities']);
     expect(fetcher.mock.calls.every(call => !call[1]?.method || call[1].method === 'GET')).toBe(true);
   });
   it('requires a selected source before Preview or Start and supports keyboard mode selection', async () => {
@@ -146,7 +147,7 @@ describe('OBS05 operator session page', () => {
     expect(screen.getByText('RECORDED PLAYBACK')).toBeInTheDocument();
     expect(fetcher.mock.calls.every(call => !call[1]?.method || call[1].method === 'GET')).toBe(true);
   });
-  it.each(['/health/live', '/api/live/config', '/api/live/sources', '/api/live/status'])('rejects invalid %s responses', async badPath => {
+  it.each(['/health/live', '/api/live/config', '/api/live/sources', '/api/live/status', '/api/live/capabilities'])('rejects invalid %s responses', async badPath => {
     const fetcher = mockReads(); const original = fetcher.getMockImplementation()!;
     fetcher.mockImplementation((path, init) => path === badPath ? Promise.resolve(new Response('{"invented":true}')) : original(path, init));
     render(<Live />); expect(await screen.findByRole('alert')).toHaveTextContent('Invalid live');
@@ -155,7 +156,7 @@ describe('OBS05 operator session page', () => {
   it('remains read-only across StrictMode cleanup and remount', async () => {
     const fetcher = mockReads(); const view = render(<StrictMode><Live /></StrictMode>);
     await screen.findByText('Idle · local service available');
-    expect(fetcher.mock.calls).toHaveLength(8);
+    expect(fetcher.mock.calls).toHaveLength(10);
     expect(fetcher.mock.calls.every(call => !call[1]?.method || call[1].method === 'GET')).toBe(true);
     view.unmount();
     for (const call of fetcher.mock.calls.filter(call => call[1]?.signal)) expect(call[1].signal.aborted).toBe(true);
@@ -291,4 +292,32 @@ it('discards pending display frames after a source mode change without showing s
   expect(create).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole('button', { name: 'Live source' }));
   expect(screen.getByTestId('screen-backdrop').querySelector('img')).toBeNull();
+});
+
+it('explains art review before any click, disables neural controls, and keeps Preview and replay available', async () => {
+  const fetcher = mockReads(); const original = fetcher.getMockImplementation()!;
+  fetcher.mockImplementation((path, init) => path === '/api/live/capabilities' ? Promise.resolve(new Response(JSON.stringify({
+    schema_version: 'obs-capabilities-1', profile: 'art_review', preview: true, inference: false, replay: true,
+  }))) : original(path, init));
+  render(<Live />); await enterLive();
+  expect(screen.getByTestId('launch-profile')).toHaveTextContent('Art review — capture-only demo and saved replays.');
+  const start = screen.getByRole('button', { name: 'Start live flight' });
+  expect(start).toBeDisabled();
+  expect(start).toHaveAccessibleDescription(/Run .\/scripts\/dev_sg01_live.sh/);
+  expect(screen.getByLabelText('Maximum model calls')).toBeDisabled();
+  expect(screen.getByLabelText('Record this session locally')).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Preview source' })).toBeEnabled();
+  expect(screen.getByRole('button', { name: 'Recorded playback' })).toBeEnabled();
+  fireEvent.click(start);
+  expect(fetcher.mock.calls.every(call => !call[1]?.method || call[1].method === 'GET')).toBe(true);
+  fireEvent.click(screen.getByRole('button', { name: 'Preview source' }));
+  await waitFor(() => expect(screen.getByTestId('session-status')).toHaveTextContent('previewing'));
+  expect(fetcher.mock.calls.some(call => call[0] === '/api/live/sessions')).toBe(false);
+});
+
+it('keeps safe synthetic source inference available when the server supports it', async () => {
+  const fetcher = mockReads(); render(<Live />); await enterLive();
+  expect(source.backend).toBe('synthetic');
+  fireEvent.click(screen.getByRole('button', { name: 'Start live flight' }));
+  await waitFor(() => expect(fetcher.mock.calls.some(call => call[0] === '/api/live/sessions')).toBe(true));
 });

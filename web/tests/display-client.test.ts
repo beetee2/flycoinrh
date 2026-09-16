@@ -173,6 +173,7 @@ describe('SG01 presentation transport with original safe fixture JPEGs', () => {
         return response({ ...activeDisplay(), status: snapshot.status });
       }
       const value = path === '/health/live' ? fixture('LiveHealth')
+        : path === '/api/live/capabilities' ? { schema_version: 'obs-capabilities-1', profile: 'live', preview: true, inference: true, replay: true }
         : path === '/api/live/config' ? fixture('LiveConfig')
           : path === '/api/live/control' ? fixture('ControlBootstrap')
             : path === '/api/live/sources' ? fixture('SourceList')

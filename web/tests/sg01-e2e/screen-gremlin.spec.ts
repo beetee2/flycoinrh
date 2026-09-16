@@ -10,6 +10,26 @@ async function ready(page: Page) {
 }
 async function pose(page: Page) { return JSON.parse((await page.getByTestId('rendered-pose').textContent())!); }
 
+test('art review explains disabled Start and reload stays idle without selecting or capturing', async ({ page }, info) => {
+  const writes: string[] = [];
+  page.on('request', request => { if (request.method() !== 'GET') writes.push(new URL(request.url()).pathname); });
+  for (let visit = 0; visit < 2; visit++) {
+    await ready(page);
+    await expect(page.getByTestId('launch-profile')).toHaveText('Art review — capture-only demo and saved replays.');
+    await page.getByRole('button', { name: 'Live source', exact: true }).click();
+    await expect(page.getByRole('combobox', { name: 'Source', exact: true })).toHaveValue('');
+    await page.getByRole('combobox', { name: 'Source', exact: true }).selectOption('fixture-pattern');
+    const start = page.getByRole('button', { name: 'Start live flight', exact: true });
+    await expect(start).toBeDisabled();
+    await expect(start).toHaveAccessibleDescription(/Run .\/scripts\/dev_sg01_live.sh/);
+    await expect(page.getByRole('button', { name: 'Preview source', exact: true })).toBeEnabled();
+    await expect(page.getByRole('button', { name: 'Recorded playback', exact: true })).toBeEnabled();
+  }
+  expect(writes).toEqual([]);
+  expect(await (await page.request.get('/api/live/status')).json()).toEqual({ schema_version: 'obs-service-status-1', current: null });
+  await page.locator('.status-card').first().screenshot({ path: info.outputPath('disabled-start-explanation.png') });
+});
+
 test('original four-background character sheet, composition ratios, same-pose Legacy comparison', async ({ page }, info) => {
   const mutations: string[] = [];
   page.on('request', request => { if (request.method() !== 'GET') mutations.push(new URL(request.url()).pathname); });

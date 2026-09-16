@@ -1,8 +1,8 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 const FlightStage = lazy(() => import('./FlightStage').then(module => ({ default: module.FlightStage })));
 import { parseLiveContract } from './contracts';
-import type { ApiSnapshot, FlightSnapshot, LiveConfig, ReplayList, ReplayPayload, SourceCapability, SourcePreview, DisplayFrame } from './contracts';
-import { SessionClient, DisplayBackpressureError } from './session-client';
+import type { ApiSnapshot, FlightSnapshot, LiveConfig, ReplayList, ReplayPayload, SourceCapability, SourcePreview, DisplayFrame, ServiceCapabilities } from './contracts';
+import { SessionClient, DisplayBackpressureError, apiError } from './session-client';
 import type { StageMode } from './FlightStage';
 
 const activeStates = new Set(['previewing', 'starting', 'running', 'stopping']);
@@ -43,6 +43,7 @@ export function SourceThumbnail({ source }: { source: SourcePreview }) {
 }
 
 export function Live() {
+  const [capabilities, setCapabilities] = useState<ServiceCapabilities | null>(null);
   const [config, setConfig] = useState<LiveConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sources, setSources] = useState<SourceCapability[]>([]);
@@ -78,7 +79,7 @@ export function Live() {
   const action = useRef(0);
   const selected = sources.find(source => source.source_id === sourceId);
   const active = snapshot !== null && activeStates.has(snapshot.status.state) && !neutral;
-  const recordingAllowed = selected?.backend === 'synthetic';
+  const recordingAllowed = capabilities?.inference === true && selected?.backend === 'synthetic';
   const stale = active && mode === 'live' && clock - receivedAt > 2000;
   const motionAllowed = mode === 'replay' ? replayPlaying : active && !stale && snapshot?.status.state === 'running';
 
@@ -100,14 +101,14 @@ export function Live() {
     client.current = connection;
     async function read(path: string) {
       const response = await fetch(path, { method: 'GET', signal: controller.signal, cache: 'no-store' });
-      if (!response.ok) throw new Error(`Local service returned HTTP ${response.status}.`);
+      if (!response.ok) throw await apiError(response);
       return response.json() as Promise<unknown>;
     }
-    void Promise.all([read('/health/live'), read('/api/live/config'), connection.sources(), connection.status()]).then(([health, settings, list, status]) => {
+    void Promise.all([read('/health/live'), read('/api/live/config'), connection.sources(), connection.status(), connection.capabilities()]).then(([health, settings, list, status, available]) => {
       parseLiveContract('LiveHealth', health);
       const checked = parseLiveContract('LiveConfig', settings);
       if (controller.signal.aborted) return;
-      setConfig(checked); setSources(list.sources);
+      setConfig(checked); setSources(list.sources); setCapabilities(available);
       if (status.current) { setSnapshot(status.current); setNeutral(`Existing session · ${status.current.status.state}${status.current.status.reason ? ` · ${status.current.status.reason}` : ''} · this tab does not own capture.`); }
     }).catch(cause => { if (!controller.signal.aborted) setError(message(cause)); });
     const timer = setInterval(() => setClock(performance.now()), 250);
@@ -199,7 +200,7 @@ export function Live() {
     action.current++; client.current?.stop(); setReplayPlaying(false); setBusy(false); setRenderHz(0); setDisplay(null); setLatest(null);
   }
   async function start(preview: boolean) {
-    if (!selected || !client.current || busy) return;
+    if (!selected || !client.current || busy || !(preview ? capabilities?.preview : capabilities?.inference)) return;
     if (!Number.isInteger(duration) || duration < 1 || duration > 120 || !Number.isInteger(calls) || calls < 1 || calls > 512 || !Number.isInteger(seed) || seed < 0 || seed > 4294967295) {
       setError('Use a duration from 1 to 120 seconds, 1 to 512 model calls, and an integer seed from 0 to 4294967295.'); return;
     }
@@ -219,6 +220,7 @@ export function Live() {
     finally { if (serial === action.current) { setBusy(false); setRecord(false); } }
   }
   async function refreshRecordings() {
+    if (!capabilities?.replay) return;
     try { const list = await client.current!.replays(); if (mounted.current) setRecordings(list.recordings); }
     catch (cause) { setError(message(cause)); }
   }
@@ -286,10 +288,15 @@ export function Live() {
     <main>
       <section className="intro"><p className="eyebrow">MEET YOUR SCREEN GREMLIN</p><h1>Your screen.<br />One very small problem.</h1>
         <p className="lede">A simulated fly connectome drives the motion. We designed the body and the mapping.</p></section>
+      <p className="context" data-testid="launch-profile">{capabilities?.profile === 'art_review'
+        ? 'Art review — capture-only demo and saved replays.'
+        : capabilities ? 'Live flight — explicit source selection and Start required.' : 'Checking service capabilities…'}</p>
+      {!capabilities && <p>Controls stay disabled until the service capabilities are available. Check the launcher and reload.</p>}
+      {capabilities && !capabilities.replay && <p>Saved replay playback is unavailable on this service.</p>}
       <nav className="mode-controls" aria-label="Flight experience">
         <button aria-pressed={mode === 'synthetic'} onClick={() => switchMode('synthetic')}>Synthetic demonstration</button>
         <button aria-pressed={mode === 'live' || mode === 'preview'} onClick={() => switchMode('live')}>Live source</button>
-        <button aria-pressed={mode === 'replay'} onClick={() => { switchMode('replay'); void refreshRecordings(); }}>Recorded playback</button>
+        <button disabled={!capabilities?.replay} aria-pressed={mode === 'replay'} onClick={() => { switchMode('replay'); void refreshRecordings(); }}>Recorded playback</button>
       </nav>
       <div className="session-strip"><span>{active ? `Active · ${snapshot?.status.state}` : mode === 'synthetic' ? 'Local synthetic demonstration · no capture or inference' : 'Local session controls'}</span></div>
       <section className="status-card" aria-labelledby="live-status-title">
@@ -301,15 +308,19 @@ export function Live() {
             <label>Source<select value={sourceId} disabled={active || busy} onChange={event => { setSourceId(event.target.value); setRecord(false); setLatest(null); setDisplay(null); setSnapshot(null); setNeutral(null); }}><option value="">Explicit selection required</option>
               {sources.map(source => <option key={source.source_id} value={source.source_id}>{source.name} · {source.source_id}</option>)}</select></label>
             <label>Session duration (seconds)<input type="number" min="1" max="120" value={duration} disabled={active || busy} onChange={event => setDuration(Number(event.target.value))} /></label>
-            <label>Maximum model calls<input type="number" min="1" max="512" value={calls} disabled={active || busy} onChange={event => setCalls(Number(event.target.value))} /></label>
-            <label>Seed<input type="number" min="0" max="4294967295" value={seed} disabled={active || busy} onChange={event => setSeed(Number(event.target.value))} /></label>
+            <label>Maximum model calls<input type="number" min="1" max="512" value={calls} disabled={!capabilities?.inference || active || busy} onChange={event => setCalls(Number(event.target.value))} /></label>
+            <label>Seed<input type="number" min="0" max="4294967295" value={seed} disabled={!capabilities?.inference || active || busy} onChange={event => setSeed(Number(event.target.value))} /></label>
           </div>
           {selected && <p className="context">{selected.name} · {selected.backend} · producer detection: {selected.producer_detection}. Preview lasts at most 30 seconds. Keep the Flyjam output outside the selected OBS input scene.</p>}
           <label className="consent"><input type="checkbox" checked={record} disabled={!recordingAllowed || active || busy} onChange={event => setRecord(event.target.checked)} />Record this session locally</label>
-          {!recordingAllowed && <p className="context">Recording is disabled for the selected monitor source.</p>}
+          {!recordingAllowed && <p className="context">{!capabilities?.inference ? 'Recording requires an inference-capable live session.' : 'Recording is disabled for the selected monitor source.'}</p>}
+          <p id="preview-availability" className="context">{!capabilities?.preview ? 'Source preview is unavailable on this service.' : !selected ? 'Select a source to enable capture-only Preview.' : 'Preview captures the selected source without inference.'}</p>
+          <p id="inference-availability" className="context">{!capabilities?.inference
+            ? capabilities?.profile === 'art_review' ? 'Live flight is unavailable in art review. Run ./scripts/dev_sg01_live.sh for live flight, then select a source and press Start.' : 'Live flight is unavailable until this service confirms inference support.'
+            : !selected ? 'Select a source to enable live flight.' : !graphicsReady ? 'Live flight requires ready graphics. Use Retry graphics if needed.' : 'Start captures the selected source and runs the neural model.'}</p>
           <div className="operator-buttons">
-            <button disabled={!selected || active || busy || !config} onClick={() => { void start(true); }}>Preview source</button>
-            <button disabled={!selected || active || busy || !config || !graphicsReady} onClick={() => { void start(false); }}>Start live flight</button>
+            <button aria-describedby="preview-availability" disabled={!capabilities?.preview || !selected || active || busy || !config} onClick={() => { void start(true); }}>Preview source</button>
+            <button aria-describedby="inference-availability" disabled={!capabilities?.inference || !selected || active || busy || !config || !graphicsReady} onClick={() => { void start(false); }}>Start live flight</button>
             <button disabled={!active && !busy} onClick={stop}>Stop session</button>
           </div>
         </>}

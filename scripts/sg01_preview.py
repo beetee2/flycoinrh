@@ -54,7 +54,7 @@ def preview_service(root, replay_root):
         metadata_state="available", producer_detection="synthetic")
     return LiveService(repository_root=root, source_provider=lambda: [source],
         session_factory=no_inference, capture_factory=safe_capture,
-        recording_store=SafeReplayStore(replay_root), execution_purpose="automated")
+        recording_store=SafeReplayStore(replay_root), execution_purpose="automated", profile="art_review")
 
 
 def main():

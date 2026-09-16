@@ -6,7 +6,7 @@ from io import BytesIO
 from PIL import Image
 
 from flytrap.live.contracts import EncoderConfig, GROUND_ENVIRONMENT, LiveConfig, LiveHealth, SessionConfig
-from flytrap.live.api_contracts import ControlBootstrap
+from flytrap.live.api_contracts import ApiError, ControlBootstrap, ERROR_MESSAGES, ServiceCapabilities
 
 
 def corpus():
@@ -67,6 +67,10 @@ def corpus():
         PreviewReply=dict(schema_version="obs-source-preview-1", status=status, latest=preview_image),
         ReplayList=dict(schema_version="obs-replay-list-1", recordings=[]),
         FlightState=dict(physics_id="flight-fixed20-v1", snapshot=flight, velocity=[0., 0., 0.], yaw_rate=0.))
+    good.update(ServiceCapabilities=ServiceCapabilities(profile="live", preview=True,
+                    inference=True, replay=True).model_dump(),
+                ApiError=ApiError(code="inference_unavailable",
+                    message=ERROR_MESSAGES["inference_unavailable"]).model_dump())
     with BytesIO() as output, Image.new("RGB", (4, 3), "ivory") as image:
         image.save(output, format="JPEG", quality=85)
         jpeg = output.getvalue()
@@ -78,6 +82,14 @@ def corpus():
     good.update(DisplayFrame=display, DisplayReply=display_reply)
     cases = [dict(name=f"{name} valid synthetic", contract=name, valid=True, value=value)
              for name, value in good.items()]
+    cases.append(dict(name="art review capture and replay capabilities", contract="ServiceCapabilities",
+        valid=True, value=ServiceCapabilities(profile="art_review", preview=True,
+            inference=False, replay=True).model_dump()))
+    cases.append(dict(name="art review cannot advertise inference", contract="ServiceCapabilities",
+        valid=False, value={**good["ServiceCapabilities"], "profile": "art_review"}))
+    for code, message in ERROR_MESSAGES.items():
+        cases.append(dict(name=f"safe operator error {code}", contract="ApiError", valid=True,
+            value=ApiError(code=code, message=message).model_dump()))
     for label, patch in (
         ("oversized width", {"width": 961}),
         ("oversized encoded image", {"encoded_bytes": 262145}),
@@ -146,6 +158,10 @@ def corpus():
         bad(name, "unrecognized", "forbidden", f"{name} unknown field")
         bad(name, "schema_version", "future-999", f"{name} unknown version")
     for name, path, value, label in [
+        ("ServiceCapabilities", "profile", "unknown", "unknown launch profile"),
+        ("ServiceCapabilities", "inference", "false", "coerced inference capability"),
+        ("ApiError", "code", "raw_exception", "unknown API error code"),
+        ("ApiError", "message", "<script>private path /home/operator/secret</script>", "arbitrary API error message"),
         ("SourceCapability", "evidence_kind", "real", "synthetic source relabeled real"),
         ("SourceCapability", "backend", "ffmpeg-v4l2", "fixture source with real backend"),
         ("SourceCapability", "producer_detection", "driver", "fixture source with real detection"),

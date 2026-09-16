@@ -31,6 +31,33 @@ function decode<K extends ContractName>(name: K, text: string): LiveContracts[K]
   return parseLiveContract(name, JSON.parse(text));
 }
 
+/** Only strict, fixed-vocabulary error contracts reach the operator. */
+export async function apiError(response: Response): Promise<Error> {
+  const fallback = new Error(`Local request failed (HTTP ${response.status}). Check the launcher and source, then retry explicitly.`);
+  if (!response.headers.get('content-type')?.split(';')[0].trim().match(/^application\/json$/i) || !response.body) return fallback;
+  const reader = response.body.getReader();
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const text = await Promise.race([
+      (async () => {
+        const decoder = new TextDecoder('utf-8', { fatal: true });
+        let bytes = 0, text = '';
+        while (true) {
+          const part = await reader.read();
+          if (part.done) return text + decoder.decode();
+          bytes += part.value.byteLength;
+          if (bytes > 2048) throw new Error('Error body exceeds bound.');
+          text += decoder.decode(part.value, { stream: true });
+        }
+      })(),
+      new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error('Error body deadline.')), 2000); }),
+    ]);
+    const safe = parseLiveContract('ApiError', JSON.parse(text));
+    return new Error(`${safe.message} (${safe.code})`);
+  } catch { return fallback; }
+  finally { clearTimeout(timer); void reader.cancel().catch(() => {}); }
+}
+
 /** Local transport only. Construction and spectator reads never acquire ownership. */
 export class SessionClient {
   private readonly transport: typeof fetch;
@@ -70,7 +97,7 @@ export class SessionClient {
   private async read<K extends ContractName>(path: string, name: K, init?: RequestInit): Promise<LiveContracts[K]> {
     const response = await this.transport(`/api/live${path}`, { credentials: 'same-origin', ...init });
     if (name === 'DisplayReply' && response.status === 429) throw new DisplayBackpressureError('Display busy; sample again later.');
-    if (!response.ok) throw new Error(`Local session request failed (${response.status}).`);
+    if (!response.ok) throw await apiError(response);
     return decode(name, await response.text());
   }
 
@@ -79,6 +106,7 @@ export class SessionClient {
     this.csrf = result.csrf_token;
     return result;
   }
+  capabilities() { return this.read('/capabilities', 'ServiceCapabilities'); }
   sources() { return this.read('/sources', 'SourceList'); }
   config() { return this.read('/config', 'LiveConfig'); }
   status() { return this.read('/status', 'ServiceStatus'); }
@@ -112,7 +140,7 @@ export class SessionClient {
   async download(id: string): Promise<Blob> {
     const manifest = this.recording(id);
     const response = await this.transport(`/api/live/replays/${id}/download`, { credentials: 'same-origin' });
-    if (!response.ok) throw new Error(`Recording download failed (${response.status}).`);
+    if (!response.ok) throw await apiError(response);
     const original = await response.text();
     const payload = decode('ReplayPayload', original);
     if (payload.manifest.session_id !== manifest.session_id || payload.manifest.generation !== manifest.generation ||

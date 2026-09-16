@@ -3025,6 +3025,28 @@
     }
   },
   {
+    "name": "ServiceCapabilities valid synthetic",
+    "contract": "ServiceCapabilities",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-capabilities-1",
+      "profile": "live",
+      "preview": true,
+      "inference": true,
+      "replay": true
+    }
+  },
+  {
+    "name": "ApiError valid synthetic",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "inference_unavailable",
+      "message": "Art review cannot run inference. Use the live launcher to start live flight."
+    }
+  },
+  {
     "name": "DisplayFrame valid synthetic",
     "contract": "DisplayFrame",
     "valid": true,
@@ -3100,6 +3122,230 @@
         "delivered_monotonic_ms": 200.0,
         "receipt_age_ms": 100.0
       }
+    }
+  },
+  {
+    "name": "art review capture and replay capabilities",
+    "contract": "ServiceCapabilities",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-capabilities-1",
+      "profile": "art_review",
+      "preview": true,
+      "inference": false,
+      "replay": true
+    }
+  },
+  {
+    "name": "art review cannot advertise inference",
+    "contract": "ServiceCapabilities",
+    "valid": false,
+    "value": {
+      "schema_version": "obs-capabilities-1",
+      "profile": "art_review",
+      "preview": true,
+      "inference": true,
+      "replay": true
+    }
+  },
+  {
+    "name": "safe operator error inference_unavailable",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "inference_unavailable",
+      "message": "Art review cannot run inference. Use the live launcher to start live flight."
+    }
+  },
+  {
+    "name": "safe operator error source_unavailable",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "source_unavailable",
+      "message": "Selected source is unavailable. Refresh sources and check source access."
+    }
+  },
+  {
+    "name": "safe operator error service_unavailable",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "service_unavailable",
+      "message": "Local source or storage is unavailable. Check the service and try again."
+    }
+  },
+  {
+    "name": "safe operator error control_busy",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "control_busy",
+      "message": "Another session owns the source or model. Stop it or wait for its lease to end."
+    }
+  },
+  {
+    "name": "safe operator error control_conflict",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "control_conflict",
+      "message": "Session state changed. Refresh status and start a new session if needed."
+    }
+  },
+  {
+    "name": "safe operator error owner_required",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "owner_required",
+      "message": "Only the active control owner can perform this operation. Return to the owning tab."
+    }
+  },
+  {
+    "name": "safe operator error recording_forbidden",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "recording_forbidden",
+      "message": "Recording the selected OBS source is disabled. Use the safe deterministic input."
+    }
+  },
+  {
+    "name": "safe operator error session_not_found",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "session_not_found",
+      "message": "Session is no longer available. Refresh status and start a new session."
+    }
+  },
+  {
+    "name": "safe operator error origin_required",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "origin_required",
+      "message": "Same-origin control is required. Open the UI through its local launcher URL."
+    }
+  },
+  {
+    "name": "safe operator error csrf_required",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "csrf_required",
+      "message": "Local control token is missing or expired. Reload the page and try again."
+    }
+  },
+  {
+    "name": "safe operator error invalid_request",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "invalid_request",
+      "message": "Request settings are invalid. Refresh the page and check the selected options."
+    }
+  },
+  {
+    "name": "safe operator error json_required",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "json_required",
+      "message": "JSON is required for control requests. Reload the page and try again."
+    }
+  },
+  {
+    "name": "safe operator error request_too_large",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "request_too_large",
+      "message": "Control request exceeds its size limit. Reload the page and try again."
+    }
+  },
+  {
+    "name": "safe operator error request_timeout",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "request_timeout",
+      "message": "Control request timed out. Check the local service and try again."
+    }
+  },
+  {
+    "name": "safe operator error client_limit",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "client_limit",
+      "message": "Local client limit reached. Close extra viewer tabs and try again."
+    }
+  },
+  {
+    "name": "safe operator error replay_unavailable",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "replay_unavailable",
+      "message": "Recording is missing, incomplete or unsupported. Select another saved replay."
+    }
+  },
+  {
+    "name": "safe operator error seek_out_of_range",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "seek_out_of_range",
+      "message": "Replay position is outside this recording. Select an earlier position."
+    }
+  },
+  {
+    "name": "safe operator error ui_unavailable",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "ui_unavailable",
+      "message": "Local UI is unavailable. Build it with npm --prefix web run build."
+    }
+  },
+  {
+    "name": "safe operator error not_found",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "not_found",
+      "message": "Requested resource is unavailable. Refresh the page and try again."
+    }
+  },
+  {
+    "name": "safe operator error internal_error",
+    "contract": "ApiError",
+    "valid": true,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "internal_error",
+      "message": "Local service could not complete the request. Restart the idle service and try again."
     }
   },
   {
@@ -11093,6 +11339,52 @@
     }
   },
   {
+    "name": "ServiceCapabilities unknown field",
+    "contract": "ServiceCapabilities",
+    "valid": false,
+    "value": {
+      "schema_version": "obs-capabilities-1",
+      "profile": "live",
+      "preview": true,
+      "inference": true,
+      "replay": true,
+      "unrecognized": "forbidden"
+    }
+  },
+  {
+    "name": "ServiceCapabilities unknown version",
+    "contract": "ServiceCapabilities",
+    "valid": false,
+    "value": {
+      "schema_version": "future-999",
+      "profile": "live",
+      "preview": true,
+      "inference": true,
+      "replay": true
+    }
+  },
+  {
+    "name": "ApiError unknown field",
+    "contract": "ApiError",
+    "valid": false,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "inference_unavailable",
+      "message": "Art review cannot run inference. Use the live launcher to start live flight.",
+      "unrecognized": "forbidden"
+    }
+  },
+  {
+    "name": "ApiError unknown version",
+    "contract": "ApiError",
+    "valid": false,
+    "value": {
+      "schema_version": "future-999",
+      "code": "inference_unavailable",
+      "message": "Art review cannot run inference. Use the live launcher to start live flight."
+    }
+  },
+  {
     "name": "DisplayFrame unknown field",
     "contract": "DisplayFrame",
     "valid": false,
@@ -11248,6 +11540,50 @@
         "delivered_monotonic_ms": 200.0,
         "receipt_age_ms": 100.0
       }
+    }
+  },
+  {
+    "name": "unknown launch profile",
+    "contract": "ServiceCapabilities",
+    "valid": false,
+    "value": {
+      "schema_version": "obs-capabilities-1",
+      "profile": "unknown",
+      "preview": true,
+      "inference": true,
+      "replay": true
+    }
+  },
+  {
+    "name": "coerced inference capability",
+    "contract": "ServiceCapabilities",
+    "valid": false,
+    "value": {
+      "schema_version": "obs-capabilities-1",
+      "profile": "live",
+      "preview": true,
+      "inference": "false",
+      "replay": true
+    }
+  },
+  {
+    "name": "unknown API error code",
+    "contract": "ApiError",
+    "valid": false,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "raw_exception",
+      "message": "Art review cannot run inference. Use the live launcher to start live flight."
+    }
+  },
+  {
+    "name": "arbitrary API error message",
+    "contract": "ApiError",
+    "valid": false,
+    "value": {
+      "schema_version": "obs-error-1",
+      "code": "inference_unavailable",
+      "message": "<script>private path /home/operator/secret</script>"
     }
   },
   {

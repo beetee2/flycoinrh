@@ -12,6 +12,53 @@ RECORDING_NOTICE = ("Recording is optional and off by default. Consent saves pri
                     "raw neural responses and flight replay locally. These inputs can contain sensitive content. "
                     "Full-resolution source video is never saved.")
 
+# Public errors deliberately contain only reviewed, bounded operator guidance.
+# Exception text, validation input, paths and HTML never become wire messages.
+ERROR_MESSAGES = {
+    "inference_unavailable": "Art review cannot run inference. Use the live launcher to start live flight.",
+    "source_unavailable": "Selected source is unavailable. Refresh sources and check source access.",
+    "service_unavailable": "Local source or storage is unavailable. Check the service and try again.",
+    "control_busy": "Another session owns the source or model. Stop it or wait for its lease to end.",
+    "control_conflict": "Session state changed. Refresh status and start a new session if needed.",
+    "owner_required": "Only the active control owner can perform this operation. Return to the owning tab.",
+    "recording_forbidden": "Recording the selected OBS source is disabled. Use the safe deterministic input.",
+    "session_not_found": "Session is no longer available. Refresh status and start a new session.",
+    "origin_required": "Same-origin control is required. Open the UI through its local launcher URL.",
+    "csrf_required": "Local control token is missing or expired. Reload the page and try again.",
+    "invalid_request": "Request settings are invalid. Refresh the page and check the selected options.",
+    "json_required": "JSON is required for control requests. Reload the page and try again.",
+    "request_too_large": "Control request exceeds its size limit. Reload the page and try again.",
+    "request_timeout": "Control request timed out. Check the local service and try again.",
+    "client_limit": "Local client limit reached. Close extra viewer tabs and try again.",
+    "replay_unavailable": "Recording is missing, incomplete or unsupported. Select another saved replay.",
+    "seek_out_of_range": "Replay position is outside this recording. Select an earlier position.",
+    "ui_unavailable": "Local UI is unavailable. Build it with npm --prefix web run build.",
+    "not_found": "Requested resource is unavailable. Refresh the page and try again.",
+    "internal_error": "Local service could not complete the request. Restart the idle service and try again.",
+}
+ErrorCode = Literal[tuple(ERROR_MESSAGES)]
+ErrorMessage = Literal[tuple(ERROR_MESSAGES.values())]
+
+
+class ApiError(Contract):
+    schema_version: Literal["obs-error-1"] = "obs-error-1"
+    code: ErrorCode
+    message: ErrorMessage
+
+
+class ServiceCapabilities(Contract):
+    schema_version: Literal["obs-capabilities-1"] = "obs-capabilities-1"
+    profile: Literal["live", "art_review"]
+    preview: bool
+    inference: bool
+    replay: bool
+
+    @model_validator(mode="after")
+    def review_cannot_infer(self):
+        if self.profile == "art_review" and self.inference:
+            raise ValueError("art review cannot offer inference")
+        return self
+
 
 class StartRequest(Contract):
     schema_version: Literal["obs-start-1"] = "obs-start-1"
@@ -176,4 +223,4 @@ class PreviewReply(Contract):
 
 API_CONTRACTS = {cls.__name__: cls for cls in (StartRequest, OwnerRequest, PreviewRequest,
     SourceList, InspectRequest, ControlBootstrap, SourcePreview, DisplayFrame, DisplayReply,
-    ApiSnapshot, ServiceStatus, PreviewReply)}
+    ApiSnapshot, ServiceStatus, PreviewReply, ServiceCapabilities, ApiError)}

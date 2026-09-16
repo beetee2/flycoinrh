@@ -11,9 +11,15 @@ PENDING.** SG01 real-OBS validation is NOT_RUN; the operator will approve and
 perform that smoke test after reviewing this candidate. No new full-connectome
 calls, desktop capture, decoder/model/physics changes or remote action.
 
-Safe development preview: `./scripts/dev_sg01.sh` →
-**http://127.0.0.1:5173/live**. Explicit synthetic Preview and existing safe measured
-replay only; neural Start is unavailable on this dedicated service. SG01
+**Launch-profile repair PASS.** `./scripts/dev_sg01.sh` is **Art review — capture-only demo
+and saved replays.** Its server-authoritative capabilities disable neural Start
+with visible guidance. `./scripts/dev_sg01_live.sh` starts the normal live API in
+human mode and matching frontend proxy. Both start idle at
+**http://127.0.0.1:5173/live**, require explicit source selection/actions, and refuse
+occupied ports. See the [operator handoff](OBS-LIVE-HANDOFF.md) and
+[repair evidence](milestones/SG01.md#launch-profile-and-unavailable-control-repair).
+Zero new full-model calls or desktop capture; actual OBS smoke is the operator's
+next step. SG01
 supersedes earlier presentation stops for this task only. Historical reports
 and evidence remain below.
 

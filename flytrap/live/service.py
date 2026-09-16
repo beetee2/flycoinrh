@@ -10,7 +10,7 @@ import time
 import uuid
 
 from .accounting import BusyError, LiveOwnership
-from .api_contracts import ApiSnapshot, DisplayReply, PreviewReply, SourceList, SourcePreview
+from .api_contracts import ApiSnapshot, DisplayReply, PreviewReply, ServiceCapabilities, SourceList, SourcePreview
 from .contracts import SessionConfig, SessionStatus, SourceCapability, SourceFormat
 from .display import DisplayBuffer
 
@@ -28,6 +28,14 @@ class Forbidden(ValueError):
 
 
 class Unavailable(ValueError):
+    pass
+
+
+class InferenceUnavailable(Unavailable):
+    pass
+
+
+class RecordingForbidden(Forbidden):
     pass
 
 
@@ -165,12 +173,14 @@ class LiveService:
 
     def __init__(self, *, repository_root=None, session_factory=None,
                  source_provider=source_metadata, capture_factory=None, recording_store=None,
-                 execution_purpose="automated"):
+                 execution_purpose="automated", profile="live"):
         from pathlib import Path
         self.root = Path(repository_root) if repository_root is not None else Path(__file__).resolve().parents[2]
         if execution_purpose not in {"automated", "human"}:
             raise ValueError("execution purpose must be configured by the server")
         self.execution_purpose = execution_purpose
+        self._capabilities = ServiceCapabilities(profile=profile, preview=True,
+            inference=profile == "live", replay=True)
         self.session_factory = session_factory or partial(neural_factory, execution_purpose=execution_purpose)
         self.source_provider = source_provider
         self.capture_factory = capture_factory
@@ -184,6 +194,11 @@ class LiveService:
         self._task = None
         self._closed = False
         self._display_requests = threading.BoundedSemaphore(self.max_clients)
+
+    @property
+    def capabilities(self):
+        """Frozen server policy; independent of source imagery and client input."""
+        return self._capabilities
 
     def sources(self):
         return SourceList(sources=self.source_provider())
@@ -228,6 +243,8 @@ class LiveService:
         # Threadpool request handlers serialize admission only. Inference and Stop
         # never hold this lock; busy responses/health remain prompt during work.
         with self._lock:
+            if not preview and not self.capabilities.inference:
+                raise InferenceUnavailable("Art review cannot run inference.")
             if self._closed:
                 raise Unavailable("Local service is shutting down.")
             fingerprint = request.model_dump_json()
@@ -247,7 +264,7 @@ class LiveService:
             if config.evidence_kind != source.evidence_kind:
                 raise Conflict("Source and session evidence labels disagree.")
             if config.recording and source.evidence_kind == "real":
-                raise Forbidden("Recording the selected OBS source is disabled; use the safe deterministic input.")
+                raise RecordingForbidden("Recording the selected OBS source is disabled; use the safe deterministic input.")
             if preview:
                 session = PreviewSession(config, repository_root=self.root, expected_device=device,
                                          capture_factory=self.capture_factory)

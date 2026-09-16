@@ -28,7 +28,7 @@ def test_ground_preview_rejects_live_and_capture_start_without_spawning(tmp_path
                 body["source_id"] = "fixture-pattern"
             response = client.post(f"/api/live/{endpoint}", json=body, headers=headers)
             assert response.status_code == 503, response.text
-            assert "source" in response.json()["detail"].lower()
+            assert "source" in response.json()["message"].lower()
         assert client.get("/api/live/status").json()["current"] is None
         assert client.get("/api/live/config").json()["obs_recording_allowed"] is False
     assert not list(tmp_path.rglob("attempts.jsonl"))

@@ -10,20 +10,30 @@ import threading
 from typing import Annotated
 
 from fastapi import FastAPI, HTTPException, Query, Request, Response
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .contracts import LiveConfig, LiveHealth, SourceCapability
 from .flight import SyntheticFlightPreview, synthetic_preview
 from .accounting import BusyError
-from .api_contracts import (ApiSnapshot, ControlBootstrap, DisplayReply, InspectRequest, OwnerRequest, PreviewReply, PreviewRequest,
-                            ServiceStatus, SourceList, StartRequest)
-from .service import Conflict, Forbidden, LiveService, NotFound, Unavailable
+from .api_contracts import (ApiError, ApiSnapshot, ControlBootstrap, DisplayReply, ERROR_MESSAGES,
+                            InspectRequest, OwnerRequest, PreviewReply, PreviewRequest,
+                            ServiceCapabilities, ServiceStatus, SourceList, StartRequest)
+from .service import (Conflict, Forbidden, InferenceUnavailable, LiveService, NotFound,
+                      RecordingForbidden, Unavailable)
 from .recording import RecordingError, ReplayList, ReplayPayload
 from .flight import FlightState
 
 DIST = Path(__file__).resolve().parents[2] / "web/dist"
+
+
+def error_response(status_code, code):
+    return JSONResponse(status_code=status_code,
+        content=ApiError(code=code, message=ERROR_MESSAGES[code]).model_dump(),
+        headers={"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff"})
 
 
 class DisplayResponse(Response):
@@ -63,30 +73,29 @@ def create_live_app(*, dist: Path = DIST, service=None):
         if request.method == "POST" and protected:
             origin = f"{request.url.scheme}://{request.headers.get('host')}"
             if request.headers.get("origin") != origin:
-                return JSONResponse(status_code=403, content={"detail": "Same-origin control required."})
+                return error_response(403, "origin_required")
             token = request.cookies.get("live_csrf", "")
             nonce, _, signature = token.partition(".")
             expected = hmac.new(signing_key, nonce.encode(), hashlib.sha256).hexdigest()
             if (len(nonce) != 32 or not hmac.compare_digest(signature, expected)
                     or not hmac.compare_digest(token, request.headers.get("x-live-csrf", ""))):
-                return JSONResponse(status_code=403, content={"detail": "Local control token required."})
+                return error_response(403, "csrf_required")
             if request.headers.get("content-type", "").split(";")[0].strip() != "application/json":
-                return JSONResponse(status_code=415, content={"detail": "JSON required."})
+                return error_response(415, "json_required")
             body = bytearray()
             try:
                 async with asyncio.timeout(2):
                     async for chunk in request.stream():
                         if len(body) + len(chunk) > 8192:
-                            return JSONResponse(status_code=413, content={"detail": "Control body exceeds 8192 bytes."})
+                            return error_response(413, "request_too_large")
                         body.extend(chunk)
             except TimeoutError:
-                return JSONResponse(status_code=408, content={"detail": "Control body deadline exceeded."})
+                return error_response(408, "request_timeout")
             request._body = bytes(body)
         is_display = (request.method == "POST" and request.url.path.startswith("/api/live/sessions/")
                       and request.url.path.endswith("/display"))
         if is_display and not display_clients.acquire(blocking=False):
-            return JSONResponse(status_code=429, content={"detail": "Display client limit reached."},
-                                headers={"Cache-Control": "no-store"})
+            return error_response(429, "client_limit")
         try:
             response = await call_next(request)
         except BaseException:
@@ -110,15 +119,29 @@ def create_live_app(*, dist: Path = DIST, service=None):
         # The whole response lifecycle owns admission, including header-send failure.
         return DisplayResponse(response, display_clients) if is_display else response
 
-    for error, code in ((BusyError, 409), (Conflict, 409), (Forbidden, 403),
-                        (NotFound, 404), (Unavailable, 503), (RecordingError, 422)):
-        async def handle(request, exc, status_code=code):
-            return JSONResponse(status_code=status_code, content={"detail": str(exc)})
+    for error, status, code in ((BusyError, 409, "control_busy"),
+            (Conflict, 409, "control_conflict"), (Forbidden, 403, "owner_required"),
+            (RecordingForbidden, 403, "recording_forbidden"),
+            (NotFound, 404, "session_not_found"), (Unavailable, 503, "source_unavailable"),
+            (InferenceUnavailable, 503, "inference_unavailable"),
+            (RecordingError, 422, "replay_unavailable"),
+            (OSError, 503, "service_unavailable"),
+            (RequestValidationError, 422, "invalid_request"), (Exception, 500, "internal_error")):
+        async def handle(request, exc, status_code=status, error_code=code):
+            return error_response(status_code, error_code)
         app.add_exception_handler(error, handle)
 
-    @app.exception_handler(OSError)
-    async def storage_unavailable(request, exc):
-        return JSONResponse(status_code=503, content={"detail": "Local source or storage unavailable."})
+    @app.exception_handler(StarletteHTTPException)
+    async def http_error(request, exc):
+        # Only the server's fixed codes are accepted, never arbitrary detail text.
+        code = exc.detail if isinstance(exc.detail, str) and exc.detail in ERROR_MESSAGES else {
+            404: "not_found", 422: "invalid_request", 429: "client_limit",
+            503: "service_unavailable"}.get(exc.status_code, "internal_error")
+        return error_response(exc.status_code, code)
+
+    @app.get("/api/live/capabilities", response_model=ServiceCapabilities)
+    def capabilities():
+        return service.capabilities
 
     @app.get("/api/live/control", response_model=ControlBootstrap)
     def control(request: Request, response: Response):
@@ -163,8 +186,8 @@ def create_live_app(*, dist: Path = DIST, service=None):
     def display_frame(session_id: str, request: OwnerRequest):
         try:
             return service.display(session_id, request)
-        except BusyError as exc:
-            raise HTTPException(429, str(exc)) from None
+        except BusyError:
+            raise HTTPException(429, "client_limit") from None
 
     @app.post("/api/live/sessions/{session_id}/renew", response_model=ApiSnapshot)
     def renew(session_id: str, request: OwnerRequest):
@@ -178,8 +201,8 @@ def create_live_app(*, dist: Path = DIST, service=None):
     async def events(session_id: str, request: Request, generation: Annotated[int, Query(ge=1)]):
         try:
             client_id, queue = await service.subscribe(session_id, generation)
-        except BusyError as exc:
-            raise HTTPException(429, str(exc)) from None
+        except BusyError:
+            raise HTTPException(429, "client_limit") from None
 
         async def stream():
             try:
@@ -205,13 +228,13 @@ def create_live_app(*, dist: Path = DIST, service=None):
         try:
             return ReplayList(recordings=store().list())
         except (ValueError, OSError):
-            raise HTTPException(503, "Recording storage is unavailable or exceeds its listing bound.") from None
+            raise HTTPException(503, "service_unavailable") from None
 
     def read_replay(recording_id):
         try:
             return store().read(recording_id)
         except (ValueError, OSError):
-            raise HTTPException(422, "Recording is missing, incomplete, unsupported or corrupt.") from None
+            raise HTTPException(422, "replay_unavailable") from None
 
     @app.get("/api/live/replays/{recording_id}", response_model=ReplayPayload)
     def recorded(recording_id: str):
@@ -230,7 +253,7 @@ def create_live_app(*, dist: Path = DIST, service=None):
         try:
             return read_replay(recording_id).seek(tick)
         except ValueError:
-            raise HTTPException(422, "Seek tick is outside this recording.") from None
+            raise HTTPException(422, "seek_out_of_range") from None
 
     @app.get("/health/live", response_model=LiveHealth)
     async def health():
@@ -254,7 +277,7 @@ def create_live_app(*, dist: Path = DIST, service=None):
     @app.get("/live")
     async def screen():
         if not (dist / "index.html").is_file():
-            raise HTTPException(503, "Build the local UI: npm --prefix web run build")
+            raise HTTPException(503, "ui_unavailable")
         return FileResponse(dist / "index.html")
 
     @app.get("/live/obs-test")

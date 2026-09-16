@@ -3484,6 +3484,78 @@ export interface FrameIdentity {
 }
 export type PreviewReply = PreviewReplyContract.PreviewReply;
 
+export namespace ServiceCapabilitiesContract {
+export type SchemaVersion = "obs-capabilities-1";
+export type Profile = "live" | "art_review";
+export type Preview = boolean;
+export type Inference = boolean;
+export type Replay = boolean;
+
+export interface ServiceCapabilities {
+  schema_version?: SchemaVersion;
+  profile: Profile;
+  preview: Preview;
+  inference: Inference;
+  replay: Replay;
+}
+
+}
+export type ServiceCapabilities = ServiceCapabilitiesContract.ServiceCapabilities;
+
+export namespace ApiErrorContract {
+export type SchemaVersion = "obs-error-1";
+export type Code =
+  | "inference_unavailable"
+  | "source_unavailable"
+  | "service_unavailable"
+  | "control_busy"
+  | "control_conflict"
+  | "owner_required"
+  | "recording_forbidden"
+  | "session_not_found"
+  | "origin_required"
+  | "csrf_required"
+  | "invalid_request"
+  | "json_required"
+  | "request_too_large"
+  | "request_timeout"
+  | "client_limit"
+  | "replay_unavailable"
+  | "seek_out_of_range"
+  | "ui_unavailable"
+  | "not_found"
+  | "internal_error";
+export type Message =
+  | "Art review cannot run inference. Use the live launcher to start live flight."
+  | "Selected source is unavailable. Refresh sources and check source access."
+  | "Local source or storage is unavailable. Check the service and try again."
+  | "Another session owns the source or model. Stop it or wait for its lease to end."
+  | "Session state changed. Refresh status and start a new session if needed."
+  | "Only the active control owner can perform this operation. Return to the owning tab."
+  | "Recording the selected OBS source is disabled. Use the safe deterministic input."
+  | "Session is no longer available. Refresh status and start a new session."
+  | "Same-origin control is required. Open the UI through its local launcher URL."
+  | "Local control token is missing or expired. Reload the page and try again."
+  | "Request settings are invalid. Refresh the page and check the selected options."
+  | "JSON is required for control requests. Reload the page and try again."
+  | "Control request exceeds its size limit. Reload the page and try again."
+  | "Control request timed out. Check the local service and try again."
+  | "Local client limit reached. Close extra viewer tabs and try again."
+  | "Recording is missing, incomplete or unsupported. Select another saved replay."
+  | "Replay position is outside this recording. Select an earlier position."
+  | "Local UI is unavailable. Build it with npm --prefix web run build."
+  | "Requested resource is unavailable. Refresh the page and try again."
+  | "Local service could not complete the request. Restart the idle service and try again.";
+
+export interface ApiError {
+  schema_version?: SchemaVersion;
+  code: Code;
+  message: Message;
+}
+
+}
+export type ApiError = ApiErrorContract.ApiError;
+
 export namespace ReplayPayloadContract {
 export type SchemaVersion = "obs-recorded-replay-1";
 export type SchemaVersion1 = "obs-replay-1";
