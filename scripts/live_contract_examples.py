@@ -2,7 +2,7 @@
 import json
 import base64
 
-from flytrap.live.contracts import EncoderConfig, LiveConfig, LiveHealth, SessionConfig
+from flytrap.live.contracts import EncoderConfig, GROUND_ENVIRONMENT, LiveConfig, LiveHealth, SessionConfig
 from flytrap.live.api_contracts import ControlBootstrap
 
 
@@ -72,6 +72,34 @@ def corpus():
     cases.append(dict(name="explicit producer clock on synthetic frame", contract="FrameIdentity", valid=True,
                       value={**frame, "source_clock": "producer", "source_timestamp_ms": 12.0,
                              "source_sequence": 3}))
+
+    ground = {**flight, "schema_version": "obs-flight-2", "physics_id": "flight-fixed20-ground-v2",
+              "environment": GROUND_ENVIRONMENT.model_dump(), "ground_contact": False}
+    ground_state = {**good["FlightState"], "physics_id": ground["physics_id"], "snapshot": ground}
+    for name, value in (
+        ("GroundEnvironment", GROUND_ENVIRONMENT.model_dump()),
+        ("GroundFlightSnapshot", ground),
+        ("FlightState", ground_state),
+        ("StreamEnvelope", {**stream, "flight": ground}),
+        ("ApiSnapshot", {**api_snapshot, "flight": ground}),
+        ("ReplayManifest", {**replay, "initial_flight": ground}),
+        ("SyntheticFlightPreview", {**good["SyntheticFlightPreview"],
+                                    "snapshots": [ground, {**ground, "tick": 1}]}),
+    ):
+        cases.append(dict(name=f"{name} ground v2 synthetic", contract=name, valid=True, value=value))
+    for name, value, label in (
+        ("GroundEnvironment", {**GROUND_ENVIRONMENT.model_dump(), "ground_z": -40.}, "conflicting plane"),
+        ("GroundEnvironment", {**GROUND_ENVIRONMENT.model_dump(), "clearance": 0.}, "conflicting clearance"),
+        ("GroundEnvironment", {**GROUND_ENVIRONMENT.model_dump(), "environment_id": "future-99"}, "unknown environment"),
+        ("GroundFlightSnapshot", {**ground, "physics_id": "flight-fixed20-v1"}, "legacy identity on ground pose"),
+        ("GroundFlightSnapshot", {**ground, "position": [0., 0., -4.]}, "ground pose penetrates clearance"),
+        ("GroundFlightSnapshot", {**ground, "ground_contact": True}, "contact above plane"),
+        ("FlightState", {**ground_state, "physics_id": "flight-fixed20-v1"}, "state and snapshot physics mismatch"),
+        ("FlightState", {**ground_state, "snapshot": flight}, "ground state with legacy snapshot"),
+        ("SyntheticFlightPreview", {**good["SyntheticFlightPreview"], "snapshots": [flight, {**ground, "tick": 1}]},
+         "mixed physics preview"),
+    ):
+        cases.append(dict(name=label, contract=name, valid=False, value=value))
 
     def bad(name, path, value, label):
         # A JSON round trip breaks template object aliases: changing the latest

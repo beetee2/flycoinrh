@@ -8,7 +8,7 @@ from pydantic import Field
 
 from flytrap.contracts import ControllerOutput
 from flytrap.lab.contracts import Statistics
-from .contracts import (Contract, Count, Epoch, FlightSnapshot, Id, Millis, MotorRates,
+from .contracts import (AnyFlightSnapshot, Contract, Count, Epoch, Id, Millis, MotorRates,
                         NeuralSample, Pixels, RawAction, SessionStatus)
 
 MAX_PACKET = 65536
@@ -69,4 +69,4 @@ class SessionSnapshot:
     last_step_wall_ms: float | None
     source_receipt_age_ms: float | None
     model_kind: str
-    flight: FlightSnapshot
+    flight: AnyFlightSnapshot

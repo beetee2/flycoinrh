@@ -8,12 +8,14 @@ from typing import Annotated, Literal
 
 from pydantic import Field, field_validator, model_validator
 
-from .contracts import (Contract, FlightControls, FlightSnapshot, MotorRates,
-                        State, SyntheticFlightPreview)
+from .contracts import (AnyFlightSnapshot, Contract, FlightControls, FlightSnapshot,
+                        GROUND_ENVIRONMENT, GroundFlightSnapshot, MotorRates, State,
+                        SyntheticFlightPreview)
 
 DT_MS = 20
 DT = DT_MS / 1000
-PHYSICS_ID = "flight-fixed20-v1"
+LEGACY_PHYSICS_ID = "flight-fixed20-v1"
+PHYSICS_ID = "flight-fixed20-ground-v2"
 ALPHA = 1 - exp(-DT / .25)
 
 
@@ -45,8 +47,10 @@ def decode(rates: MotorRates, *, response_id: str, session_id: str, generation: 
 
 
 class FlightState(Contract):
-    physics_id: Literal["flight-fixed20-v1"] = PHYSICS_ID
-    snapshot: FlightSnapshot
+    # The historical default preserves valid v1 serialized states and callers.
+    # New authorities always provide PHYSICS_ID explicitly through initial_state.
+    physics_id: Literal["flight-fixed20-v1", "flight-fixed20-ground-v2"] = LEGACY_PHYSICS_ID
+    snapshot: AnyFlightSnapshot
     velocity: tuple[float, float, float] = (0., 0., 0.)
     yaw_rate: Annotated[float, Field(ge=-1.2, le=1.2)] = 0.
 
@@ -58,6 +62,11 @@ class FlightState(Contract):
 
     @model_validator(mode="after")
     def coherent(self):
+        expected = self.snapshot.physics_id if isinstance(self.snapshot, GroundFlightSnapshot) else LEGACY_PHYSICS_ID
+        if self.physics_id != expected:
+            raise ValueError("inconsistent flight physics and snapshot versions")
+        if isinstance(self.snapshot, GroundFlightSnapshot) and self.snapshot.ground_contact and self.velocity[2] < 0:
+            raise ValueError("ground contact cannot retain downward velocity")
         speed = hypot(*self.velocity)
         if (speed > 6 + 1e-12 or abs(speed-self.snapshot.speed_units_s) > 1e-9
                 or abs(self.snapshot.pitch_rad) > .45 + 1e-12
@@ -73,14 +82,21 @@ class ControlTick(Contract):
     state: State = "running"
 
 
-def initial_state(session_id: str, generation: int, evidence_kind: str) -> FlightState:
-    return FlightState(snapshot=FlightSnapshot(schema_version="obs-flight-1", session_id=session_id,
+def initial_state(session_id: str, generation: int, evidence_kind: str, *,
+                  physics_id: str = PHYSICS_ID) -> FlightState:
+    if physics_id not in (LEGACY_PHYSICS_ID, PHYSICS_ID):
+        raise ValueError("unknown flight physics version")
+    snapshot_type = FlightSnapshot if physics_id == LEGACY_PHYSICS_ID else GroundFlightSnapshot
+    ground = {} if physics_id == LEGACY_PHYSICS_ID else dict(
+        physics_id=PHYSICS_ID, environment=GROUND_ENVIRONMENT, ground_contact=False)
+    return FlightState(physics_id=physics_id, snapshot=snapshot_type(
+        schema_version="obs-flight-1" if physics_id == LEGACY_PHYSICS_ID else "obs-flight-2", session_id=session_id,
         generation=generation, evidence_kind=evidence_kind, tick=0, position=[0., 0., 2.],
-        yaw_rad=0., pitch_rad=0., speed_units_s=0., applied_response_id=None, neutral=True))
+        yaw_rad=0., pitch_rad=0., speed_units_s=0., applied_response_id=None, neutral=True, **ground))
 
 
 def neutralize(state: FlightState) -> FlightState:
-    return FlightState(snapshot=FlightSnapshot(**{**state.snapshot.model_dump(),
+    return FlightState(physics_id=state.physics_id, snapshot=type(state.snapshot)(**{**state.snapshot.model_dump(),
         "speed_units_s": 0., "applied_response_id": None, "neutral": True}))
 
 
@@ -101,7 +117,8 @@ def advance(state: FlightState, controls: FlightControls | None, *, tick_ms: flo
               and any((controls.yaw_rate_rad_s, controls.pitch_target_rad, controls.speed_target_units_s)))
     if not active:
         stopped = neutralize(state)
-        return FlightState(snapshot=FlightSnapshot(**{**stopped.snapshot.model_dump(), "tick": s.tick+1}))
+        return FlightState(physics_id=state.physics_id,
+            snapshot=type(s)(**{**stopped.snapshot.model_dump(), "tick": s.tick+1}))
     yaw_target = clamp(controls.yaw_rate_rad_s, -1.2, 1.2)
     yaw_rate = state.yaw_rate + clamp(ALPHA*(yaw_target-state.yaw_rate), -3*DT, 3*DT)
     yaw = (s.yaw_rad + yaw_rate*DT + pi) % (2*pi) - pi
@@ -113,10 +130,22 @@ def advance(state: FlightState, controls: FlightControls | None, *, tick_ms: flo
     factor = min(1., 4*DT/hypot(*delta)) if any(delta) else 1.
     velocity = tuple(v+d*factor for v, d in zip(state.velocity, delta, strict=True))
     position = [p+v*DT for p, v in zip(s.position, velocity, strict=True)]
-    snapshot = FlightSnapshot(**{**s.model_dump(), "tick": s.tick+1, "position": position,
+    contact = {}
+    if isinstance(s, GroundFlightSnapshot):
+        floor = s.environment.ground_z + s.environment.clearance
+        # Constant velocity over this fixed interval gives a straight swept path.
+        # Project its endpoint onto the legal half-space and remove only inward
+        # normal velocity. Tangential motion covers the entire tick unchanged.
+        # This inelastic contact impulse is separate from the 4 units/s² motor
+        # acceleration limit and supplies no upward velocity or steering.
+        if position[2] <= floor:
+            position[2] = floor
+            velocity = (velocity[0], velocity[1], max(0., velocity[2]))
+        contact["ground_contact"] = position[2] == floor
+    snapshot = type(s)(**{**s.model_dump(), **contact, "tick": s.tick+1, "position": position,
         "yaw_rad": yaw, "pitch_rad": pitch, "speed_units_s": hypot(*velocity),
         "neutral": False, "applied_response_id": controls.response_id})
-    return FlightState(snapshot=snapshot, velocity=velocity, yaw_rate=yaw_rate)
+    return FlightState(physics_id=state.physics_id, snapshot=snapshot, velocity=velocity, yaw_rate=yaw_rate)
 
 
 def replay(initial: FlightState, events: list[ControlTick], *, ticks: int, origin_ms: float,
@@ -229,8 +258,11 @@ def synthetic_preview() -> SyntheticFlightPreview:
     initial = initial_state("synthetic-flight-preview", 1, "fixture")
     events = []
     for second in range(12):
-        rates = MotorRates(steer_L=200. if second < 5 else 50., steer_R=50. if second < 5 else 200.,
-                           fwd_L=140., fwd_R=140., back=80., stop=0., click=0.)
+        # Descend, sustain contact with turning, then request departure. Every
+        # second refreshes validity; no recorded neural response or model is used.
+        rates = MotorRates(steer_L=225., steer_R=25.,
+                           fwd_L=0. if second < 8 else 500., fwd_R=0. if second < 8 else 500.,
+                           back=900. if second < 8 else 0., stop=0., click=0.)
         controls = decode(rates, response_id=f"synthetic-{second}", session_id=initial.snapshot.session_id,
             generation=1, evidence_kind="fixture", receipt_ms=float(second*1000),
             completed_ms=float(second*1000), now_ms=float(second*1000))

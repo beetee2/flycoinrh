@@ -1,5 +1,12 @@
 import * as THREE from 'three';
 import type { FlightSnapshot } from './contracts';
+import schemas from './generated/schemas.json' with { type: 'json' };
+
+// Python contracts own the ground definition, including the historical visual floor.
+export const FLIGHT_GROUND = schemas.GroundEnvironment.properties;
+export function groundHeight(pose: FlightSnapshot | null): number {
+  return pose?.schema_version === 'obs-flight-2' ? pose.environment.ground_z : FLIGHT_GROUND.ground_z.const;
+}
 
 export type FlightRenderer = { draw: (pose: FlightSnapshot | null, decorativeMs: number) => void; resize: () => void; dispose: () => void };
 
@@ -124,8 +131,8 @@ export function createFlightRenderer(host: HTMLDivElement, onFailure?: (error: F
   }
   // A repeating grid and deterministic landmarks give parallax without a world boundary.
   const ground = new THREE.Mesh(own(new THREE.PlaneGeometry(260, 260)), own(new THREE.MeshStandardMaterial({ color: 0xb8ccae, roughness: 1 })));
-  ground.rotation.x = -Math.PI / 2; ground.position.y = -4; scene.add(ground);
-  const grid = new THREE.GridHelper(240, 60, 0x799881, 0x9db49b); grid.position.y = -3.98; scene.add(grid);
+  ground.rotation.x = -Math.PI / 2; ground.position.y = groundHeight(null); scene.add(ground);
+  const grid = new THREE.GridHelper(240, 60, 0x799881, 0x9db49b); grid.position.y = groundHeight(null) + 0.02; scene.add(grid);
   own(grid.geometry);
   for (const material of Array.isArray(grid.material) ? grid.material : [grid.material]) own(material);
   const landmarks: THREE.Mesh[] = [];
@@ -146,11 +153,12 @@ export function createFlightRenderer(host: HTMLDivElement, onFailure?: (error: F
     fly.position.set(0, 0, 0);
     fly.rotation.set(0, pose?.yaw_rad ?? 0, pose?.pitch_rad ?? 0, 'YXZ');
     wings.forEach((wing, index) => { wing.rotation.x = (index === 0 ? -1 : 1) * (0.13 + Math.sin(decorativeMs * 0.035) * 0.16); });
-    ground.position.set(0, -4 - altitude, 0);
-    grid.position.set(-(x % 4), -3.98 - altitude, y % 4);
+    const floor = groundHeight(pose) - altitude;
+    ground.position.set(0, floor, 0);
+    grid.position.set(-(x % 4), floor + 0.02, y % 4);
     for (const stone of landmarks) {
       const wrap = (v: number) => ((v + 63) % 126 + 126) % 126 - 63;
-      stone.position.set(wrap(stone.userData.x - x), -4 - altitude + stone.userData.height / 2, wrap(stone.userData.z + y));
+      stone.position.set(wrap(stone.userData.x - x), floor + stone.userData.height / 2, wrap(stone.userData.z + y));
     }
     // Camera follows translation exactly; fixed spectator angle keeps turns legible.
     camera.position.set(-5.9, 4.0, 8.0); camera.lookAt(0, -0.1, 0);

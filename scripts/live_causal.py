@@ -90,7 +90,8 @@ def fixed_flight(rates):
     from flytrap.live.contracts import MotorRates
     from flytrap.live.flight import ControlTick, decode, initial_state, replay
 
-    initial = initial_state("causal-playback", 1, "fixture")
+    # OBS06's frozen diagnostic and its historical measurements use v1.
+    initial = initial_state("causal-playback", 1, "fixture", physics_id="flight-fixed20-v1")
     events, controls = [], []
     for index, vector in enumerate(rates):
         now = float(index*INTERVAL_MS)

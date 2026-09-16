@@ -804,6 +804,188 @@
     "title": "FlightSnapshot",
     "type": "object"
   },
+  "GroundEnvironment": {
+    "additionalProperties": false,
+    "description": "Single source for physics and generated renderer ground parameters.",
+    "properties": {
+      "environment_id": {
+        "const": "flat-ground-v1",
+        "title": "Environment Id",
+        "type": "string"
+      },
+      "ground_z": {
+        "const": -4.0,
+        "title": "Ground Z",
+        "type": "number"
+      },
+      "collision_proxy": {
+        "const": "fly-clearance-v1",
+        "title": "Collision Proxy",
+        "type": "string"
+      },
+      "clearance": {
+        "const": 1.5,
+        "title": "Clearance",
+        "type": "number"
+      }
+    },
+    "required": [
+      "environment_id",
+      "ground_z",
+      "collision_proxy",
+      "clearance"
+    ],
+    "title": "GroundEnvironment",
+    "type": "object"
+  },
+  "GroundFlightSnapshot": {
+    "$defs": {
+      "GroundEnvironment": {
+        "additionalProperties": false,
+        "description": "Single source for physics and generated renderer ground parameters.",
+        "properties": {
+          "environment_id": {
+            "const": "flat-ground-v1",
+            "title": "Environment Id",
+            "type": "string"
+          },
+          "ground_z": {
+            "const": -4.0,
+            "title": "Ground Z",
+            "type": "number"
+          },
+          "collision_proxy": {
+            "const": "fly-clearance-v1",
+            "title": "Collision Proxy",
+            "type": "string"
+          },
+          "clearance": {
+            "const": 1.5,
+            "title": "Clearance",
+            "type": "number"
+          }
+        },
+        "required": [
+          "environment_id",
+          "ground_z",
+          "collision_proxy",
+          "clearance"
+        ],
+        "title": "GroundEnvironment",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "schema_version": {
+        "const": "obs-flight-2",
+        "title": "Schema Version",
+        "type": "string"
+      },
+      "session_id": {
+        "maxLength": 64,
+        "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+        "title": "Session Id",
+        "type": "string"
+      },
+      "generation": {
+        "maximum": 9007199254740991,
+        "minimum": 1,
+        "title": "Generation",
+        "type": "integer"
+      },
+      "evidence_kind": {
+        "enum": [
+          "real",
+          "fixture"
+        ],
+        "title": "Evidence Kind",
+        "type": "string"
+      },
+      "tick": {
+        "maximum": 9007199254740991,
+        "minimum": 0,
+        "title": "Tick",
+        "type": "integer"
+      },
+      "position": {
+        "items": {
+          "maximum": 1000000000.0,
+          "minimum": -1000000000.0,
+          "type": "number"
+        },
+        "maxItems": 3,
+        "minItems": 3,
+        "title": "Position",
+        "type": "array"
+      },
+      "yaw_rad": {
+        "maximum": 3.141592653589793,
+        "minimum": -3.141592653589793,
+        "title": "Yaw Rad",
+        "type": "number"
+      },
+      "pitch_rad": {
+        "maximum": 0.45,
+        "minimum": -0.45,
+        "title": "Pitch Rad",
+        "type": "number"
+      },
+      "speed_units_s": {
+        "maximum": 6,
+        "minimum": 0,
+        "title": "Speed Units S",
+        "type": "number"
+      },
+      "applied_response_id": {
+        "anyOf": [
+          {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Applied Response Id"
+      },
+      "neutral": {
+        "title": "Neutral",
+        "type": "boolean"
+      },
+      "physics_id": {
+        "const": "flight-fixed20-ground-v2",
+        "title": "Physics Id",
+        "type": "string"
+      },
+      "environment": {
+        "$ref": "#/$defs/GroundEnvironment"
+      },
+      "ground_contact": {
+        "title": "Ground Contact",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "schema_version",
+      "session_id",
+      "generation",
+      "evidence_kind",
+      "tick",
+      "position",
+      "yaw_rad",
+      "pitch_rad",
+      "speed_units_s",
+      "applied_response_id",
+      "neutral",
+      "physics_id",
+      "environment",
+      "ground_contact"
+    ],
+    "title": "GroundFlightSnapshot",
+    "type": "object"
+  },
   "SyntheticFlightPreview": {
     "$defs": {
       "FlightSnapshot": {
@@ -902,6 +1084,152 @@
         ],
         "title": "FlightSnapshot",
         "type": "object"
+      },
+      "GroundEnvironment": {
+        "additionalProperties": false,
+        "description": "Single source for physics and generated renderer ground parameters.",
+        "properties": {
+          "environment_id": {
+            "const": "flat-ground-v1",
+            "title": "Environment Id",
+            "type": "string"
+          },
+          "ground_z": {
+            "const": -4.0,
+            "title": "Ground Z",
+            "type": "number"
+          },
+          "collision_proxy": {
+            "const": "fly-clearance-v1",
+            "title": "Collision Proxy",
+            "type": "string"
+          },
+          "clearance": {
+            "const": 1.5,
+            "title": "Clearance",
+            "type": "number"
+          }
+        },
+        "required": [
+          "environment_id",
+          "ground_z",
+          "collision_proxy",
+          "clearance"
+        ],
+        "title": "GroundEnvironment",
+        "type": "object"
+      },
+      "GroundFlightSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-flight-2",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "tick": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Tick",
+            "type": "integer"
+          },
+          "position": {
+            "items": {
+              "maximum": 1000000000.0,
+              "minimum": -1000000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Position",
+            "type": "array"
+          },
+          "yaw_rad": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "title": "Yaw Rad",
+            "type": "number"
+          },
+          "pitch_rad": {
+            "maximum": 0.45,
+            "minimum": -0.45,
+            "title": "Pitch Rad",
+            "type": "number"
+          },
+          "speed_units_s": {
+            "maximum": 6,
+            "minimum": 0,
+            "title": "Speed Units S",
+            "type": "number"
+          },
+          "applied_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Response Id"
+          },
+          "neutral": {
+            "title": "Neutral",
+            "type": "boolean"
+          },
+          "physics_id": {
+            "const": "flight-fixed20-ground-v2",
+            "title": "Physics Id",
+            "type": "string"
+          },
+          "environment": {
+            "$ref": "#/$defs/GroundEnvironment"
+          },
+          "ground_contact": {
+            "title": "Ground Contact",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "tick",
+          "position",
+          "yaw_rad",
+          "pitch_rad",
+          "speed_units_s",
+          "applied_response_id",
+          "neutral",
+          "physics_id",
+          "environment",
+          "ground_contact"
+        ],
+        "title": "GroundFlightSnapshot",
+        "type": "object"
       }
     },
     "additionalProperties": false,
@@ -923,7 +1251,21 @@
       },
       "snapshots": {
         "items": {
-          "$ref": "#/$defs/FlightSnapshot"
+          "discriminator": {
+            "mapping": {
+              "obs-flight-1": "#/$defs/FlightSnapshot",
+              "obs-flight-2": "#/$defs/GroundFlightSnapshot"
+            },
+            "propertyName": "schema_version"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/FlightSnapshot"
+            },
+            {
+              "$ref": "#/$defs/GroundFlightSnapshot"
+            }
+          ]
         },
         "maxItems": 601,
         "minItems": 2,
@@ -1484,6 +1826,152 @@
         "title": "FrameIdentity",
         "type": "object"
       },
+      "GroundEnvironment": {
+        "additionalProperties": false,
+        "description": "Single source for physics and generated renderer ground parameters.",
+        "properties": {
+          "environment_id": {
+            "const": "flat-ground-v1",
+            "title": "Environment Id",
+            "type": "string"
+          },
+          "ground_z": {
+            "const": -4.0,
+            "title": "Ground Z",
+            "type": "number"
+          },
+          "collision_proxy": {
+            "const": "fly-clearance-v1",
+            "title": "Collision Proxy",
+            "type": "string"
+          },
+          "clearance": {
+            "const": 1.5,
+            "title": "Clearance",
+            "type": "number"
+          }
+        },
+        "required": [
+          "environment_id",
+          "ground_z",
+          "collision_proxy",
+          "clearance"
+        ],
+        "title": "GroundEnvironment",
+        "type": "object"
+      },
+      "GroundFlightSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-flight-2",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "tick": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Tick",
+            "type": "integer"
+          },
+          "position": {
+            "items": {
+              "maximum": 1000000000.0,
+              "minimum": -1000000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Position",
+            "type": "array"
+          },
+          "yaw_rad": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "title": "Yaw Rad",
+            "type": "number"
+          },
+          "pitch_rad": {
+            "maximum": 0.45,
+            "minimum": -0.45,
+            "title": "Pitch Rad",
+            "type": "number"
+          },
+          "speed_units_s": {
+            "maximum": 6,
+            "minimum": 0,
+            "title": "Speed Units S",
+            "type": "number"
+          },
+          "applied_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Response Id"
+          },
+          "neutral": {
+            "title": "Neutral",
+            "type": "boolean"
+          },
+          "physics_id": {
+            "const": "flight-fixed20-ground-v2",
+            "title": "Physics Id",
+            "type": "string"
+          },
+          "environment": {
+            "$ref": "#/$defs/GroundEnvironment"
+          },
+          "ground_contact": {
+            "title": "Ground Contact",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "tick",
+          "position",
+          "yaw_rad",
+          "pitch_rad",
+          "speed_units_s",
+          "applied_response_id",
+          "neutral",
+          "physics_id",
+          "environment",
+          "ground_contact"
+        ],
+        "title": "GroundFlightSnapshot",
+        "type": "object"
+      },
       "MotorRates": {
         "additionalProperties": false,
         "properties": {
@@ -1836,12 +2324,27 @@
       "flight": {
         "anyOf": [
           {
-            "$ref": "#/$defs/FlightSnapshot"
+            "discriminator": {
+              "mapping": {
+                "obs-flight-1": "#/$defs/FlightSnapshot",
+                "obs-flight-2": "#/$defs/GroundFlightSnapshot"
+              },
+              "propertyName": "schema_version"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/FlightSnapshot"
+              },
+              {
+                "$ref": "#/$defs/GroundFlightSnapshot"
+              }
+            ]
           },
           {
             "type": "null"
           }
-        ]
+        ],
+        "title": "Flight"
       }
     },
     "required": [
@@ -2002,6 +2505,152 @@
           "neutral"
         ],
         "title": "FlightSnapshot",
+        "type": "object"
+      },
+      "GroundEnvironment": {
+        "additionalProperties": false,
+        "description": "Single source for physics and generated renderer ground parameters.",
+        "properties": {
+          "environment_id": {
+            "const": "flat-ground-v1",
+            "title": "Environment Id",
+            "type": "string"
+          },
+          "ground_z": {
+            "const": -4.0,
+            "title": "Ground Z",
+            "type": "number"
+          },
+          "collision_proxy": {
+            "const": "fly-clearance-v1",
+            "title": "Collision Proxy",
+            "type": "string"
+          },
+          "clearance": {
+            "const": 1.5,
+            "title": "Clearance",
+            "type": "number"
+          }
+        },
+        "required": [
+          "environment_id",
+          "ground_z",
+          "collision_proxy",
+          "clearance"
+        ],
+        "title": "GroundEnvironment",
+        "type": "object"
+      },
+      "GroundFlightSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-flight-2",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "tick": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Tick",
+            "type": "integer"
+          },
+          "position": {
+            "items": {
+              "maximum": 1000000000.0,
+              "minimum": -1000000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Position",
+            "type": "array"
+          },
+          "yaw_rad": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "title": "Yaw Rad",
+            "type": "number"
+          },
+          "pitch_rad": {
+            "maximum": 0.45,
+            "minimum": -0.45,
+            "title": "Pitch Rad",
+            "type": "number"
+          },
+          "speed_units_s": {
+            "maximum": 6,
+            "minimum": 0,
+            "title": "Speed Units S",
+            "type": "number"
+          },
+          "applied_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Response Id"
+          },
+          "neutral": {
+            "title": "Neutral",
+            "type": "boolean"
+          },
+          "physics_id": {
+            "const": "flight-fixed20-ground-v2",
+            "title": "Physics Id",
+            "type": "string"
+          },
+          "environment": {
+            "$ref": "#/$defs/GroundEnvironment"
+          },
+          "ground_contact": {
+            "title": "Ground Contact",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "tick",
+          "position",
+          "yaw_rad",
+          "pitch_rad",
+          "speed_units_s",
+          "applied_response_id",
+          "neutral",
+          "physics_id",
+          "environment",
+          "ground_contact"
+        ],
+        "title": "GroundFlightSnapshot",
         "type": "object"
       },
       "Provenance": {
@@ -2468,7 +3117,22 @@
         "$ref": "#/$defs/SourceCapability"
       },
       "initial_flight": {
-        "$ref": "#/$defs/FlightSnapshot"
+        "discriminator": {
+          "mapping": {
+            "obs-flight-1": "#/$defs/FlightSnapshot",
+            "obs-flight-2": "#/$defs/GroundFlightSnapshot"
+          },
+          "propertyName": "schema_version"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/$defs/FlightSnapshot"
+          },
+          {
+            "$ref": "#/$defs/GroundFlightSnapshot"
+          }
+        ],
+        "title": "Initial Flight"
       },
       "provenance": {
         "$ref": "#/$defs/Provenance"
@@ -3630,6 +4294,152 @@
         "title": "FrameIdentity",
         "type": "object"
       },
+      "GroundEnvironment": {
+        "additionalProperties": false,
+        "description": "Single source for physics and generated renderer ground parameters.",
+        "properties": {
+          "environment_id": {
+            "const": "flat-ground-v1",
+            "title": "Environment Id",
+            "type": "string"
+          },
+          "ground_z": {
+            "const": -4.0,
+            "title": "Ground Z",
+            "type": "number"
+          },
+          "collision_proxy": {
+            "const": "fly-clearance-v1",
+            "title": "Collision Proxy",
+            "type": "string"
+          },
+          "clearance": {
+            "const": 1.5,
+            "title": "Clearance",
+            "type": "number"
+          }
+        },
+        "required": [
+          "environment_id",
+          "ground_z",
+          "collision_proxy",
+          "clearance"
+        ],
+        "title": "GroundEnvironment",
+        "type": "object"
+      },
+      "GroundFlightSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-flight-2",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "tick": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Tick",
+            "type": "integer"
+          },
+          "position": {
+            "items": {
+              "maximum": 1000000000.0,
+              "minimum": -1000000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Position",
+            "type": "array"
+          },
+          "yaw_rad": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "title": "Yaw Rad",
+            "type": "number"
+          },
+          "pitch_rad": {
+            "maximum": 0.45,
+            "minimum": -0.45,
+            "title": "Pitch Rad",
+            "type": "number"
+          },
+          "speed_units_s": {
+            "maximum": 6,
+            "minimum": 0,
+            "title": "Speed Units S",
+            "type": "number"
+          },
+          "applied_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Response Id"
+          },
+          "neutral": {
+            "title": "Neutral",
+            "type": "boolean"
+          },
+          "physics_id": {
+            "const": "flight-fixed20-ground-v2",
+            "title": "Physics Id",
+            "type": "string"
+          },
+          "environment": {
+            "$ref": "#/$defs/GroundEnvironment"
+          },
+          "ground_contact": {
+            "title": "Ground Contact",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "tick",
+          "position",
+          "yaw_rad",
+          "pitch_rad",
+          "speed_units_s",
+          "applied_response_id",
+          "neutral",
+          "physics_id",
+          "environment",
+          "ground_contact"
+        ],
+        "title": "GroundFlightSnapshot",
+        "type": "object"
+      },
       "MotorRates": {
         "additionalProperties": false,
         "properties": {
@@ -3983,12 +4793,27 @@
       "flight": {
         "anyOf": [
           {
-            "$ref": "#/$defs/FlightSnapshot"
+            "discriminator": {
+              "mapping": {
+                "obs-flight-1": "#/$defs/FlightSnapshot",
+                "obs-flight-2": "#/$defs/GroundFlightSnapshot"
+              },
+              "propertyName": "schema_version"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/FlightSnapshot"
+              },
+              {
+                "$ref": "#/$defs/GroundFlightSnapshot"
+              }
+            ]
           },
           {
             "type": "null"
           }
-        ]
+        ],
+        "title": "Flight"
       },
       "kind": {
         "enum": [
@@ -4183,12 +5008,27 @@
           "flight": {
             "anyOf": [
               {
-                "$ref": "#/$defs/FlightSnapshot"
+                "discriminator": {
+                  "mapping": {
+                    "obs-flight-1": "#/$defs/FlightSnapshot",
+                    "obs-flight-2": "#/$defs/GroundFlightSnapshot"
+                  },
+                  "propertyName": "schema_version"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/FlightSnapshot"
+                  },
+                  {
+                    "$ref": "#/$defs/GroundFlightSnapshot"
+                  }
+                ]
               },
               {
                 "type": "null"
               }
-            ]
+            ],
+            "title": "Flight"
           },
           "kind": {
             "enum": [
@@ -4546,6 +5386,152 @@
           "source_clock"
         ],
         "title": "FrameIdentity",
+        "type": "object"
+      },
+      "GroundEnvironment": {
+        "additionalProperties": false,
+        "description": "Single source for physics and generated renderer ground parameters.",
+        "properties": {
+          "environment_id": {
+            "const": "flat-ground-v1",
+            "title": "Environment Id",
+            "type": "string"
+          },
+          "ground_z": {
+            "const": -4.0,
+            "title": "Ground Z",
+            "type": "number"
+          },
+          "collision_proxy": {
+            "const": "fly-clearance-v1",
+            "title": "Collision Proxy",
+            "type": "string"
+          },
+          "clearance": {
+            "const": 1.5,
+            "title": "Clearance",
+            "type": "number"
+          }
+        },
+        "required": [
+          "environment_id",
+          "ground_z",
+          "collision_proxy",
+          "clearance"
+        ],
+        "title": "GroundEnvironment",
+        "type": "object"
+      },
+      "GroundFlightSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-flight-2",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "tick": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Tick",
+            "type": "integer"
+          },
+          "position": {
+            "items": {
+              "maximum": 1000000000.0,
+              "minimum": -1000000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Position",
+            "type": "array"
+          },
+          "yaw_rad": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "title": "Yaw Rad",
+            "type": "number"
+          },
+          "pitch_rad": {
+            "maximum": 0.45,
+            "minimum": -0.45,
+            "title": "Pitch Rad",
+            "type": "number"
+          },
+          "speed_units_s": {
+            "maximum": 6,
+            "minimum": 0,
+            "title": "Speed Units S",
+            "type": "number"
+          },
+          "applied_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Response Id"
+          },
+          "neutral": {
+            "title": "Neutral",
+            "type": "boolean"
+          },
+          "physics_id": {
+            "const": "flight-fixed20-ground-v2",
+            "title": "Physics Id",
+            "type": "string"
+          },
+          "environment": {
+            "$ref": "#/$defs/GroundEnvironment"
+          },
+          "ground_contact": {
+            "title": "Ground Contact",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "tick",
+          "position",
+          "yaw_rad",
+          "pitch_rad",
+          "speed_units_s",
+          "applied_response_id",
+          "neutral",
+          "physics_id",
+          "environment",
+          "ground_contact"
+        ],
+        "title": "GroundFlightSnapshot",
         "type": "object"
       },
       "MotorRates": {
@@ -5540,13 +6526,31 @@
         "additionalProperties": false,
         "properties": {
           "physics_id": {
-            "const": "flight-fixed20-v1",
             "default": "flight-fixed20-v1",
+            "enum": [
+              "flight-fixed20-v1",
+              "flight-fixed20-ground-v2"
+            ],
             "title": "Physics Id",
             "type": "string"
           },
           "snapshot": {
-            "$ref": "#/$defs/FlightSnapshot"
+            "discriminator": {
+              "mapping": {
+                "obs-flight-1": "#/$defs/FlightSnapshot",
+                "obs-flight-2": "#/$defs/GroundFlightSnapshot"
+              },
+              "propertyName": "schema_version"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/FlightSnapshot"
+              },
+              {
+                "$ref": "#/$defs/GroundFlightSnapshot"
+              }
+            ],
+            "title": "Snapshot"
           },
           "velocity": {
             "default": [
@@ -5762,6 +6766,152 @@
           "source_clock"
         ],
         "title": "FrameIdentity",
+        "type": "object"
+      },
+      "GroundEnvironment": {
+        "additionalProperties": false,
+        "description": "Single source for physics and generated renderer ground parameters.",
+        "properties": {
+          "environment_id": {
+            "const": "flat-ground-v1",
+            "title": "Environment Id",
+            "type": "string"
+          },
+          "ground_z": {
+            "const": -4.0,
+            "title": "Ground Z",
+            "type": "number"
+          },
+          "collision_proxy": {
+            "const": "fly-clearance-v1",
+            "title": "Collision Proxy",
+            "type": "string"
+          },
+          "clearance": {
+            "const": 1.5,
+            "title": "Clearance",
+            "type": "number"
+          }
+        },
+        "required": [
+          "environment_id",
+          "ground_z",
+          "collision_proxy",
+          "clearance"
+        ],
+        "title": "GroundEnvironment",
+        "type": "object"
+      },
+      "GroundFlightSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-flight-2",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "tick": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Tick",
+            "type": "integer"
+          },
+          "position": {
+            "items": {
+              "maximum": 1000000000.0,
+              "minimum": -1000000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Position",
+            "type": "array"
+          },
+          "yaw_rad": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "title": "Yaw Rad",
+            "type": "number"
+          },
+          "pitch_rad": {
+            "maximum": 0.45,
+            "minimum": -0.45,
+            "title": "Pitch Rad",
+            "type": "number"
+          },
+          "speed_units_s": {
+            "maximum": 6,
+            "minimum": 0,
+            "title": "Speed Units S",
+            "type": "number"
+          },
+          "applied_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Response Id"
+          },
+          "neutral": {
+            "title": "Neutral",
+            "type": "boolean"
+          },
+          "physics_id": {
+            "const": "flight-fixed20-ground-v2",
+            "title": "Physics Id",
+            "type": "string"
+          },
+          "environment": {
+            "$ref": "#/$defs/GroundEnvironment"
+          },
+          "ground_contact": {
+            "title": "Ground Contact",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "tick",
+          "position",
+          "yaw_rad",
+          "pitch_rad",
+          "speed_units_s",
+          "applied_response_id",
+          "neutral",
+          "physics_id",
+          "environment",
+          "ground_contact"
+        ],
+        "title": "GroundFlightSnapshot",
         "type": "object"
       },
       "InputEvent": {
@@ -6174,7 +7324,22 @@
             "$ref": "#/$defs/SourceCapability"
           },
           "initial_flight": {
-            "$ref": "#/$defs/FlightSnapshot"
+            "discriminator": {
+              "mapping": {
+                "obs-flight-1": "#/$defs/FlightSnapshot",
+                "obs-flight-2": "#/$defs/GroundFlightSnapshot"
+              },
+              "propertyName": "schema_version"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/FlightSnapshot"
+              },
+              {
+                "$ref": "#/$defs/GroundFlightSnapshot"
+              }
+            ],
+            "title": "Initial Flight"
           },
           "provenance": {
             "$ref": "#/$defs/Provenance"
@@ -6852,6 +8017,152 @@
         "title": "FlightSnapshot",
         "type": "object"
       },
+      "GroundEnvironment": {
+        "additionalProperties": false,
+        "description": "Single source for physics and generated renderer ground parameters.",
+        "properties": {
+          "environment_id": {
+            "const": "flat-ground-v1",
+            "title": "Environment Id",
+            "type": "string"
+          },
+          "ground_z": {
+            "const": -4.0,
+            "title": "Ground Z",
+            "type": "number"
+          },
+          "collision_proxy": {
+            "const": "fly-clearance-v1",
+            "title": "Collision Proxy",
+            "type": "string"
+          },
+          "clearance": {
+            "const": 1.5,
+            "title": "Clearance",
+            "type": "number"
+          }
+        },
+        "required": [
+          "environment_id",
+          "ground_z",
+          "collision_proxy",
+          "clearance"
+        ],
+        "title": "GroundEnvironment",
+        "type": "object"
+      },
+      "GroundFlightSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-flight-2",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "tick": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Tick",
+            "type": "integer"
+          },
+          "position": {
+            "items": {
+              "maximum": 1000000000.0,
+              "minimum": -1000000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Position",
+            "type": "array"
+          },
+          "yaw_rad": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "title": "Yaw Rad",
+            "type": "number"
+          },
+          "pitch_rad": {
+            "maximum": 0.45,
+            "minimum": -0.45,
+            "title": "Pitch Rad",
+            "type": "number"
+          },
+          "speed_units_s": {
+            "maximum": 6,
+            "minimum": 0,
+            "title": "Speed Units S",
+            "type": "number"
+          },
+          "applied_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Response Id"
+          },
+          "neutral": {
+            "title": "Neutral",
+            "type": "boolean"
+          },
+          "physics_id": {
+            "const": "flight-fixed20-ground-v2",
+            "title": "Physics Id",
+            "type": "string"
+          },
+          "environment": {
+            "$ref": "#/$defs/GroundEnvironment"
+          },
+          "ground_contact": {
+            "title": "Ground Contact",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "tick",
+          "position",
+          "yaw_rad",
+          "pitch_rad",
+          "speed_units_s",
+          "applied_response_id",
+          "neutral",
+          "physics_id",
+          "environment",
+          "ground_contact"
+        ],
+        "title": "GroundFlightSnapshot",
+        "type": "object"
+      },
       "Provenance": {
         "additionalProperties": false,
         "properties": {
@@ -7067,7 +8378,22 @@
             "$ref": "#/$defs/SourceCapability"
           },
           "initial_flight": {
-            "$ref": "#/$defs/FlightSnapshot"
+            "discriminator": {
+              "mapping": {
+                "obs-flight-1": "#/$defs/FlightSnapshot",
+                "obs-flight-2": "#/$defs/GroundFlightSnapshot"
+              },
+              "propertyName": "schema_version"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/FlightSnapshot"
+              },
+              {
+                "$ref": "#/$defs/GroundFlightSnapshot"
+              }
+            ],
+            "title": "Initial Flight"
           },
           "provenance": {
             "$ref": "#/$defs/Provenance"
@@ -7541,18 +8867,182 @@
         ],
         "title": "FlightSnapshot",
         "type": "object"
+      },
+      "GroundEnvironment": {
+        "additionalProperties": false,
+        "description": "Single source for physics and generated renderer ground parameters.",
+        "properties": {
+          "environment_id": {
+            "const": "flat-ground-v1",
+            "title": "Environment Id",
+            "type": "string"
+          },
+          "ground_z": {
+            "const": -4.0,
+            "title": "Ground Z",
+            "type": "number"
+          },
+          "collision_proxy": {
+            "const": "fly-clearance-v1",
+            "title": "Collision Proxy",
+            "type": "string"
+          },
+          "clearance": {
+            "const": 1.5,
+            "title": "Clearance",
+            "type": "number"
+          }
+        },
+        "required": [
+          "environment_id",
+          "ground_z",
+          "collision_proxy",
+          "clearance"
+        ],
+        "title": "GroundEnvironment",
+        "type": "object"
+      },
+      "GroundFlightSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_version": {
+            "const": "obs-flight-2",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "session_id": {
+            "maxLength": 64,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "generation": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "title": "Generation",
+            "type": "integer"
+          },
+          "evidence_kind": {
+            "enum": [
+              "real",
+              "fixture"
+            ],
+            "title": "Evidence Kind",
+            "type": "string"
+          },
+          "tick": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "title": "Tick",
+            "type": "integer"
+          },
+          "position": {
+            "items": {
+              "maximum": 1000000000.0,
+              "minimum": -1000000000.0,
+              "type": "number"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Position",
+            "type": "array"
+          },
+          "yaw_rad": {
+            "maximum": 3.141592653589793,
+            "minimum": -3.141592653589793,
+            "title": "Yaw Rad",
+            "type": "number"
+          },
+          "pitch_rad": {
+            "maximum": 0.45,
+            "minimum": -0.45,
+            "title": "Pitch Rad",
+            "type": "number"
+          },
+          "speed_units_s": {
+            "maximum": 6,
+            "minimum": 0,
+            "title": "Speed Units S",
+            "type": "number"
+          },
+          "applied_response_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied Response Id"
+          },
+          "neutral": {
+            "title": "Neutral",
+            "type": "boolean"
+          },
+          "physics_id": {
+            "const": "flight-fixed20-ground-v2",
+            "title": "Physics Id",
+            "type": "string"
+          },
+          "environment": {
+            "$ref": "#/$defs/GroundEnvironment"
+          },
+          "ground_contact": {
+            "title": "Ground Contact",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schema_version",
+          "session_id",
+          "generation",
+          "evidence_kind",
+          "tick",
+          "position",
+          "yaw_rad",
+          "pitch_rad",
+          "speed_units_s",
+          "applied_response_id",
+          "neutral",
+          "physics_id",
+          "environment",
+          "ground_contact"
+        ],
+        "title": "GroundFlightSnapshot",
+        "type": "object"
       }
     },
     "additionalProperties": false,
     "properties": {
       "physics_id": {
-        "const": "flight-fixed20-v1",
         "default": "flight-fixed20-v1",
+        "enum": [
+          "flight-fixed20-v1",
+          "flight-fixed20-ground-v2"
+        ],
         "title": "Physics Id",
         "type": "string"
       },
       "snapshot": {
-        "$ref": "#/$defs/FlightSnapshot"
+        "discriminator": {
+          "mapping": {
+            "obs-flight-1": "#/$defs/FlightSnapshot",
+            "obs-flight-2": "#/$defs/GroundFlightSnapshot"
+          },
+          "propertyName": "schema_version"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/$defs/FlightSnapshot"
+          },
+          {
+            "$ref": "#/$defs/GroundFlightSnapshot"
+          }
+        ],
+        "title": "Snapshot"
       },
       "velocity": {
         "default": [

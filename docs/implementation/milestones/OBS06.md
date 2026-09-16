@@ -1,5 +1,12 @@
 # OBS06 — technical validation and local handoff
 
+**Subsequent human review:** CHANGES_REQUESTED for ground penetration at pushed
+revision `3ee5b7247f2e4525bea60cb8fa3e3e260b33db8c`. OBS06 technical results below
+remain accepted as recorded. The [focused ground repair](OBS06-ground.md) adds
+new physics while preserving these v1 causal measurements; its implementation
+passes local checks and awaits human re-review. The reviewed revision's hosted
+workflow later finished FAILURE, as recorded in that repair report.
+
 2026-09-15. **Technical validation PASS. Return for final human review.**
 Reviewed starting revision: `a9688b39caaebb71a0c1058a6bf923ef86aab314`, initially
 clean. OBS06 changes are local and uncommitted. No push or new hosted run occurred.

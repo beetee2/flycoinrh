@@ -1,4 +1,50 @@
-# OBS live — local review handoff
+# Ground-contact repair — human re-review
+
+**Focused repair PASS; final product approval awaits your review.** Your
+CHANGES_REQUESTED decision for ground penetration is preserved. The original
+OBS06 technical and causal results remain accepted as recorded. Read the
+[ground-repair report](milestones/OBS06-ground.md) and [flight rule](OBS-FLIGHT.md).
+
+Open **http://127.0.0.1:8769/live**, press **Load synthetic preview**, then
+**Play synthetic preview**. This dedicated service has no available capture or
+inference sources. The 12-second sequence descends to contact around 2.64 seconds,
+continues moving and turning horizontally, then departs after the upward command
+at 8 seconds. Inspect ground clearance and camera framing, then try Pause, Stop
+and Reset. It makes **zero neural calls** and is labeled SYNTHETIC CONTROL REPLAY.
+
+Restart command, from the repository:
+`.venv/bin/python -m scripts.live_ground_preview --port 8769`.
+The built web assets are current; rebuild after future source edits with
+`npm --prefix web run build`.
+
+New physics is **flight-fixed20-ground-v2**, environment **flat-ground-v1**,
+ground **z=-4**, clearance **1.5**, minimum fly-root altitude **-2.5**. A Ground
+contact indicator explains constrained movement. The conservative proxy can leave
+a small gap between feet and floor at some pitches. Existing decorative cones
+have no collision. Historical v1 replays retain their original paths, including
+below-ground motion. This repair does not redefine their physics or hashes.
+
+The manual service at **http://127.0.0.1:8767/live** has been started with the
+updated code and its existing human execution policy; it has no current session.
+Capture/inference are stopped and OBS recording is disabled. No new real model
+or OBS run was performed. Automated accounting is unchanged at **219/1,024**, with
+**805 remaining**; P00 is **144**. All existing recording, ledger and protected
+model identities checked unchanged.
+
+Local regression passed: **3,031 repository Python**, **150 upstream**, **649 live
+Python**, **242 live UI/contracts**, and **20 live desktop/mobile browser tests**,
+plus foundation/lab checks. All six descent/contact/departure screenshots were
+opened and inspected. The report records failures during development and an
+older default JUnit file that may have been overwritten by one initial test run.
+
+The [hosted workflow for reviewed revision 3ee5b72](https://github.com/beetee2/flycoinrh/actions/runs/35005380470)
+finished **FAILURE** with two mobile browser failures. This local repair has not
+been committed, pushed or tested remotely. **Stop for human review.** No further
+model, GPU, learning, milestone, capture or remote action is authorized.
+
+---
+
+# Historical OBS06 handoff (superseded above)
 
 **OBS06 technical validation passed. Capture and inference are off.**
 Final product and causal-response approval remain yours.

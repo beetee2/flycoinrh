@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as THREE from 'three';
-import { createFlightRenderer, FlightGraphicsError, FLIGHT_CONTEXT_ATTRIBUTES, sanitizeGraphicsDetail } from '../src/live/flightRenderer';
+import { createFlightRenderer, FlightGraphicsError, FLIGHT_CONTEXT_ATTRIBUTES, FLIGHT_GROUND, sanitizeGraphicsDetail } from '../src/live/flightRenderer';
 import type { FlightSnapshot } from '../src/live/contracts';
 
 const mocks = vi.hoisted(() => ({ construct: vi.fn(), render: vi.fn(), setSize: vi.fn(), dispose: vi.fn(), forceContextLoss: vi.fn() }));
@@ -128,4 +128,59 @@ describe('procedural renderer ownership', () => {
     expect(sanitizeGraphicsDetail({ secret: 'private' })).toBe('No diagnostic message supplied.');
   });
 
+});
+
+describe('ground geometry and camera', () => {
+  it('keeps the actual fly geometry above the plane at every decorative extremum and supported pitch', () => {
+    const clearance = FLIGHT_GROUND.clearance.const;
+    // Continuous support bounds for pitch ±.45; yaw preserves display height.
+    const legBound = 1.12 * Math.sin(.45) + 1.04 * Math.cos(.45) + .035;
+    const bodyBound = 1.05 * Math.sin(.45) + .06 + Math.hypot(1.02 * Math.sin(.45), .51);
+    const wingMinY = .42 + .02 * Math.cos(.29) - 1.12 * Math.sin(.29) - 1.51 * Math.sin(.29) - .035;
+    const wingMaxX = .6 + Math.hypot(.74 * Math.cos(.34), 1.51 * Math.sin(.34));
+    const wingBound = -wingMinY + wingMaxX * Math.sin(.45);
+    const veinBound = -(.42 + .07 * Math.cos(.29) - 2.27 * Math.sin(.29)) + 1.36 * Math.sin(.45);
+    expect(Math.max(legBound, bodyBound, wingBound, veinBound)).toBeLessThan(clearance);
+    const host = document.createElement('div');
+    Object.defineProperty(host, 'clientWidth', { value: 800 }); Object.defineProperty(host, 'clientHeight', { value: 400 });
+    const renderer = createFlightRenderer(host);
+    let maximumRadius = 0, minimumClearance = Infinity;
+    for (const pitch of [-.45, -.225, 0, .225, .45]) for (const yaw of [0, .8, Math.PI, -2]) {
+      for (const phase of [-Math.PI / 2, 0, Math.PI / 2, Math.PI]) {
+        const contact: FlightSnapshot = { ...pose, schema_version: 'obs-flight-2', physics_id: 'flight-fixed20-ground-v2',
+          environment: { environment_id: 'flat-ground-v1', ground_z: FLIGHT_GROUND.ground_z.const as -4,
+            collision_proxy: 'fly-clearance-v1', clearance: clearance as 1.5 }, ground_contact: true,
+          position: [1234, -5678, FLIGHT_GROUND.ground_z.const + clearance], pitch_rad: pitch, yaw_rad: yaw };
+        renderer.draw(contact, phase / .035);
+        const [scene, camera] = mocks.render.mock.calls.at(-1)! as [THREE.Scene, THREE.PerspectiveCamera];
+        scene.updateMatrixWorld(true); camera.updateMatrixWorld(true);
+        const fly = scene.children.find(object => object instanceof THREE.Group)!;
+        const floor = scene.children.find(object => object instanceof THREE.Mesh && object.geometry instanceof THREE.PlaneGeometry)!;
+        expect(floor.position.y).toBe(-clearance);
+        expect(camera.position.y - floor.position.y).toBeGreaterThan(5);
+        fly.traverse(object => {
+          if (!(object instanceof THREE.Mesh || object instanceof THREE.Line)) return;
+          const vertices = object.geometry.getAttribute('position');
+          for (let index = 0; index < vertices.count; index++) {
+            const vertex = new THREE.Vector3().fromBufferAttribute(vertices, index).applyMatrix4(object.matrixWorld);
+            maximumRadius = Math.max(maximumRadius, vertex.length());
+            minimumClearance = Math.min(minimumClearance, vertex.y - floor.position.y);
+          }
+        });
+      }
+    }
+    expect(maximumRadius).toBeLessThan(3.2);
+    expect(minimumClearance).toBeGreaterThan(0);
+    renderer.dispose();
+  });
+  it('faithfully retains a historical below-ground path without a display clamp', () => {
+    const renderer = createFlightRenderer(document.createElement('div'));
+    const below = { ...pose, position: [0, 0, -8.14] as [number, number, number] };
+    renderer.draw(below, 0);
+    const scene = mocks.render.mock.calls.at(-1)![0] as THREE.Scene;
+    const floor = scene.children.find(object => object instanceof THREE.Mesh && object.geometry instanceof THREE.PlaneGeometry)!;
+    expect(floor.position.y).toBeCloseTo(4.14);
+    expect(below.position[2]).toBe(-8.14);
+    renderer.dispose();
+  });
 });

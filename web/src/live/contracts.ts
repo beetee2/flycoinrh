@@ -3,6 +3,7 @@ import schemas from './generated/schemas.json' with { type: 'json' };
 import type * as C from './generated/contracts';
 
 export type * from './generated/contracts';
+export type FlightSnapshot = C.FlightSnapshot | C.GroundFlightSnapshot;
 export type LiveContracts = {
   SourceCapability: C.SourceCapability;
   FrameIdentity: C.FrameIdentity;
@@ -10,6 +11,8 @@ export type LiveContracts = {
   NeuralSample: C.NeuralSample;
   FlightControls: C.FlightControls;
   FlightSnapshot: C.FlightSnapshot;
+  GroundEnvironment: C.GroundEnvironment;
+  GroundFlightSnapshot: C.GroundFlightSnapshot;
   SyntheticFlightPreview: C.SyntheticFlightPreview;
   SessionConfig: C.SessionConfig;
   SessionStatus: C.SessionStatus;
@@ -34,6 +37,9 @@ export type LiveContracts = {
 export type ContractName = keyof LiveContracts;
 
 const ajv = new Ajv2020({ allErrors: true, strict: true, strictNumbers: true, useDefaults: true });
+// Pydantic emits OpenAPI's discriminator hint. Full oneOf validation below
+// already enforces its literal tags; AJV need not implement the mapping hint.
+ajv.addKeyword({ keyword: 'discriminator', schemaType: 'object' });
 const validators = Object.fromEntries(Object.entries(schemas).map(([name, schema]) => [name, ajv.compile(schema)]));
 
 function requireCondition(condition: boolean, message: string): void {
@@ -69,16 +75,28 @@ function checkNeural(sample: C.NeuralSample): void {
     'response completion precedes input receipt');
 }
 
+function checkFlight(snapshot: FlightSnapshot): void {
+  if (snapshot.schema_version !== 'obs-flight-2') return;
+  const floor = snapshot.environment.ground_z + snapshot.environment.clearance;
+  requireCondition(snapshot.position[2] >= floor && snapshot.ground_contact === (snapshot.position[2] === floor),
+    'inconsistent ground position or contact');
+  requireCondition(!snapshot.neutral || snapshot.speed_units_s === 0, 'neutral ground snapshot must have zero speed');
+}
+
 // Pydantic after-validators also run for nested models. Keep these checks aligned
 // with flytrap/live/contracts.py and the shared generated compatibility corpus.
 function checkSemantics(name: ContractName, value: LiveContracts[ContractName]): void {
   switch (name) {
+    case 'GroundFlightSnapshot':
+      checkFlight(value as C.GroundFlightSnapshot);
+      break;
     case 'SyntheticFlightPreview': {
       const preview = value as C.SyntheticFlightPreview;
       const first = preview.snapshots[0];
+      preview.snapshots.forEach(checkFlight);
       requireCondition(preview.snapshots.every((snapshot, tick) => snapshot.tick === tick &&
         snapshot.evidence_kind === 'fixture' && snapshot.session_id === first.session_id &&
-        snapshot.generation === first.generation), 'synthetic preview requires sequential fixture snapshots of one session');
+        snapshot.generation === first.generation && snapshot.schema_version === first.schema_version), 'synthetic preview requires sequential fixture snapshots of one session');
       break;
     }
     case 'SourceCapability':
@@ -99,6 +117,7 @@ function checkSemantics(name: ContractName, value: LiveContracts[ContractName]):
     case 'ApiSnapshot':
     case 'StreamEnvelope': {
       const stream = value as C.StreamEnvelope | C.ApiSnapshot;
+      if (stream.flight) checkFlight(stream.flight);
       if (stream.latest_source_frame) checkFrame(stream.latest_source_frame);
       if (stream.neural_sample) checkNeural(stream.neural_sample);
       if (stream.latest_source_frame && stream.neural_sample) {
@@ -204,12 +223,19 @@ function checkSemantics(name: ContractName, value: LiveContracts[ContractName]):
           requireCondition(belongs(event.controls) && responseIds.has(event.controls.response_id), 'foreign replay controls');
         }
       });
+      checkSemantics('FlightState', replay.trace.initial);
       checkSemantics('FlightState', replay.final);
+      requireCondition(replay.trace.initial.physics_id === replay.final.physics_id, 'replay physics identity mismatch');
       break;
     }
     case 'FlightState': {
       const state = value as C.FlightState;
+      checkFlight(state.snapshot);
+      const expectedPhysics = state.snapshot.schema_version === 'obs-flight-2' ? state.snapshot.physics_id : 'flight-fixed20-v1';
+      requireCondition(state.physics_id === expectedPhysics, 'inconsistent flight physics and snapshot versions');
       const velocity = state.velocity ?? [0, 0, 0];
+      requireCondition(!(state.snapshot.schema_version === 'obs-flight-2' && state.snapshot.ground_contact && (velocity[2] as number) < 0),
+        'ground contact cannot retain downward velocity');
       requireCondition(velocity.every(v => typeof v === 'number' && Number.isFinite(v)), 'invalid velocity');
       const speed = Math.hypot(...velocity as [number, number, number]);
       requireCondition(speed <= 6 + 1e-12 && Math.abs(speed-state.snapshot.speed_units_s) <= 1e-9 &&
@@ -220,6 +246,7 @@ function checkSemantics(name: ContractName, value: LiveContracts[ContractName]):
     case 'ReplayManifest': {
       const replay = value as C.ReplayManifest;
       checkSource(replay.source);
+      checkFlight(replay.initial_flight);
       requireCondition(replay.config.recording === true, 'replay requires recording consent');
       requireCondition(replay.events_bytes <= (replay.config.recording_max_bytes ?? 33554432),
         'replay exceeds configured recording cap');

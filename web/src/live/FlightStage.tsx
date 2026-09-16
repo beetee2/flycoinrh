@@ -177,6 +177,7 @@ export function FlightStage({ mode = 'synthetic', modelMode = 'none', snapshot =
     {error && <p role="alert" className="error">{error}</p>}
     <div className="flight-telemetry" aria-label={mode === 'synthetic' ? 'Synthetic replay telemetry' : 'Flight telemetry'}>
       <p><span>PREVIEW STATE</span><strong data-testid="preview-state">{mode === 'synthetic' ? state : motionAllowed ? 'Receiving authoritative poses' : 'Frozen'}</strong></p>
+      <p><span>GROUND CONTACT</span><strong data-testid="ground-contact">{!pose ? '—' : pose.schema_version === 'obs-flight-1' ? 'Legacy · unconstrained' : pose.ground_contact ? 'Contact · downward motion constrained' : 'Clear'}</strong></p>
       <p><span>SERVER TICK · 20 MS</span><strong data-testid="flight-tick">{pose?.tick ?? '—'}</strong></p>
       <p><span>POSITION · WORLD UNITS</span><strong data-testid="flight-position">{pose ? pose.position.map(value => value.toFixed(2)).join(' / ') : '—'}</strong></p>
     </div>

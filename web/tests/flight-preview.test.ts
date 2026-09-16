@@ -60,3 +60,32 @@ describe('live snapshot interpolation boundaries', () => {
     expect(interpolatePose(end, first, .5)).toEqual(end);
   });
 });
+
+describe('ground interpolation', () => {
+  const environment = { environment_id: 'flat-ground-v1', ground_z: -4, collision_proxy: 'fly-clearance-v1', clearance: 1.5 } as const;
+  const contact: FlightSnapshot = { ...first, schema_version: 'obs-flight-2', physics_id: 'flight-fixed20-ground-v2',
+    environment, ground_contact: true, position: [0, 0, -2.5], pitch_rad: -.45 };
+  it('stays above the same plane while descending, turning at contact and departing', () => {
+    const descending = { ...contact, tick: 0, ground_contact: false, position: [0, 0, 1] as [number, number, number] };
+    const turning = { ...contact, tick: 1, yaw_rad: 3.1 };
+    const departing = { ...contact, tick: 2, ground_contact: false, pitch_rad: .45, position: [2, 1, -.5] as [number, number, number] };
+    for (const [a, b] of [[descending, turning], [turning, departing]]) {
+      for (let step = 0; step <= 100; step++) {
+        const pose = interpolatePose(a, b, step / 100);
+        expect(pose.position[2]).toBeGreaterThanOrEqual(-2.5);
+        expect(Math.abs(pose.pitch_rad)).toBeLessThanOrEqual(.45);
+      }
+    }
+    expect(interpolatePose(turning, departing, 1)).toEqual(departing);
+    expect(interpolatePose(first, contact, .5)).toEqual(first);
+  });
+  it('rejects penetrated, inconsistent contact and mixed-version preview data', () => {
+    const preview = { schema_version: 'obs-flight-preview-1', evidence_kind: 'synthetic', dt_ms: 20,
+      snapshots: [contact, { ...contact, tick: 1 }] };
+    expect(parseFlightPreview(preview).snapshots).toHaveLength(2);
+    for (const change of [{ position: [0, 0, -2.51] }, { ground_contact: false }, { neutral: true, speed_units_s: 1 }]) {
+      expect(() => parseFlightPreview({ ...preview, snapshots: [contact, { ...contact, tick: 1, ...change }] })).toThrow(/Invalid/);
+    }
+    expect(() => parseFlightPreview({ ...preview, snapshots: [contact, { ...first, tick: 1 }] })).toThrow(/Invalid/);
+  });
+});

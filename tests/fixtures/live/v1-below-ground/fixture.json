@@ -1,0 +1,18 @@
+{
+  "source_revision": "3ee5b7247f2e4525bea60cb8fa3e3e260b33db8c",
+  "frozen_algorithm_sha256": "05678d0245bd40b647a8cad6a9aafacc4d3d33e77f4189ffc1582b63ea72bc3e",
+  "fixture_kind": "synthetic controls and fabricated neural response metadata; zero model calls",
+  "physics_id": "flight-fixed20-v1",
+  "recording_id": "1e6d1ebb45104c71a8e152fea8b8678d",
+  "ticks": 600,
+  "final_position": [
+    -9.683191473960843,
+    34.23227675276414,
+    -27.022471970236644
+  ],
+  "files": {
+    "complete.sha256": "9dc5cb1e3ec8ef99f18d4438ab76bcb82ae1e4b04f572e908ffaf6cae6fb3cdf",
+    "manifest.json": "14aacfdcba7f441b19ba60aee0ad8d5008113ddb96ce60c8b49dacd82666f7f4",
+    "events.jsonl": "ddebf0f759fc68acc474dcb69802f7ef3534ac58d8550c1782372b178b52a6a5"
+  }
+}

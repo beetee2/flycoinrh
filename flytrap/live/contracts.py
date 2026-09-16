@@ -178,17 +178,51 @@ class FlightSnapshot(Contract):
     neutral: bool
 
 
+class GroundEnvironment(Contract):
+    """Single source for physics and generated renderer ground parameters."""
+    environment_id: Literal["flat-ground-v1"]
+    ground_z: Literal[-4.0]
+    collision_proxy: Literal["fly-clearance-v1"]
+    clearance: Literal[1.5]
+
+
+GROUND_ENVIRONMENT = GroundEnvironment(environment_id="flat-ground-v1", ground_z=-4.,
+    collision_proxy="fly-clearance-v1", clearance=1.5)
+
+
+class GroundFlightSnapshot(FlightSnapshot):
+    schema_version: Literal["obs-flight-2"]
+    physics_id: Literal["flight-fixed20-ground-v2"]
+    environment: GroundEnvironment
+    ground_contact: bool
+    pitch_rad: Annotated[float, Field(ge=-0.45, le=0.45)]
+    speed_units_s: Annotated[float, Field(ge=0, le=6)]
+
+    @model_validator(mode="after")
+    def ground_half_space(self):
+        floor = self.environment.ground_z + self.environment.clearance
+        if self.position[2] < floor or self.ground_contact != (self.position[2] == floor):
+            raise ValueError("inconsistent ground position or contact")
+        if self.neutral and self.speed_units_s != 0:
+            raise ValueError("neutral ground snapshot must have zero speed")
+        return self
+
+
+AnyFlightSnapshot = Annotated[FlightSnapshot | GroundFlightSnapshot, Field(discriminator="schema_version")]
+
+
 class SyntheticFlightPreview(Contract):
     schema_version: Literal["obs-flight-preview-1"]
     evidence_kind: Literal["synthetic"]
     dt_ms: Literal[20]
-    snapshots: Annotated[list[FlightSnapshot], Field(min_length=2, max_length=601)]
+    snapshots: Annotated[list[AnyFlightSnapshot], Field(min_length=2, max_length=601)]
 
     @model_validator(mode="after")
     def sequence(self):
         first = self.snapshots[0]
         for tick, snapshot in enumerate(self.snapshots):
             if (snapshot.tick != tick or snapshot.evidence_kind != "fixture"
+                    or snapshot.schema_version != first.schema_version
                     or (snapshot.session_id, snapshot.generation) != (first.session_id, first.generation)):
                 raise ValueError("synthetic preview requires sequential fixture snapshots of one session")
         return self
@@ -239,7 +273,7 @@ class StreamEnvelope(Contract):
     status: SessionStatus
     latest_source_frame: FrameIdentity | None
     neural_sample: NeuralSample | None
-    flight: FlightSnapshot | None
+    flight: AnyFlightSnapshot | None
 
     @model_validator(mode="after")
     def identity(self):
@@ -280,7 +314,7 @@ class ReplayManifest(Contract):
     state: Literal["partial", "aborted", "complete"]
     config: SessionConfig
     source: SourceCapability
-    initial_flight: FlightSnapshot
+    initial_flight: AnyFlightSnapshot
     provenance: Provenance
     events_sha256: Digest
     event_count: Count
@@ -329,5 +363,6 @@ class LiveConfig(Contract):
 
 
 CONTRACTS = {cls.__name__: cls for cls in (SourceCapability, FrameIdentity, EncoderConfig,
-    NeuralSample, FlightControls, FlightSnapshot, SyntheticFlightPreview, SessionConfig, SessionStatus, StreamEnvelope,
+    NeuralSample, FlightControls, FlightSnapshot, GroundEnvironment, GroundFlightSnapshot,
+    SyntheticFlightPreview, SessionConfig, SessionStatus, StreamEnvelope,
     ReplayManifest, LiveHealth, LiveConfig)}

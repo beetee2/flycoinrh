@@ -1,4 +1,21 @@
-# Active routing — OBS06 technical validation complete
+# Active routing — focused OBS06 ground repair; stop for review
+
+**Ground repair implementation PASS; human product re-review PENDING.** The
+CHANGES_REQUESTED decision for below-ground travel is preserved. Read
+[OBS-STATUS](OBS-STATUS.md), [handoff](OBS-LIVE-HANDOFF.md) and the
+[ground-repair report](milestones/OBS06-ground.md).
+
+Versioned v2 physics constrains new sessions to the original ground plane with
+validated fly clearance; historical v1 replay and OBS06 causal results are
+preserved. Full local repository/live checks pass. Reviewed hosted revision
+3ee5b72 finished with two mobile browser failures; no new remote run or push.
+Zero new full-connectome calls or desktop capture. Accounting remains
+219/1,024 and P00 144. Capture/inference are stopped. Local zero-call preview:
+**http://127.0.0.1:8769/live**. Stop for human review; no new milestone.
+
+---
+
+# Historical routing — OBS06 technical validation complete
 
 **OBS06 technical validation PASS; final human product and causal-response review PENDING.**
 Read [OBS-LIVE-HANDOFF](OBS-LIVE-HANDOFF.md), [OBS-STATUS](OBS-STATUS.md), and

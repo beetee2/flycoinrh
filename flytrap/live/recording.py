@@ -67,6 +67,13 @@ class ReplayPayload(Contract):
     trace: FlightTrace
     final: FlightState
 
+    @model_validator(mode="after")
+    def flight_identity(self):
+        if (self.manifest.initial_flight != self.trace.initial.snapshot
+                or self.trace.initial.physics_id != self.final.physics_id):
+            raise ValueError("replay flight physics or initial state mismatch")
+        return self
+
 
 class ReplayListEntry(Contract):
     recording_id: RecordingId
@@ -217,6 +224,8 @@ class VerifiedReplay:
                 trace = event.trace
                 if trace.initial.snapshot != manifest.initial_flight:
                     raise RecordingError("flight initial state mismatch")
+                if trace.initial.physics_id != event.final.physics_id:
+                    raise RecordingError("flight physics identity mismatch")
                 if trace.decoder_id != manifest.config.decoder_id or trace.ticks > manifest.config.duration_seconds*50:
                     raise RecordingError("flight configuration mismatch")
                 for application in trace.events:

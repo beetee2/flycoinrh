@@ -1,4 +1,31 @@
-# Active routing — OBS06 technical validation complete
+# Active routing — ground repair complete; human re-review
+
+**Ground repair implementation PASS. Product approval remains withheld pending
+human re-review.** The operator requested changes for below-ground travel at
+`3ee5b7247f2e4525bea60cb8fa3e3e260b33db8c`. Read the
+[focused report](milestones/OBS06-ground.md), [handoff](OBS-LIVE-HANDOFF.md), and
+[versioned flight rule](OBS-FLIGHT.md).
+
+New sessions use **flight-fixed20-ground-v2 / flat-ground-v1**, floor z=-4 and
+clearance 1.5. Old v1 replay paths, hashes and causal results remain unchanged.
+Zero new full-connectome calls or desktop capture. Capture/inference are off;
+OBS recording remains disabled. Ledgers remain **219/1,024 (805 remaining)** and
+P00 **144**. No model/checkpoint or learning change.
+
+Local aggregates PASS: 3,031 repository Python, 150 upstream, 649 live Python,
+242 live UI/contracts, 20 live fixture browser tests, and required foundation/lab
+checks. Desktop/mobile descent/contact/departure screenshots were inspected.
+The reviewed revision's [hosted workflow](https://github.com/beetee2/flycoinrh/actions/runs/35005380470)
+finished **FAILURE** (two mobile browser tests). This repair is local/uncommitted.
+
+Zero-call preview: **http://127.0.0.1:8769/live** → Load → Play. The dedicated
+preview has no capture/inference sources. Manual service 8767 has updated code
+and is idle. **Stop for review; no additional milestone or experiment.**
+Original OBS06 real-model/OBS/causal technical results remain accepted as recorded.
+
+---
+
+# Historical routing — OBS06 technical validation complete
 
 **Technical gates PASS. Return for final human review.** Read
 [OBS-LIVE-HANDOFF](OBS-LIVE-HANDOFF.md) and the [OBS06 report](milestones/OBS06.md).

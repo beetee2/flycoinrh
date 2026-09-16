@@ -322,7 +322,7 @@ def test_full_trace_json_roundtrip_replays_current_state_and_omits_pending_contr
         authority.stop()
     trace = FlightTrace.model_validate_json(authority.trace().model_dump_json())
     assert trace == authority.trace()
-    assert trace.initial.physics_id == "flight-fixed20-v1"
+    assert trace.initial.physics_id == "flight-fixed20-ground-v2"
     assert trace.decoder_id == "motor-flight-v1"
     assert len(trace.events) == 1
     assert trace.events[0].controls.response_id == "fixture-0"

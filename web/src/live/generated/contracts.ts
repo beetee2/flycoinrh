@@ -511,6 +511,77 @@ export interface FlightSnapshot {
 }
 export type FlightSnapshot = FlightSnapshotContract.FlightSnapshot;
 
+export namespace GroundEnvironmentContract {
+export type EnvironmentId = "flat-ground-v1";
+export type GroundZ = -4;
+export type CollisionProxy = "fly-clearance-v1";
+export type Clearance = 1.5;
+
+/**
+ * Single source for physics and generated renderer ground parameters.
+ */
+export interface GroundEnvironment {
+  environment_id: EnvironmentId;
+  ground_z: GroundZ;
+  collision_proxy: CollisionProxy;
+  clearance: Clearance;
+}
+
+}
+export type GroundEnvironment = GroundEnvironmentContract.GroundEnvironment;
+
+export namespace GroundFlightSnapshotContract {
+export type SchemaVersion = "obs-flight-2";
+export type SessionId = string;
+export type Generation = number;
+export type EvidenceKind = "real" | "fixture";
+export type Tick = number;
+/**
+ * @minItems 3
+ * @maxItems 3
+ */
+export type Position = [number, number, number];
+export type YawRad = number;
+export type PitchRad = number;
+export type SpeedUnitsS = number;
+export type AppliedResponseId = string | null;
+export type Neutral = boolean;
+export type PhysicsId = "flight-fixed20-ground-v2";
+export type EnvironmentId = "flat-ground-v1";
+export type GroundZ = -4;
+export type CollisionProxy = "fly-clearance-v1";
+export type Clearance = 1.5;
+export type GroundContact = boolean;
+
+export interface GroundFlightSnapshot {
+  schema_version: SchemaVersion;
+  session_id: SessionId;
+  generation: Generation;
+  evidence_kind: EvidenceKind;
+  tick: Tick;
+  position: Position;
+  yaw_rad: YawRad;
+  pitch_rad: PitchRad;
+  speed_units_s: SpeedUnitsS;
+  applied_response_id: AppliedResponseId;
+  neutral: Neutral;
+  physics_id: PhysicsId;
+  environment: GroundEnvironment;
+  ground_contact: GroundContact;
+}
+/**
+ * Single source for physics and generated renderer ground parameters.
+ */
+export interface GroundEnvironment {
+  environment_id: EnvironmentId;
+  ground_z: GroundZ;
+  collision_proxy: CollisionProxy;
+  clearance: Clearance;
+}
+
+}
+export type GroundFlightSnapshot = GroundFlightSnapshotContract.GroundFlightSnapshot;
+
 export namespace SyntheticFlightPreviewContract {
 export type SchemaVersion = "obs-flight-preview-1";
 export type EvidenceKind = "synthetic";
@@ -519,7 +590,11 @@ export type DtMs = 20;
  * @minItems 2
  * @maxItems 601
  */
-export type Snapshots = [FlightSnapshot, FlightSnapshot, ...FlightSnapshot[]];
+export type Snapshots = [
+  FlightSnapshot | GroundFlightSnapshot,
+  FlightSnapshot | GroundFlightSnapshot,
+  ...(FlightSnapshot | GroundFlightSnapshot)[]
+];
 export type SchemaVersion1 = "obs-flight-1";
 export type SessionId = string;
 export type Generation = number;
@@ -535,6 +610,27 @@ export type PitchRad = number;
 export type SpeedUnitsS = number;
 export type AppliedResponseId = string | null;
 export type Neutral = boolean;
+export type SchemaVersion2 = "obs-flight-2";
+export type SessionId1 = string;
+export type Generation1 = number;
+export type EvidenceKind2 = "real" | "fixture";
+export type Tick1 = number;
+/**
+ * @minItems 3
+ * @maxItems 3
+ */
+export type Position1 = [number, number, number];
+export type YawRad1 = number;
+export type PitchRad1 = number;
+export type SpeedUnitsS1 = number;
+export type AppliedResponseId1 = string | null;
+export type Neutral1 = boolean;
+export type PhysicsId = "flight-fixed20-ground-v2";
+export type EnvironmentId = "flat-ground-v1";
+export type GroundZ = -4;
+export type CollisionProxy = "fly-clearance-v1";
+export type Clearance = 1.5;
+export type GroundContact = boolean;
 
 export interface SyntheticFlightPreview {
   schema_version: SchemaVersion;
@@ -554,6 +650,31 @@ export interface FlightSnapshot {
   speed_units_s: SpeedUnitsS;
   applied_response_id: AppliedResponseId;
   neutral: Neutral;
+}
+export interface GroundFlightSnapshot {
+  schema_version: SchemaVersion2;
+  session_id: SessionId1;
+  generation: Generation1;
+  evidence_kind: EvidenceKind2;
+  tick: Tick1;
+  position: Position1;
+  yaw_rad: YawRad1;
+  pitch_rad: PitchRad1;
+  speed_units_s: SpeedUnitsS1;
+  applied_response_id: AppliedResponseId1;
+  neutral: Neutral1;
+  physics_id: PhysicsId;
+  environment: GroundEnvironment;
+  ground_contact: GroundContact;
+}
+/**
+ * Single source for physics and generated renderer ground parameters.
+ */
+export interface GroundEnvironment {
+  environment_id: EnvironmentId;
+  ground_z: GroundZ;
+  collision_proxy: CollisionProxy;
+  clearance: Clearance;
 }
 
 }
@@ -966,6 +1087,7 @@ export type Click = number;
 export type Dx = number;
 export type Dy = number;
 export type Click1 = boolean;
+export type Flight = (FlightSnapshot | GroundFlightSnapshot) | null;
 export type SchemaVersion4 = "obs-flight-1";
 export type SessionId2 = string;
 export type Generation2 = number;
@@ -981,6 +1103,27 @@ export type PitchRad = number;
 export type SpeedUnitsS = number;
 export type AppliedResponseId = string | null;
 export type Neutral = boolean;
+export type SchemaVersion5 = "obs-flight-2";
+export type SessionId3 = string;
+export type Generation3 = number;
+export type EvidenceKind3 = "real" | "fixture";
+export type Tick1 = number;
+/**
+ * @minItems 3
+ * @maxItems 3
+ */
+export type Position1 = [number, number, number];
+export type YawRad1 = number;
+export type PitchRad1 = number;
+export type SpeedUnitsS1 = number;
+export type AppliedResponseId1 = string | null;
+export type Neutral1 = boolean;
+export type PhysicsId = "flight-fixed20-ground-v2";
+export type EnvironmentId = "flat-ground-v1";
+export type GroundZ = -4;
+export type CollisionProxy = "fly-clearance-v1";
+export type Clearance = 1.5;
+export type GroundContact = boolean;
 
 export interface StreamEnvelope {
   schema_version: SchemaVersion;
@@ -989,7 +1132,7 @@ export interface StreamEnvelope {
   status: SessionStatus;
   latest_source_frame: FrameIdentity | null;
   neural_sample: NeuralSample | null;
-  flight: FlightSnapshot | null;
+  flight: Flight;
 }
 export interface SessionStatus {
   schema_version: SchemaVersion1;
@@ -1062,6 +1205,31 @@ export interface FlightSnapshot {
   applied_response_id: AppliedResponseId;
   neutral: Neutral;
 }
+export interface GroundFlightSnapshot {
+  schema_version: SchemaVersion5;
+  session_id: SessionId3;
+  generation: Generation3;
+  evidence_kind: EvidenceKind3;
+  tick: Tick1;
+  position: Position1;
+  yaw_rad: YawRad1;
+  pitch_rad: PitchRad1;
+  speed_units_s: SpeedUnitsS1;
+  applied_response_id: AppliedResponseId1;
+  neutral: Neutral1;
+  physics_id: PhysicsId;
+  environment: GroundEnvironment;
+  ground_contact: GroundContact;
+}
+/**
+ * Single source for physics and generated renderer ground parameters.
+ */
+export interface GroundEnvironment {
+  environment_id: EnvironmentId;
+  ground_z: GroundZ;
+  collision_proxy: CollisionProxy;
+  clearance: Clearance;
+}
 
 }
 export type StreamEnvelope = StreamEnvelopeContract.StreamEnvelope;
@@ -1120,6 +1288,7 @@ export type Height = number;
 export type Fps = number;
 export type MetadataState = "available" | "partial" | "unavailable";
 export type ProducerDetection = "unknown" | "driver" | "obs_readonly_monitor" | "synthetic";
+export type InitialFlight = FlightSnapshot | GroundFlightSnapshot;
 export type SchemaVersion4 = "obs-flight-1";
 export type SessionId1 = string;
 export type Generation1 = number;
@@ -1135,6 +1304,27 @@ export type PitchRad = number;
 export type SpeedUnitsS = number;
 export type AppliedResponseId = string | null;
 export type Neutral = boolean;
+export type SchemaVersion5 = "obs-flight-2";
+export type SessionId2 = string;
+export type Generation2 = number;
+export type EvidenceKind4 = "real" | "fixture";
+export type Tick1 = number;
+/**
+ * @minItems 3
+ * @maxItems 3
+ */
+export type Position1 = [number, number, number];
+export type YawRad1 = number;
+export type PitchRad1 = number;
+export type SpeedUnitsS1 = number;
+export type AppliedResponseId1 = string | null;
+export type Neutral1 = boolean;
+export type PhysicsId = "flight-fixed20-ground-v2";
+export type EnvironmentId = "flat-ground-v1";
+export type GroundZ = -4;
+export type CollisionProxy = "fly-clearance-v1";
+export type Clearance = 1.5;
+export type GroundContact = boolean;
 export type SourceHead = string;
 export type SourceTreeSha256 = string;
 export type GraphSha256 = string;
@@ -1163,7 +1353,7 @@ export interface ReplayManifest {
   state: State;
   config: SessionConfig;
   source: SourceCapability;
-  initial_flight: FlightSnapshot;
+  initial_flight: InitialFlight;
   provenance: Provenance;
   events_sha256: EventsSha256;
   event_count: EventCount;
@@ -1230,6 +1420,31 @@ export interface FlightSnapshot {
   speed_units_s: SpeedUnitsS;
   applied_response_id: AppliedResponseId;
   neutral: Neutral;
+}
+export interface GroundFlightSnapshot {
+  schema_version: SchemaVersion5;
+  session_id: SessionId2;
+  generation: Generation2;
+  evidence_kind: EvidenceKind4;
+  tick: Tick1;
+  position: Position1;
+  yaw_rad: YawRad1;
+  pitch_rad: PitchRad1;
+  speed_units_s: SpeedUnitsS1;
+  applied_response_id: AppliedResponseId1;
+  neutral: Neutral1;
+  physics_id: PhysicsId;
+  environment: GroundEnvironment;
+  ground_contact: GroundContact;
+}
+/**
+ * Single source for physics and generated renderer ground parameters.
+ */
+export interface GroundEnvironment {
+  environment_id: EnvironmentId;
+  ground_z: GroundZ;
+  collision_proxy: CollisionProxy;
+  clearance: Clearance;
 }
 export interface Provenance {
   source_head: SourceHead;
@@ -2121,6 +2336,7 @@ export type Click = number;
 export type Dx = number;
 export type Dy = number;
 export type Click1 = boolean;
+export type Flight = (FlightSnapshot | GroundFlightSnapshot) | null;
 export type SchemaVersion4 = "obs-flight-1";
 export type SessionId2 = string;
 export type Generation2 = number;
@@ -2136,6 +2352,27 @@ export type PitchRad = number;
 export type SpeedUnitsS = number;
 export type AppliedResponseId = string | null;
 export type Neutral = boolean;
+export type SchemaVersion5 = "obs-flight-2";
+export type SessionId3 = string;
+export type Generation3 = number;
+export type EvidenceKind3 = "real" | "fixture";
+export type Tick1 = number;
+/**
+ * @minItems 3
+ * @maxItems 3
+ */
+export type Position1 = [number, number, number];
+export type YawRad1 = number;
+export type PitchRad1 = number;
+export type SpeedUnitsS1 = number;
+export type AppliedResponseId1 = string | null;
+export type Neutral1 = boolean;
+export type PhysicsId = "flight-fixed20-ground-v2";
+export type EnvironmentId = "flat-ground-v1";
+export type GroundZ = -4;
+export type CollisionProxy = "fly-clearance-v1";
+export type Clearance = 1.5;
+export type GroundContact = boolean;
 export type Kind = "session" | "preview";
 export type LeaseRemainingMs = number;
 export type SourceReceiptAgeMs = number | null;
@@ -2156,7 +2393,7 @@ export interface ApiSnapshot {
   status: SessionStatus;
   latest_source_frame: FrameIdentity | null;
   neural_sample: NeuralSample | null;
-  flight: FlightSnapshot | null;
+  flight: Flight;
   kind: Kind;
   lease_remaining_ms: LeaseRemainingMs;
   source_receipt_age_ms: SourceReceiptAgeMs;
@@ -2241,6 +2478,31 @@ export interface FlightSnapshot {
   speed_units_s: SpeedUnitsS;
   applied_response_id: AppliedResponseId;
   neutral: Neutral;
+}
+export interface GroundFlightSnapshot {
+  schema_version: SchemaVersion5;
+  session_id: SessionId3;
+  generation: Generation3;
+  evidence_kind: EvidenceKind3;
+  tick: Tick1;
+  position: Position1;
+  yaw_rad: YawRad1;
+  pitch_rad: PitchRad1;
+  speed_units_s: SpeedUnitsS1;
+  applied_response_id: AppliedResponseId1;
+  neutral: Neutral1;
+  physics_id: PhysicsId;
+  environment: GroundEnvironment;
+  ground_contact: GroundContact;
+}
+/**
+ * Single source for physics and generated renderer ground parameters.
+ */
+export interface GroundEnvironment {
+  environment_id: EnvironmentId;
+  ground_z: GroundZ;
+  collision_proxy: CollisionProxy;
+  clearance: Clearance;
 }
 
 }
@@ -2558,6 +2820,7 @@ export type Click = number;
 export type Dx = number;
 export type Dy = number;
 export type Click1 = boolean;
+export type Flight = (FlightSnapshot | GroundFlightSnapshot) | null;
 export type SchemaVersion5 = "obs-flight-1";
 export type SessionId2 = string;
 export type Generation2 = number;
@@ -2573,6 +2836,27 @@ export type PitchRad = number;
 export type SpeedUnitsS = number;
 export type AppliedResponseId = string | null;
 export type Neutral = boolean;
+export type SchemaVersion6 = "obs-flight-2";
+export type SessionId3 = string;
+export type Generation3 = number;
+export type EvidenceKind3 = "real" | "fixture";
+export type Tick1 = number;
+/**
+ * @minItems 3
+ * @maxItems 3
+ */
+export type Position1 = [number, number, number];
+export type YawRad1 = number;
+export type PitchRad1 = number;
+export type SpeedUnitsS1 = number;
+export type AppliedResponseId1 = string | null;
+export type Neutral1 = boolean;
+export type PhysicsId = "flight-fixed20-ground-v2";
+export type EnvironmentId = "flat-ground-v1";
+export type GroundZ = -4;
+export type CollisionProxy = "fly-clearance-v1";
+export type Clearance = 1.5;
+export type GroundContact = boolean;
 export type Kind = "session" | "preview";
 export type LeaseRemainingMs = number;
 export type SourceReceiptAgeMs = number | null;
@@ -2597,7 +2881,7 @@ export interface ApiSnapshot {
   status: SessionStatus;
   latest_source_frame: FrameIdentity | null;
   neural_sample: NeuralSample | null;
-  flight: FlightSnapshot | null;
+  flight: Flight;
   kind: Kind;
   lease_remaining_ms: LeaseRemainingMs;
   source_receipt_age_ms: SourceReceiptAgeMs;
@@ -2682,6 +2966,31 @@ export interface FlightSnapshot {
   speed_units_s: SpeedUnitsS;
   applied_response_id: AppliedResponseId;
   neutral: Neutral;
+}
+export interface GroundFlightSnapshot {
+  schema_version: SchemaVersion6;
+  session_id: SessionId3;
+  generation: Generation3;
+  evidence_kind: EvidenceKind3;
+  tick: Tick1;
+  position: Position1;
+  yaw_rad: YawRad1;
+  pitch_rad: PitchRad1;
+  speed_units_s: SpeedUnitsS1;
+  applied_response_id: AppliedResponseId1;
+  neutral: Neutral1;
+  physics_id: PhysicsId;
+  environment: GroundEnvironment;
+  ground_contact: GroundContact;
+}
+/**
+ * Single source for physics and generated renderer ground parameters.
+ */
+export interface GroundEnvironment {
+  environment_id: EnvironmentId;
+  ground_z: GroundZ;
+  collision_proxy: CollisionProxy;
+  clearance: Clearance;
 }
 
 }
@@ -3083,6 +3392,7 @@ export type Height = number;
 export type Fps = number;
 export type MetadataState = "available" | "partial" | "unavailable";
 export type ProducerDetection = "unknown" | "driver" | "obs_readonly_monitor" | "synthetic";
+export type InitialFlight = FlightSnapshot | GroundFlightSnapshot;
 export type SchemaVersion5 = "obs-flight-1";
 export type SessionId1 = string;
 export type Generation1 = number;
@@ -3098,6 +3408,27 @@ export type PitchRad = number;
 export type SpeedUnitsS = number;
 export type AppliedResponseId = string | null;
 export type Neutral = boolean;
+export type SchemaVersion6 = "obs-flight-2";
+export type SessionId2 = string;
+export type Generation2 = number;
+export type EvidenceKind4 = "real" | "fixture";
+export type Tick1 = number;
+/**
+ * @minItems 3
+ * @maxItems 3
+ */
+export type Position1 = [number, number, number];
+export type YawRad1 = number;
+export type PitchRad1 = number;
+export type SpeedUnitsS1 = number;
+export type AppliedResponseId1 = string | null;
+export type Neutral1 = boolean;
+export type PhysicsId = "flight-fixed20-ground-v2";
+export type EnvironmentId = "flat-ground-v1";
+export type GroundZ = -4;
+export type CollisionProxy = "fly-clearance-v1";
+export type Clearance = 1.5;
+export type GroundContact = boolean;
 export type SourceHead = string;
 export type SourceTreeSha256 = string;
 export type GraphSha256 = string;
@@ -3118,12 +3449,12 @@ export type EventCount = number;
 export type EventsBytes = number;
 export type EventsFile = "events.jsonl";
 export type Kind = "input";
-export type SchemaVersion6 = "obs-frame-1";
+export type SchemaVersion7 = "obs-frame-1";
 export type SourceId2 = string;
-export type SessionId2 = string;
-export type Generation2 = number;
+export type SessionId3 = string;
+export type Generation3 = number;
 export type Sequence = number;
-export type EvidenceKind4 = "real" | "fixture";
+export type EvidenceKind5 = "real" | "fixture";
 export type Width1 = number;
 export type Height1 = number;
 export type PixelFormat1 = "RGB24";
@@ -3399,7 +3730,7 @@ export type EncoderId1 = "obs-rgb-letterbox16-v1";
  * @maxItems 512
  */
 export type Inputs = InputEvent[];
-export type SchemaVersion7 = "obs-neural-1";
+export type SchemaVersion8 = "obs-neural-1";
 export type ResponseId = string;
 /**
  * @minItems 256
@@ -3684,16 +4015,16 @@ export type Click1 = boolean;
  */
 export type Samples = NeuralSample[];
 export type Kind1 = "result";
-export type SessionId3 = string;
-export type Generation3 = number;
+export type SessionId4 = string;
+export type Generation4 = number;
 export type StepIndex2 = number;
 export type CompletedMonotonicMs1 = number;
-export type SchemaVersion8 = "1";
+export type SchemaVersion9 = "1";
 export type Dx1 = number;
 export type Dy1 = number;
 export type Click2 = boolean;
 export type ModelMode = "fixture" | "windowed_reset";
-export type SchemaVersion9 = "1";
+export type SchemaVersion10 = "1";
 export type SampledNeurons = number;
 export type SpikeCount = number;
 export type NeuralMs1 = number;
@@ -3709,9 +4040,10 @@ export type ModelFileReads = number;
  * @maxItems 512
  */
 export type Results = StepResult[];
-export type SchemaVersion10 = "obs-flight-trace-1";
+export type SchemaVersion11 = "obs-flight-trace-1";
 export type DecoderId1 = "motor-flight-v1";
-export type PhysicsId = "flight-fixed20-v1";
+export type PhysicsId1 = "flight-fixed20-v1" | "flight-fixed20-ground-v2";
+export type Snapshot = FlightSnapshot | GroundFlightSnapshot;
 /**
  * @minItems 3
  * @maxItems 3
@@ -3719,13 +4051,13 @@ export type PhysicsId = "flight-fixed20-v1";
 export type Velocity = [unknown, unknown, unknown];
 export type YawRate = number;
 export type OriginMs = number;
-export type Tick1 = number;
-export type SchemaVersion11 = "obs-controls-1";
+export type Tick2 = number;
+export type SchemaVersion12 = "obs-controls-1";
 export type DecoderId2 = "motor-flight-v1";
 export type ResponseId1 = string;
-export type SessionId4 = string;
-export type Generation4 = number;
-export type EvidenceKind5 = "real" | "fixture";
+export type SessionId5 = string;
+export type Generation5 = number;
+export type EvidenceKind6 = "real" | "fixture";
 export type IssuedMonotonicMs = number;
 export type ExpiresMonotonicMs = number;
 export type YawRateRadS = number;
@@ -3757,7 +4089,7 @@ export interface ReplayManifest {
   state: State;
   config: SessionConfig;
   source: SourceCapability;
-  initial_flight: FlightSnapshot;
+  initial_flight: InitialFlight;
   provenance: Provenance;
   events_sha256: EventsSha256;
   event_count: EventCount;
@@ -3825,6 +4157,31 @@ export interface FlightSnapshot {
   applied_response_id: AppliedResponseId;
   neutral: Neutral;
 }
+export interface GroundFlightSnapshot {
+  schema_version: SchemaVersion6;
+  session_id: SessionId2;
+  generation: Generation2;
+  evidence_kind: EvidenceKind4;
+  tick: Tick1;
+  position: Position1;
+  yaw_rad: YawRad1;
+  pitch_rad: PitchRad1;
+  speed_units_s: SpeedUnitsS1;
+  applied_response_id: AppliedResponseId1;
+  neutral: Neutral1;
+  physics_id: PhysicsId;
+  environment: GroundEnvironment;
+  ground_contact: GroundContact;
+}
+/**
+ * Single source for physics and generated renderer ground parameters.
+ */
+export interface GroundEnvironment {
+  environment_id: EnvironmentId;
+  ground_z: GroundZ;
+  collision_proxy: CollisionProxy;
+  clearance: Clearance;
+}
 export interface Provenance {
   source_head: SourceHead;
   source_tree_sha256: SourceTreeSha256;
@@ -3850,12 +4207,12 @@ export interface InputEvent {
   encoder_id?: EncoderId1;
 }
 export interface FrameIdentity {
-  schema_version: SchemaVersion6;
+  schema_version: SchemaVersion7;
   source_id: SourceId2;
-  session_id: SessionId2;
-  generation: Generation2;
+  session_id: SessionId3;
+  generation: Generation3;
   sequence: Sequence;
-  evidence_kind: EvidenceKind4;
+  evidence_kind: EvidenceKind5;
   width: Width1;
   height: Height1;
   pixel_format: PixelFormat1;
@@ -3865,7 +4222,7 @@ export interface FrameIdentity {
   source_clock: SourceClock;
 }
 export interface NeuralSample {
-  schema_version: SchemaVersion7;
+  schema_version: SchemaVersion8;
   response_id: ResponseId;
   frame: FrameIdentity;
   observation_u8: ObservationU81;
@@ -3894,8 +4251,8 @@ export interface RawAction {
 }
 export interface StepResult {
   kind?: Kind1;
-  session_id: SessionId3;
-  generation: Generation3;
+  session_id: SessionId4;
+  generation: Generation4;
   step_index: StepIndex2;
   completed_monotonic_ms: CompletedMonotonicMs1;
   output: ControllerOutput;
@@ -3905,7 +4262,7 @@ export interface StepResult {
   model_file_reads: ModelFileReads;
 }
 export interface ControllerOutput {
-  schema_version: SchemaVersion8;
+  schema_version: SchemaVersion9;
   dx: Dx1;
   dy: Dy1;
   click: Click2;
@@ -3913,7 +4270,7 @@ export interface ControllerOutput {
   telemetry: NeuralTelemetry;
 }
 export interface NeuralTelemetry {
-  schema_version: SchemaVersion9;
+  schema_version: SchemaVersion10;
   sampled_neurons: SampledNeurons;
   spike_count: SpikeCount;
   neural_ms: NeuralMs1;
@@ -3931,7 +4288,7 @@ export interface Statistics {
  * Bounded in-memory state/control record, with an immediate terminal overlay.
  */
 export interface FlightTrace {
-  schema_version?: SchemaVersion10;
+  schema_version?: SchemaVersion11;
   decoder_id?: DecoderId1;
   initial: FlightState;
   origin_ms: OriginMs;
@@ -3940,8 +4297,8 @@ export interface FlightTrace {
   terminal_tick: TerminalTick;
 }
 export interface FlightState {
-  physics_id?: PhysicsId;
-  snapshot: FlightSnapshot;
+  physics_id?: PhysicsId1;
+  snapshot: Snapshot;
   velocity?: Velocity;
   yaw_rate?: YawRate;
 }
@@ -3949,7 +4306,7 @@ export interface FlightState {
  * Control selected for the interval ending at tick; never a pixel record.
  */
 export interface ControlTick {
-  tick: Tick1;
+  tick: Tick2;
   controls: FlightControls | null;
   state?: State1;
 }
@@ -3957,12 +4314,12 @@ export interface ControlTick {
  * Decoder output only; source pixels and world targets are excluded.
  */
 export interface FlightControls {
-  schema_version: SchemaVersion11;
+  schema_version: SchemaVersion12;
   decoder_id: DecoderId2;
   response_id: ResponseId1;
-  session_id: SessionId4;
-  generation: Generation4;
-  evidence_kind: EvidenceKind5;
+  session_id: SessionId5;
+  generation: Generation5;
+  evidence_kind: EvidenceKind6;
   issued_monotonic_ms: IssuedMonotonicMs;
   expires_monotonic_ms: ExpiresMonotonicMs;
   yaw_rate_rad_s: YawRateRadS;
@@ -4029,6 +4386,7 @@ export type Height = number;
 export type Fps = number;
 export type MetadataState = "available" | "partial" | "unavailable";
 export type ProducerDetection = "unknown" | "driver" | "obs_readonly_monitor" | "synthetic";
+export type InitialFlight = FlightSnapshot | GroundFlightSnapshot;
 export type SchemaVersion5 = "obs-flight-1";
 export type SessionId1 = string;
 export type Generation1 = number;
@@ -4044,6 +4402,27 @@ export type PitchRad = number;
 export type SpeedUnitsS = number;
 export type AppliedResponseId = string | null;
 export type Neutral = boolean;
+export type SchemaVersion6 = "obs-flight-2";
+export type SessionId2 = string;
+export type Generation2 = number;
+export type EvidenceKind4 = "real" | "fixture";
+export type Tick1 = number;
+/**
+ * @minItems 3
+ * @maxItems 3
+ */
+export type Position1 = [number, number, number];
+export type YawRad1 = number;
+export type PitchRad1 = number;
+export type SpeedUnitsS1 = number;
+export type AppliedResponseId1 = string | null;
+export type Neutral1 = boolean;
+export type PhysicsId = "flight-fixed20-ground-v2";
+export type EnvironmentId = "flat-ground-v1";
+export type GroundZ = -4;
+export type CollisionProxy = "fly-clearance-v1";
+export type Clearance = 1.5;
+export type GroundContact = boolean;
 export type SourceHead = string;
 export type SourceTreeSha256 = string;
 export type GraphSha256 = string;
@@ -4088,7 +4467,7 @@ export interface ReplayManifest {
   state: State;
   config: SessionConfig;
   source: SourceCapability;
-  initial_flight: FlightSnapshot;
+  initial_flight: InitialFlight;
   provenance: Provenance;
   events_sha256: EventsSha256;
   event_count: EventCount;
@@ -4156,6 +4535,31 @@ export interface FlightSnapshot {
   applied_response_id: AppliedResponseId;
   neutral: Neutral;
 }
+export interface GroundFlightSnapshot {
+  schema_version: SchemaVersion6;
+  session_id: SessionId2;
+  generation: Generation2;
+  evidence_kind: EvidenceKind4;
+  tick: Tick1;
+  position: Position1;
+  yaw_rad: YawRad1;
+  pitch_rad: PitchRad1;
+  speed_units_s: SpeedUnitsS1;
+  applied_response_id: AppliedResponseId1;
+  neutral: Neutral1;
+  physics_id: PhysicsId;
+  environment: GroundEnvironment;
+  ground_contact: GroundContact;
+}
+/**
+ * Single source for physics and generated renderer ground parameters.
+ */
+export interface GroundEnvironment {
+  environment_id: EnvironmentId;
+  ground_z: GroundZ;
+  collision_proxy: CollisionProxy;
+  clearance: Clearance;
+}
 export interface Provenance {
   source_head: SourceHead;
   source_tree_sha256: SourceTreeSha256;
@@ -4178,7 +4582,8 @@ export interface Provenance {
 export type ReplayList = ReplayListContract.ReplayList;
 
 export namespace FlightStateContract {
-export type PhysicsId = "flight-fixed20-v1";
+export type PhysicsId = "flight-fixed20-v1" | "flight-fixed20-ground-v2";
+export type Snapshot = FlightSnapshot | GroundFlightSnapshot;
 export type SchemaVersion = "obs-flight-1";
 export type SessionId = string;
 export type Generation = number;
@@ -4194,6 +4599,27 @@ export type PitchRad = number;
 export type SpeedUnitsS = number;
 export type AppliedResponseId = string | null;
 export type Neutral = boolean;
+export type SchemaVersion1 = "obs-flight-2";
+export type SessionId1 = string;
+export type Generation1 = number;
+export type EvidenceKind1 = "real" | "fixture";
+export type Tick1 = number;
+/**
+ * @minItems 3
+ * @maxItems 3
+ */
+export type Position1 = [number, number, number];
+export type YawRad1 = number;
+export type PitchRad1 = number;
+export type SpeedUnitsS1 = number;
+export type AppliedResponseId1 = string | null;
+export type Neutral1 = boolean;
+export type PhysicsId1 = "flight-fixed20-ground-v2";
+export type EnvironmentId = "flat-ground-v1";
+export type GroundZ = -4;
+export type CollisionProxy = "fly-clearance-v1";
+export type Clearance = 1.5;
+export type GroundContact = boolean;
 /**
  * @minItems 3
  * @maxItems 3
@@ -4203,7 +4629,7 @@ export type YawRate = number;
 
 export interface FlightState {
   physics_id?: PhysicsId;
-  snapshot: FlightSnapshot;
+  snapshot: Snapshot;
   velocity?: Velocity;
   yaw_rate?: YawRate;
 }
@@ -4219,6 +4645,31 @@ export interface FlightSnapshot {
   speed_units_s: SpeedUnitsS;
   applied_response_id: AppliedResponseId;
   neutral: Neutral;
+}
+export interface GroundFlightSnapshot {
+  schema_version: SchemaVersion1;
+  session_id: SessionId1;
+  generation: Generation1;
+  evidence_kind: EvidenceKind1;
+  tick: Tick1;
+  position: Position1;
+  yaw_rad: YawRad1;
+  pitch_rad: PitchRad1;
+  speed_units_s: SpeedUnitsS1;
+  applied_response_id: AppliedResponseId1;
+  neutral: Neutral1;
+  physics_id: PhysicsId1;
+  environment: GroundEnvironment;
+  ground_contact: GroundContact;
+}
+/**
+ * Single source for physics and generated renderer ground parameters.
+ */
+export interface GroundEnvironment {
+  environment_id: EnvironmentId;
+  ground_z: GroundZ;
+  collision_proxy: CollisionProxy;
+  clearance: Clearance;
 }
 
 }
